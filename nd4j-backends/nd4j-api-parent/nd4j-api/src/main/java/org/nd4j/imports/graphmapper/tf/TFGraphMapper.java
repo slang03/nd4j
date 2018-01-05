@@ -301,15 +301,21 @@ public class TFGraphMapper extends BaseGraphMapper<GraphDef,NodeDef,AttrValue,No
                 throw new ND4JIllegalStateException("Unable to find GraphDef in given folder");
 
 
-            val sd = importGraph(readGraph(new FileInputStream(pair.getFirst())));
+            MetaGraphDef mgd = null;
+            try (val is= new FileInputStream(pair.getFirst()); val bs = new BufferedInputStream(is)){
+                mgd = MetaGraphDef.parseFrom(bs);
+            } catch (Exception e) {
+                throw new ND4JIllegalStateException(e);
+            }
 
-
+            val sd = importGraph(mgd.getGraphDef());
 
             if (sd == null)
                 throw new ND4JIllegalStateException("Unable to load GraphDef from given checkpoint");
 
             if (pair.getSecond() == null)
                 throw new ND4JIllegalStateException("Unable to find Variables in given folder");
+
 
         } else if (file.getAbsolutePath().endsWith(".zip")) {
             // unzip
