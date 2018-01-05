@@ -303,6 +303,8 @@ public class TFGraphMapper extends BaseGraphMapper<GraphDef,NodeDef,AttrValue,No
 
             val sd = importGraph(readGraph(new FileInputStream(pair.getFirst())));
 
+
+
             if (sd == null)
                 throw new ND4JIllegalStateException("Unable to load GraphDef from given checkpoint");
 

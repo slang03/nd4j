@@ -695,7 +695,8 @@ public class TensorFlowImportTest {
 
     @Test
     public void testCheckpointLoader_1() throws Exception {
-        val sd = TFGraphMapper.getInstance().importCheckpoint(new ClassPathResource("tf_ckpt/tfmodel2.zip").getTempFileFromArchive());
+        //val sd = TFGraphMapper.getInstance().importCheckpoint(new ClassPathResource("tf_ckpt/tfmodel2.zip").getTempFileFromArchive());
+        val sd = TFGraphMapper.getInstance().importCheckpoint(new File("/home/raver119/Downloads/tfmodel2"));
         assertNotNull(sd);
     }
 
