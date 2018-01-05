@@ -67,9 +67,9 @@ public class ClassPathResource extends AbstractFileResolvingResource {
         if (path.contains("/") || path.contains("\\")) {
             int idx = Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\"));
             String subpath = path.substring(idx + 1);
-            tmpFile = new File(subpath + "tmp");
+            tmpFile = new File(subpath);
         } else {
-            tmpFile = new File(path + "tmp");
+            tmpFile = new File(path);
         }
         tmpFile.deleteOnExit();
 

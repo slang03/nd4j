@@ -2,6 +2,7 @@ package org.nd4j.imports.graphmapper;
 
 import com.google.protobuf.Message;
 import com.google.protobuf.TextFormat;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.io.IOUtils;
@@ -39,8 +40,6 @@ public abstract class BaseGraphMapper<GRAPH_TYPE,NODE_TYPE,ATTR_TYPE,TENSOR_TYPE
         return type;
 
     }
-
-
 
     /**
      *

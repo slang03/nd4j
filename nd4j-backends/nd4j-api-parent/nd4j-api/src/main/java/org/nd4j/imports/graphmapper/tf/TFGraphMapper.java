@@ -2,10 +2,12 @@ package org.nd4j.imports.graphmapper.tf;
 
 import com.google.common.primitives.Ints;
 import com.google.protobuf.Message;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.nd4j.autodiff.functions.DifferentialFunction;
 import org.nd4j.autodiff.samediff.SDVariable;
+import org.nd4j.autodiff.samediff.SameDiff;
 import org.nd4j.imports.converters.DifferentialFunctionClassHolder;
 import org.nd4j.imports.graphmapper.BaseGraphMapper;
 import org.nd4j.imports.graphmapper.ImportState;
@@ -13,13 +15,16 @@ import org.nd4j.linalg.api.buffer.DataBuffer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.exception.ND4JIllegalStateException;
 import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.primitives.Pair;
 import org.nd4j.linalg.util.ArrayUtil;
+import org.nd4j.linalg.util.FileUtils;
 import org.nd4j.weightinit.impl.ZeroInitScheme;
 import org.tensorflow.framework.*;
 
 import java.io.*;
 import java.nio.ByteOrder;
 import java.util.*;
+import java.util.zip.ZipFile;
 
 /**
  * Map tensorflow graph protos
@@ -214,6 +219,104 @@ public class TFGraphMapper extends BaseGraphMapper<GraphDef,NodeDef,AttrValue,No
             ret = ret.replace("/read","");
         }
         return ret;
+    }
+
+    protected static File unzipToTempFile(@NonNull File file) throws IOException{
+        File tempFolder = File.createTempFile("ckpt_","_tmp");
+        tempFolder.delete();
+        tempFolder.mkdir();
+
+        if (!tempFolder.exists())
+            throw new ND4JIllegalStateException("Can't create temp folder: [" + tempFolder.getAbsolutePath() +"]");
+
+        tempFolder.deleteOnExit();
+
+        ZipFile zipFile = new ZipFile(file);
+
+        val entries = zipFile.entries();
+        while (entries.hasMoreElements()) {
+            val entry = entries.nextElement();
+            log.info("Name: {}", entry.getName());
+            if (entry.isDirectory()) {
+                val f = new File(tempFolder, entry.getName());
+                f.deleteOnExit();
+                f.mkdirs();
+
+                if (!f.exists())
+                    throw new ND4JIllegalStateException("Can't create temp folder: [" + f.getAbsolutePath() +"]");
+            } else {
+                val f = new File(tempFolder, entry.getName());
+                f.deleteOnExit();
+
+                try (val os = new FileOutputStream(f); val bs = new BufferedOutputStream(os); val stream = zipFile.getInputStream(entry); val reader = new BufferedInputStream(stream)) {
+                    int read = 0;
+                    val bytes = new byte[2048];
+                    while ((read = reader.read(bytes)) > 0)
+                        bs.write(bytes, 0, read);
+                }
+            }
+        }
+
+        return tempFolder;
+    }
+
+
+    protected static Pair<File, File> pickFiles(@NonNull Collection<File> files) {
+        val pair = new Pair<File, File>();
+
+        for (val f: files)
+            if (f.getAbsolutePath().endsWith(".meta"))
+                pair.setFirst(f);
+
+
+        return pair;
+    }
+
+    /**
+     * This method imports TensorFlow checkpoint (provided as *.zip file or folder) into SameDiff
+     *
+     * PLEASE NOTE: Provided file/folder should be valid TF checkpoint bundle, containing 1 model
+     *
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    public SameDiff importCheckpoint(@NonNull File file) throws IOException {
+        if (!file.exists())
+            throw new ND4JIllegalStateException("File [" + file.getAbsolutePath() + "] doesn't exist");
+
+        if (file.isDirectory()) {
+            /**
+             * we mostly care about 2 files here:
+             * *.meta file, which contain GraphDef
+             * *.data file(s), which contain Variables
+             */
+
+            val files = FileUtils.listFiles(file);
+            log.info("files: {}", files);
+
+            val pair = pickFiles(files);
+
+            if (pair.getFirst() == null)
+                throw new ND4JIllegalStateException("Unable to find GraphDef in given folder");
+
+
+            val sd = importGraph(readGraph(new FileInputStream(pair.getFirst())));
+
+            if (sd == null)
+                throw new ND4JIllegalStateException("Unable to load GraphDef from given checkpoint");
+
+            if (pair.getSecond() == null)
+                throw new ND4JIllegalStateException("Unable to find Variables in given folder");
+
+        } else if (file.getAbsolutePath().endsWith(".zip")) {
+            // unzip
+            return importCheckpoint(unzipToTempFile(file));
+        } else if (file.getAbsolutePath().endsWith(".gz")) {
+            // gunzip
+        }
+
+        throw new ND4JIllegalStateException("Unknown file: [" + file.getAbsolutePath() + "]");
     }
 
 
