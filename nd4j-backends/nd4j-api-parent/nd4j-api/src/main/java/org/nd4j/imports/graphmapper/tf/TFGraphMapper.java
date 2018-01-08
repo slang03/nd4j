@@ -16,10 +16,12 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.exception.ND4JIllegalStateException;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.primitives.Pair;
+import org.nd4j.linalg.primitives.Triple;
 import org.nd4j.linalg.util.ArrayUtil;
 import org.nd4j.linalg.util.FileUtils;
 import org.nd4j.weightinit.impl.ZeroInitScheme;
 import org.tensorflow.framework.*;
+import org.tensorflow.util.BundleEntryProto;
 
 import java.io.*;
 import java.nio.ByteOrder;
@@ -261,15 +263,22 @@ public class TFGraphMapper extends BaseGraphMapper<GraphDef,NodeDef,AttrValue,No
     }
 
 
-    protected static Pair<File, File> pickFiles(@NonNull Collection<File> files) {
-        val pair = new Pair<File, File>();
+    protected static Triple<File, File, File> pickFiles(@NonNull Collection<File> files) {
+        val triple = new Triple<File, File, File>();
+
+        for (val f: files)
+            if (f.getAbsolutePath().endsWith(".index"))
+                triple.setFirst(f);
 
         for (val f: files)
             if (f.getAbsolutePath().endsWith(".meta"))
-                pair.setFirst(f);
+                triple.setSecond(f);
 
+        for (val f: files)
+            if (f.getAbsolutePath().contains(".data"))
+                triple.setThird(f);
 
-        return pair;
+        return triple;
     }
 
     /**
@@ -295,26 +304,44 @@ public class TFGraphMapper extends BaseGraphMapper<GraphDef,NodeDef,AttrValue,No
             val files = FileUtils.listFiles(file);
             log.info("files: {}", files);
 
-            val pair = pickFiles(files);
+            val triple = pickFiles(files);
 
-            if (pair.getFirst() == null)
+            if (triple.getSecond() == null)
                 throw new ND4JIllegalStateException("Unable to find GraphDef in given folder");
 
-
             MetaGraphDef mgd = null;
-            try (val is= new FileInputStream(pair.getFirst()); val bs = new BufferedInputStream(is)){
+            try (val is= new FileInputStream(triple.getSecond()); val bs = new BufferedInputStream(is)){
                 mgd = MetaGraphDef.parseFrom(bs);
             } catch (Exception e) {
                 throw new ND4JIllegalStateException(e);
             }
 
-            val sd = importGraph(mgd.getGraphDef());
+       //     val sd = importGraph(mgd.getGraphDef());
 
-            if (sd == null)
-                throw new ND4JIllegalStateException("Unable to load GraphDef from given checkpoint");
+            //if (sd == null)
+              //  throw new ND4JIllegalStateException("Unable to load GraphDef from given checkpoint");
 
-            if (pair.getSecond() == null)
+
+
+
+
+            if (triple.getFirst() == null)
+                throw new ND4JIllegalStateException("Unable to find Index in given folder");
+
+
+
+
+            if (triple.getThird() == null)
                 throw new ND4JIllegalStateException("Unable to find Variables in given folder");
+
+            BundleEntryProto bep = null;
+            try (val is= new FileInputStream(triple.getThird()); val bs = new BufferedInputStream(is)){
+                bep = BundleEntryProto.parseFrom(bs);
+            } catch (Exception e) {
+                throw new ND4JIllegalStateException(e);
+            }
+
+
 
 
         } else if (file.getAbsolutePath().endsWith(".zip")) {
