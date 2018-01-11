@@ -35,6 +35,7 @@ This user guide is designed to explain (and provide examples for) the main funct
   * Permute
   * sortRows/sortColumns
   * Directly accessing BLAS operations
+* <a href="#serialization">Serialization</a>
 * <a href="#quickref">Quick Reference: A Summary Overview of ND4J Methods</a>
 * <a href="#faq">FAQ: Frequently Asked Questions</a>
 
@@ -615,7 +616,42 @@ Nd4j also provides overloaded toFlattened methods with the default ordering. The
 
 ### Serialization
 
-[This section: Forthcoming.]
+Nd4j provides serialization of INDArrays many formats. Here are some examples for binary and text serialization:
+```java
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.serde.binary.BinarySerde;
+
+import java.io.*;
+import java.nio.ByteBuffer;
+
+INDArray arrWrite = Nd4j.linspace(1,10,10);
+INDArray arrRead;
+
+//1. Binary format
+//   Close the streams manually or use try with resources.
+try (DataOutputStream sWrite = new DataOutputStream(new FileOutputStream(new File("tmp.bin")))) {
+	Nd4j.write(arrWrite, sWrite);
+    }
+
+try (DataInputStream sRead = new DataInputStream(new FileInputStream(new File("tmp.bin")))) {
+	arrRead = Nd4j.read(sRead);
+    }
+
+//2. Binary format using java.nio.ByteBuffer;
+ByteBuffer buffer = BinarySerde.toByteBuffer(arrWrite);
+arrRead = BinarySerde.toArray(buffer);
+
+//3. Text format
+Nd4j.writeTxt(arrWrite, "tmp.txt");
+arrRead = Nd4j.readTxt("tmp.txt");
+
+// To read csv format:
+// The writeNumpy method has been deprecated.
+arrRead =Nd4j.readNumpy("tmp.csv", ", ");
+```
+
+The [nd4j-serde](https://github.com/deeplearning4j/nd4j/tree/master/nd4j-serde) directory provides packages for Aeron, base64, camel-routes, gsom, jackson and kryo.  
 
 
 ## <a name="quickref">Quick Reference: A Summary Overview of ND4J Methods</a>
