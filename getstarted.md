@@ -28,7 +28,7 @@ System configuration requirements:
 Above  0.7.2:
 
 * [JavaCPP](#javacpp)
-* [BLAS (ATLAS, MKL, or OpenBLAS)](#blas)
+* [BLAS (MKL or OpenBLAS)](#blas)
 
 Optional:
 
@@ -43,11 +43,11 @@ For help installing the Java Development Kit or Maven, see the [DL4J quickstart]
 
 ## <a id="javacpp">JavaCPP</a>
 
-[JavaCPP](https://github.com/bytedeco/javacpp) provides efficient access to native C++ inside Java. Git clone and install when using version above 0.7.2.
+[JavaCPP](https://github.com/bytedeco/javacpp) provides efficient access to native C++ inside Java.
 
 ## <a id="blas">BLAS</a>
 
-BLAS is used as a backend for libnd4j computations. You can choose between ATLAS, MKL, or [OpenBLAS](https://github.com/xianyi/OpenBLAS/wiki/Installation-Guide). Note, if you use OpenBLAS check fortran requirements and make sure to configure for the number of cores on your machine.
+BLAS is used as a backend for libnd4j computations. You can choose between [MKL](https://software.intel.com/en-us/mkl), or [OpenBLAS](https://github.com/xianyi/OpenBLAS/wiki/Installation-Guide). Note, if you use OpenBLAS check fortran requirements and make sure to configure for the number of cores on your machine.
 
 ## <a id="ide">Integrated Development Environment: IntelliJ</a>
 
@@ -73,7 +73,7 @@ Click through the following screen with "Next", and on the screen after that, na
 
 Update the POM file with the dependences you'll need. These will vary depending on whether you're running on CPUs or GPUs.
 
-The default backend for CPUs is `nd4j-native-platform`, and for CUDA it is `nd4j-cuda-7.5-platform`. You can paste that into  the `<dependencies> ... </dependencies>` section of your POM like this:
+The default backend for CPUs is `nd4j-native-platform`, and for CUDA it is `nd4j-cuda-8.0-platform`. You can paste that into  the `<dependencies> ... </dependencies>` section of your POM like this:
 ```xml
 <dependency>
  <groupId>org.nd4j</groupId>
@@ -83,11 +83,33 @@ The default backend for CPUs is `nd4j-native-platform`, and for CUDA it is `nd4j
 ```
 ND4J's version is a variable here. It will refer to another line higher in the POM, in the `<properties> ... </properties>` section, specifying the nd4j version and appearing similar to this:
 ```xml
-<nd4j.version></nd4j.version>
+<nd4j.version>0.9.1</nd4j.version>
 ```
-*The dl4j version and DataVec version are also .*
+*The dl4j version and DataVec version are also 0.9.1.*
 
-Version `` or higher now includes all backends by default and binaries for all platforms are automatically pulled. It is recommended to not alter this behavior *especially* if you are building on one platform but deploying to another (OS X vs. Linux). However, you can also explicitly pull binaries only for the platforms you are using. Information on how to do this can be found on the [dependencies](./dependencies) page.
+Version `0.4.0` or higher now includes all backends by default and binaries for all platforms are automatically pulled. It is recommended to not alter this behavior *especially* if you are building on one platform but deploying to another (OS X vs. Linux). However, you can also explicitly pull binaries only for the platforms you are using. Information on how to do this can be found on the [dependencies](./dependencies) page.
+
+Further, additional but optional binaries targeting processors with AVX2 or AVX512 instructions are also available since version 0.9.2-SNAPSHOT. You just need to add them to your dependencies and ND4J will automatically pick them up, as below for AVX2 (Linux, Mac, and Windows), and similarly for AVX512 (Linux and Mac only).
+```xml
+ <dependency>
+   <groupId>org.nd4j</groupId>
+   <artifactId>nd4j-native</artifactId>
+   <version>${nd4j.version}</version>
+   <classifier>linux-x86_64-avx2</classifier>
+ </dependency>
+ <dependency>
+   <groupId>org.nd4j</groupId>
+   <artifactId>nd4j-native</artifactId>
+   <version>${nd4j.version}</version>
+   <classifier>macosx-x86_64-avx2</classifier>
+ </dependency>
+ <dependency>
+   <groupId>org.nd4j</groupId>
+   <artifactId>nd4j-native</artifactId>
+   <version>${nd4j.version}</version>
+   <classifier>windows-x86_64-avx2</classifier>
+ </dependency>
+```
 
 ### Other Build Systems
 
@@ -98,7 +120,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    compile 'org.nd4j:nd4j-native-platform:'
+    compile 'org.nd4j:nd4j-native-platform:0.9.1'
 }
 ```
 
@@ -107,16 +129,18 @@ Note: if your Gradle project fails with an error like the following:
 ```groovy
 Warning:<i><b>root project 'search-classifier': Unable to resolve additional project configuration.</b>
 Details: org.gradle.api.artifacts.ResolveException: Could not resolve all dependencies for configuration ':naive-classifier:compile'.
-Caused by: org.gradle.internal.resolve.ArtifactNotFoundException: Could not find opencv-linux-x86.jar (org.bytedeco.javacpp-presets:opencv:3.1.0-1.3).
+Caused by: org.gradle.internal.resolve.ArtifactNotFoundException: Could not find opencv-linux-x86_64.jar (org.bytedeco.javacpp-presets:opencv:3.2.0-1.3).
 Searched in the following locations:
-    file:/Users/user/.m2/repository/org/bytedeco/javacpp-presets/opencv/3.1.0-1.3/opencv-3.1.0-1.3-linux-x86.jar</i>
+    file:/Users/user/.m2/repository/org/bytedeco/javacpp-presets/opencv/3.2.0-1.3/opencv-3.2.0-1.3-linux-x86_64.jar</i>
 ```
 
 You can add the required dependencies as below. This is because Gradle has limited support for classifiers.
 
 ```groovy
-compile 'org.bytedeco.javacpp-presets:opencv:3.1.0-1.3'
-compile 'org.bytedeco.javacpp-presets:opencv:3.1.0-1.3.3:linx-x86'
+compile 'org.bytedeco.javacpp-presets:opencv:3.2.0-1.3'
+compile 'org.bytedeco.javacpp-presets:opencv:3.2.0-1.3:linux-x86_64'
+compile 'org.bytedeco.javacpp-presets:openblas:0.2.20-1.3'
+compile 'org.bytedeco.javacpp-presets:openblas:0.2.20-1.3:linux-x86_64'
 ```
 
 Similarly, for sbt, we need to include something like the following inside `build.sbt`:
@@ -124,7 +148,7 @@ Similarly, for sbt, we need to include something like the following inside `buil
 ```scala
 classpathTypes += "maven-plugin"
 
-libraryDependencies += "org.nd4j" % "nd4j-native-platform" % ""
+libraryDependencies += "org.nd4j" % "nd4j-native-platform" % "0.9.1"
 ```
 
 ### Stay Up-to-date
@@ -188,108 +212,6 @@ In addition to the core dependency, given below, you may also want to install `d
 </dependency>
 ```
 More information on installing Deeplearning4j is available on its [Getting Started page](http://deeplearning4j.org/gettingstarted.html).
-
-## <a id="devtools">Dev Tools for C on OSX, Windows & Linux</a>
-
-To compile certain ND4J dependencies on Windows or a Linux OS, you will need to install some dev tools for C, including gcc. To check if you have *gcc*, enter `gcc -v` on your terminal or command prompt.
-
-### OSX
-
-Some versions of the [Apple developer tool Xcode](https://developer.apple.com/xcode/downloads/) will install *gcc* for you. If you don't already have gcc, enter `brew install gcc` into your command prompt.
-
-### <a id="open"> OpenBlas </a>
-
-To make sure the native libs on the `native` backend work, you need `/opt/OpenBLAS/lib` on the system path. After that, enter these commands in the prompt
-```
-sudo cp libopenblas.so liblapack.so.3
-sudo cp libopenblas.so libblas.so.3
-```
-We added this so that [Spark](http://deeplearning4j.org/spark) would work with OpenBlas.
-
-If OpenBlas is not working correctly, follow these steps:
-
-* Remove Openblas if you installed it.
-* Run `sudo apt-get remove libopenblas-base`
-* Download the development version of OpenBLAS
-* `git clone git://github.com/xianyi/OpenBLAS`
-* `cd OpenBLAS`
-* `make FC=gfortran`
-* `sudo make PREFIX=/usr/local/ install`
-* With **Linux**, double check if the symlinks for `libblas.so.3` and `liblapack.so.3` are present anywhere in your `LD_LIBRARY_PATH`. If they aren't, add the links to `/usr/lib`. A symlink is a "symbolic link." You can set it up like this (the -s makes the link symbolic):
-```
-ln -s TARGET LINK_NAME
-// interpretation: ln -s "to-here" <- "from-here"
-```
-* The "from-here" is the symbolic link that does not exist yet, and which you are creating. Here's StackOverflow on [how to create a symlink](https://stackoverflow.com/questions/1951742/how-to-symlink-a-file-in-linux). And here's the [Linux man page](http://linux.die.net/man/1/ln).
-* As a last step, restart your IDE.
-* For complete instructions on how to get native Blas running with Centos 6, [see this page](https://gist.github.com/jarutis/912e2a4693accee42a94).
-
-For OpenBlas on **Ubuntu** (15.10), please see [these instructions](http://pastebin.com/F0Rv2uEk). Some additional gymnastics may be necessary to get OpenBlas running:
-```
-cd OpenBLAS
-make FC=gfortran
-sudo make PREFIX=/usr/local/ install
-
-sudo ln -s libopenblas.so libblas.so.3
-sudo ln -s libopenblas.so liblapack.so.3
-```
-For OpenBlas on **Windows**, download [this file](https://www.dropbox.com/s/6p8yn3fcf230rxy/ND4J_Win64_OpenBLAS-v0.2.14.zip?dl=1). Extract it to a location such as `C:/BLAS`. Finally, add that directory to your system's `PATH` environment variable.
-
-### <a id="windows"> Windows </a>
-
-Windows users may need to install [Visual Studio Community 2013 or later](https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx), which is free. You will need to add its path to your PATH environment variable manually. The path will look something like this: `C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin`
-
-Type `cl` into your CMD. You may get a message informing you that certain `.dll` files are missing. Make sure that your VS/IDE folder is in the path (see above). If your CMD returns usage info for `cl`, then it's in the right place.
-
-If you use Visual Studio:
-
-* Set up `PATH` environment variable to point to `\bin\` (for `cl.exe` etc)
-* Also try running `vcvars32.bat` (also in bin) to set up environment before doing `mvn clean install` on ND4J (it may save you from copying headers around)
-* `vcvars32` may be temporary, so you might need to run it every time you want to do ND4J `mvn install`.
-* After installing Visual Studio 2015 and setting the PATH variable, you need to run the `vcvars32.bat` to set up the environment variables (INCLUDE, LIB, LIBPATH) properly so that you don't have to copy header files. But if you run the bat file from Explorer, since the settings are temporary, they're not properly set. So run `vcvars32.bat` from the same CMD window as your `mvn install`, and all the environment variables will be set correctly.
-* Here is how they should be set:
-```
-INCLUDE = C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include
-LIB = "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\lib"
-//so you can link to .lib files^^
-```		
-* In Visual Studio, you also have to click on C++. It is no longer set by default.
-(*In addition, the include path for [Java CPP](https://github.com/bytedeco/javacpp) doesn't always work on Windows. One workaround is to take the the header files from the include directory of Visual Studio, and put them in the include directory of the Java Run-Time Environment (JRE), where Java is installed. This will affect files such as `standardio.h`.*)
-* For a walkthrough of installing our examples with Git, IntelliJ and Maven, please see our [Quickstart page](http://deeplearning4j.org/quickstart.html#walk).
-* [This page](http://avulanov.blogspot.cz/29/howto-to-run-netlib-javabreeze-in.html) describes how to obtain dll for the Windows 64 platform.
-
-
-### Linux
-
-With Linux, Ubuntu and Centos users will need to follow two separate sets of instructions:
-
-### Ubuntu
-
-For Ubuntu, first type:
-
-		sudo apt-get update
-
-Then you'll need to run a version of this command:
-
-		sudo apt-get install linux-headers-$(uname -r) build-essential
-
-`$(uname -r)` will vary according to your Linux version. To get your Linux version, open a new window of your terminal and enter this command:
-
-		uname -r
-
-You will see something like this -- `3.2.0-23-generic`. Whatever you see, copy and paste it into the first line of script in place of `$(uname -r)`. Then insert one space and type `build-essential`. Watch out for typos. You can press tab to complete any command.
-
-### Centos
-
-Enter the following in your terminal (or ssh session) as a root user:
-
-		yum groupinstall 'Development Tools'
-
-After that, you should see a lot of activity and installs on the terminal. To verify that you have, for example, *gcc*, enter this line:
-
-		gcc --version
-
-For more complete instructions, [go here](http://www.cyberciti.biz/faq/centos-linux-install-gcc-c-c-compiler/).
 
 ## <a id="gpu"> GPUs </a>
 
