@@ -383,4 +383,133 @@ public class GradCheckReductions {
 
 
 
+    @Test
+    public void debugReduceExec(){
+        SameDiff sd = SameDiff.create();
+
+        int dim = 0;
+
+        int nOut = 4;
+        int minibatch = 10;
+        SDVariable input = sd.var("in", new int[]{-1, nOut});
+        SDVariable label = sd.var("label", new int[]{-1, nOut});
+
+        SDVariable diff = input.sub(label);
+        SDVariable sqDiff = diff.mul(diff);
+        SDVariable msePerEx = sd.mean("msePerEx", sqDiff, 1);
+        SDVariable loss = sd.mean("loss", msePerEx, dim);
+
+        INDArray inputArr = Nd4j.randn(minibatch, nOut).muli(100);
+        INDArray labelArr = Nd4j.randn(minibatch, nOut).muli(100);
+
+        sd.associateArrayWithVariable(inputArr, input);
+        sd.associateArrayWithVariable(labelArr, label);
+
+        INDArray out = sd.execAndEndResult();
+        sd.execBackwards();
+    }
+
+
+    @Test
+    public void debugReduceExec2(){
+        SameDiff sd = SameDiff.create();
+
+        int dim = 0;
+
+        int nOut = 4;
+        int minibatch = 10;
+        SDVariable input = sd.var("in", Nd4j.randn(minibatch, nOut).muli(100));
+        SDVariable label = sd.var("label", Nd4j.randn(minibatch, nOut).muli(100));
+
+        SDVariable diff = input.sub(label);
+        // ----- Following variants fail -----
+        SDVariable sqDiff = diff.mul(diff);
+//        SDVariable sqDiff = diff.div(diff);
+//        SDVariable sqDiff = diff.sub(diff);
+//        SDVariable sqDiff = diff.rdiv(diff);
+        // ----- Following variants pass -----
+//        SDVariable sqDiff = diff.mul(2);
+//        SDVariable sqDiff = diff.add(diff);
+//        SDVariable sqDiff = diff.rsub(diff);
+        // ------------------------------
+        SDVariable msePerEx = sd.mean("msePerEx", sqDiff, 1);
+        SDVariable loss = sd.mean("loss", msePerEx, dim);
+
+        INDArray out = sd.execAndEndResult();
+        sd.execBackwards();
+    }
+
+    @Test
+    public void debugReduceExec3(){
+        SameDiff sd = SameDiff.create();
+
+        int dim = 0;
+
+        int nOut = 4;
+        int minibatch = 10;
+        SDVariable input = sd.var("in", Nd4j.randn(minibatch, nOut).muli(100));
+        SDVariable label = sd.var("label", Nd4j.randn(minibatch, nOut).muli(100));
+
+        SDVariable diff = input.sub(label);
+        SDVariable sqDiff = diff.mul(2);
+        SDVariable msePerEx = sd.mean("msePerEx", sqDiff, 1);
+        SDVariable loss = sd.mean("loss", msePerEx, dim);
+
+        INDArray out = sd.execAndEndResult();
+        sd.execBackwards();
+    }
+
+
+    @Test
+    public void testInPlace(){
+        Nd4j.getRandom().setSeed(12345);
+
+        for( int i=0; i<2; i++ ){
+
+            SameDiff sd1 = SameDiff.create();
+            SameDiff sd2 = SameDiff.create();
+
+            INDArray a = Nd4j.rand(3,4);
+            INDArray b = Nd4j.rand(3,4);
+            INDArray c = Nd4j.rand(3,4);
+
+            SDVariable a1 = sd1.var("a", a.dup());
+            SDVariable b1 = sd1.var("b", b.dup());
+            SDVariable c1 = sd1.var("c", c.dup());
+
+            SDVariable a2 = sd2.var("a", a.dup());
+            SDVariable b2 = sd2.var("b", b.dup());
+            SDVariable c2 = sd2.var("c", c.dup());
+
+            SDVariable op1_1;
+            SDVariable op2_1;
+            SDVariable op1_2;
+            SDVariable op2_2;
+            switch(i){
+                case 0:
+                    op1_1 = a1.add(b1);
+                    op2_1 = op1_1.add(c1);
+                    op1_2 = a2.addi(b2);
+                    op2_2 = op1_2.addi(c2);
+                    break;
+                case 1:
+
+                    op1_1 = a1.sub(b1);
+                    op2_1 = op1_1.sub(c1);
+                    op1_2 = a2.subi(b2);
+                    op2_2 = op1_2.subi(c2);
+                    break;
+                default:
+                    throw new RuntimeException();
+            }
+
+
+            INDArray out = sd1.execAndEndResult();
+            INDArray outi = sd2.execAndEndResult();
+
+            assertEquals(out, outi);
+        }
+
+    }
+
 }
