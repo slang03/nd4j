@@ -41,6 +41,7 @@ import org.bytedeco.javacpp.tools.InfoMapper;
                         "graph/FlowPath.h",
                         "graph/Intervals.h",
                         "graph/Stash.h",
+                        "graph/GraphState.h",
                         "graph/VariableSpace.h",
                         "helpers/helper_generator.h",
                         "graph/Context.h",

@@ -6260,6 +6260,12 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         */
         public native @Name("operator +=") void addPut(@Const @ByRef FloatNDArray other);
 
+        /**
+        *  subtraction unary operator array -= other
+        *  other - input array to add
+        */
+        public native @Name("operator -=") void subtractPut(@Const @ByRef FloatNDArray other);
+
         public native @Name("operator +=") void addPut(float other);
         public native @Name("operator -=") void subtractPut(float other);
         
@@ -6361,6 +6367,30 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         public native void setIdentity();
 
         /**
+        *  swaps the contents of tow arrays, 
+        *  PLEASE NOTE: method doesn't take into account the shapes of arrays, shapes may be different except one condition: arrays lengths must be the same 
+        */
+        public native void swapUnsafe(@ByRef FloatNDArray other);
+
+        /**
+        *  return vector with buffer which points on corresponding diagonal elements of array
+        *  type - means of vector to be returned: column ('c') or row ('r')
+        */
+        public native FloatNDArray diagonal(char type );
+
+        /**
+        *  set zeros in specified array block, works only with 2D matrix
+        *
+        *  block - block of array where to put zeros. Possible values are:
+        *      "trianUp"   - upper triangular block excluding diagonal 
+        *      "trianUpD"  - upper triangular block including diagonal 
+        *      "trianLow"  - lower triangular block excluding diagonal
+        *      "trianLowD" - lower triangular block including diagonal
+        */
+        public native void setZeros(@Cast("char*") String block);
+        public native void setZeros(@Cast("char*") BytePointer block);
+
+		/**
         *  change an array by repeating it the number of times in order to acquire new shape equal to the input shape
         *
         *  shape  - contains new shape to broadcast array to 
@@ -6579,6 +6609,15 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         *  inline modifying operator for 3D array, i - height, j - width, k - depth
         */ 
         public native @ByRef @Name("operator ()") FloatPointer apply(int i, int j, int k);
+
+        /**
+        *  inline modifying operator for 4D array, i - height, j - width, k - depth
+        */ 
+        public native @ByRef @Name("operator ()") FloatPointer apply(int t, int u, int v, int w);
+
+        /**
+        *  inline accessing operator for 4D array, i - height, j - width, k - depth
+        */
     }
 
 
@@ -7300,6 +7339,12 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         */
         public native @Name("operator +=") void addPut(@Const @ByRef HalfNDArray other);
 
+        /**
+        *  subtraction unary operator array -= other
+        *  other - input array to add
+        */
+        public native @Name("operator -=") void subtractPut(@Const @ByRef HalfNDArray other);
+
         public native @Name("operator +=") void addPut(@Cast("const float16") short other);
         public native @Name("operator -=") void subtractPut(@Cast("const float16") short other);
         
@@ -7401,6 +7446,30 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         public native void setIdentity();
 
         /**
+        *  swaps the contents of tow arrays, 
+        *  PLEASE NOTE: method doesn't take into account the shapes of arrays, shapes may be different except one condition: arrays lengths must be the same 
+        */
+        public native void swapUnsafe(@ByRef HalfNDArray other);
+
+        /**
+        *  return vector with buffer which points on corresponding diagonal elements of array
+        *  type - means of vector to be returned: column ('c') or row ('r')
+        */
+        public native HalfNDArray diagonal(char type );
+
+        /**
+        *  set zeros in specified array block, works only with 2D matrix
+        *
+        *  block - block of array where to put zeros. Possible values are:
+        *      "trianUp"   - upper triangular block excluding diagonal 
+        *      "trianUpD"  - upper triangular block including diagonal 
+        *      "trianLow"  - lower triangular block excluding diagonal
+        *      "trianLowD" - lower triangular block including diagonal
+        */
+        public native void setZeros(@Cast("char*") String block);
+        public native void setZeros(@Cast("char*") BytePointer block);
+
+		/**
         *  change an array by repeating it the number of times in order to acquire new shape equal to the input shape
         *
         *  shape  - contains new shape to broadcast array to 
@@ -7619,6 +7688,15 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         *  inline modifying operator for 3D array, i - height, j - width, k - depth
         */ 
         public native @Cast("float16*") @ByRef @Name("operator ()") ShortPointer apply(int i, int j, int k);
+
+        /**
+        *  inline modifying operator for 4D array, i - height, j - width, k - depth
+        */ 
+        public native @Cast("float16*") @ByRef @Name("operator ()") ShortPointer apply(int t, int u, int v, int w);
+
+        /**
+        *  inline accessing operator for 4D array, i - height, j - width, k - depth
+        */
     }
 
 
@@ -8340,6 +8418,12 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         */
         public native @Name("operator +=") void addPut(@Const @ByRef DoubleNDArray other);
 
+        /**
+        *  subtraction unary operator array -= other
+        *  other - input array to add
+        */
+        public native @Name("operator -=") void subtractPut(@Const @ByRef DoubleNDArray other);
+
         public native @Name("operator +=") void addPut(double other);
         public native @Name("operator -=") void subtractPut(double other);
         
@@ -8441,6 +8525,30 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         public native void setIdentity();
 
         /**
+        *  swaps the contents of tow arrays, 
+        *  PLEASE NOTE: method doesn't take into account the shapes of arrays, shapes may be different except one condition: arrays lengths must be the same 
+        */
+        public native void swapUnsafe(@ByRef DoubleNDArray other);
+
+        /**
+        *  return vector with buffer which points on corresponding diagonal elements of array
+        *  type - means of vector to be returned: column ('c') or row ('r')
+        */
+        public native DoubleNDArray diagonal(char type );
+
+        /**
+        *  set zeros in specified array block, works only with 2D matrix
+        *
+        *  block - block of array where to put zeros. Possible values are:
+        *      "trianUp"   - upper triangular block excluding diagonal 
+        *      "trianUpD"  - upper triangular block including diagonal 
+        *      "trianLow"  - lower triangular block excluding diagonal
+        *      "trianLowD" - lower triangular block including diagonal
+        */
+        public native void setZeros(@Cast("char*") String block);
+        public native void setZeros(@Cast("char*") BytePointer block);
+
+		/**
         *  change an array by repeating it the number of times in order to acquire new shape equal to the input shape
         *
         *  shape  - contains new shape to broadcast array to 
@@ -8659,6 +8767,15 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         *  inline modifying operator for 3D array, i - height, j - width, k - depth
         */ 
         public native @ByRef @Name("operator ()") DoublePointer apply(int i, int j, int k);
+
+        /**
+        *  inline modifying operator for 4D array, i - height, j - width, k - depth
+        */ 
+        public native @ByRef @Name("operator ()") DoublePointer apply(int t, int u, int v, int w);
+
+        /**
+        *  inline accessing operator for 4D array, i - height, j - width, k - depth
+        */
     }
 
 
@@ -8749,6 +8866,10 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
 
 //////////////////////////////////////////////////////////////////////////
 // modifying operator for 3D array
+
+
+
+
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -9781,6 +9902,32 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
 
 
 // #endif //LIBND4J_STASH_H
+
+
+// Parsed from graph/GraphState.h
+
+//
+// Created by raver119 on 23.01.18.
+//
+
+// #ifndef LIBND4J_GRAPHSTATE_H
+// #define LIBND4J_GRAPHSTATE_H
+
+// #include <pointercast.h>
+// #include <op_boilerplate.h>
+// #include <dll.h>
+    @Namespace("nd4j::graph") @Opaque public static class GraphState extends Pointer {
+        /** Empty constructor. Calls {@code super((Pointer)null)}. */
+        public GraphState() { super((Pointer)null); }
+        /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
+        public GraphState(Pointer p) { super(p); }
+    }
+
+
+
+
+
+// #endif //LIBND4J_GRAPHSTATE_H
 
 
 // Parsed from graph/VariableSpace.h
