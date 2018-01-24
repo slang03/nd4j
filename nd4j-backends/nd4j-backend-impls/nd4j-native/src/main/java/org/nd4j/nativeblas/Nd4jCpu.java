@@ -975,6 +975,7 @@ bool verbose = false;
 
 // #include <array/ShapeList.h>
 // #include <graph/VariablesSet.h>
+// #include <graph/GraphState.h>
 
 public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
     static { Loader.load(); }
@@ -6028,6 +6029,12 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
     public native void deleteVariablesSetFloat(@Cast("Nd4jPointer") Pointer pointer);
     public native void deleteVariablesSetDouble(@Cast("Nd4jPointer") Pointer pointer);
     public native void deleteVariablesSetHalf(@Cast("Nd4jPointer") Pointer pointer);
+
+    // GraphState creation
+    public native FloatGraphState getGraphStateFloat(@Cast("Nd4jIndex") long id);
+    public native DoubleGraphState getGraphStateDouble(@Cast("Nd4jIndex") long id);
+    public native void deleteGraphStateFloat(FloatGraphState state);
+    public native void deleteGraphStateDouble(DoubleGraphState state);
 }
 
 
@@ -6246,6 +6253,88 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
 
 
 // #endif
+
+// Parsed from graph/ArgumentsList.h
+
+//
+// Created by raver119 on 24.01.18.
+//
+
+// #ifndef LIBND4J_INPUTLIST_H
+// #define LIBND4J_INPUTLIST_H
+
+// #include <op_boilerplate.h>
+// #include <pointercast.h>
+// #include <dll.h>
+// #include <vector>
+// #include <types/pair.h>
+    @Namespace("nd4j::graph") @NoOffset public static class ArgumentsList extends Pointer {
+        static { Loader.load(); }
+        /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
+        public ArgumentsList(Pointer p) { super(p); }
+        /** Native array allocator. Access with {@link Pointer#position(long)}. */
+        public ArgumentsList(long size) { super((Pointer)null); allocateArray(size); }
+        private native void allocateArray(long size);
+        @Override public ArgumentsList position(long position) {
+            return (ArgumentsList)super.position(position);
+        }
+    
+        public ArgumentsList() { super((Pointer)null); allocate(); }
+        private native void allocate();
+
+        /**
+         * This method returns number of argument pairs available
+         *
+         * @return
+         */
+        public native int size();
+
+        /**
+         * This method returns Pair at specified index
+         *
+         * @param index
+         * @return
+         */
+        public native @ByRef Pair at(int index);
+    }
+
+
+
+// #endif //LIBND4J_INPUTLIST_H
+
+
+// Parsed from types/pair.h
+
+//
+// Created by raver119 on 24.01.18.
+//
+
+// #ifndef LIBND4J_PAIR_H
+// #define LIBND4J_PAIR_H
+    @Namespace("nd4j") @NoOffset public static class Pair extends Pointer {
+        static { Loader.load(); }
+        /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
+        public Pair(Pointer p) { super(p); }
+        /** Native array allocator. Access with {@link Pointer#position(long)}. */
+        public Pair(long size) { super((Pointer)null); allocateArray(size); }
+        private native void allocateArray(long size);
+        @Override public Pair position(long position) {
+            return (Pair)super.position(position);
+        }
+    
+        public Pair(int first/*=0*/, int second/*=0*/) { super((Pointer)null); allocate(first, second); }
+        private native void allocate(int first/*=0*/, int second/*=0*/);
+        public Pair() { super((Pointer)null); allocate(); }
+        private native void allocate();
+
+        public native int first();
+        public native int second();
+    }
+
+
+
+// #endif //LIBND4J_PAIR_H
+
 
 // Parsed from NDArray.h
 
@@ -10643,11 +10732,163 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
 // #include <pointercast.h>
 // #include <op_boilerplate.h>
 // #include <dll.h>
-    @Namespace("nd4j::graph") @Opaque public static class GraphState extends Pointer {
-        /** Empty constructor. Calls {@code super((Pointer)null)}. */
-        public GraphState() { super((Pointer)null); }
+// #include <vector>
+// #include <map>
+// #include <Scope.h>
+// #include <Status.h>
+// #include <VariableSpace.h>
+// #include <ops/declarable/DeclarableOp.h>
+// #include <types/pair.h>
+// #include "ArgumentsList.h"
+    @Name("nd4j::graph::GraphState<float>") @NoOffset public static class FloatGraphState extends Pointer {
+        static { Loader.load(); }
         /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
-        public GraphState(Pointer p) { super(p); }
+        public FloatGraphState(Pointer p) { super(p); }
+    
+        public FloatGraphState(@Cast("Nd4jIndex") long id) { super((Pointer)null); allocate(id); }
+        private native void allocate(@Cast("Nd4jIndex") long id);
+
+        /**
+         *
+         * @return
+         */
+        public native @Cast("Nd4jIndex") long id();
+
+        /**
+         * This method adds scope to this state tracker
+         *
+         * @param scopeId
+         * @return
+         */
+        public native @Cast("Nd4jStatus") int registerScope(int scopeId);
+
+        /**
+         * This method removes specified scope from this state tracker
+         *
+         * @param scopeId
+         * @return
+         */
+        public native @Cast("Nd4jStatus") int forgetScope(int scopeId);
+
+// #ifndef __JAVACPP_HACK__
+
+// #endif
+        /**
+         * This method adds given op to the end of specified scope
+         *
+         * @param scopeId
+         * @param opNum
+         * @param type
+         * @return
+         */
+        public native @Cast("Nd4jStatus") int attachOpToScope(int scopeId, @Cast("Nd4jIndex") long opNum, int type, @ByVal ArgumentsList inputs);
+
+        /**
+         * This method returns current variable space of this state holder
+         *
+         * @return
+         */
+        public native FloatVariableSpace variableSpace();
+    }
+    @Name("nd4j::graph::GraphState<float16>") @NoOffset public static class HalfGraphState extends Pointer {
+        static { Loader.load(); }
+        /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
+        public HalfGraphState(Pointer p) { super(p); }
+    
+        public HalfGraphState(@Cast("Nd4jIndex") long id) { super((Pointer)null); allocate(id); }
+        private native void allocate(@Cast("Nd4jIndex") long id);
+
+        /**
+         *
+         * @return
+         */
+        public native @Cast("Nd4jIndex") long id();
+
+        /**
+         * This method adds scope to this state tracker
+         *
+         * @param scopeId
+         * @return
+         */
+        public native @Cast("Nd4jStatus") int registerScope(int scopeId);
+
+        /**
+         * This method removes specified scope from this state tracker
+         *
+         * @param scopeId
+         * @return
+         */
+        public native @Cast("Nd4jStatus") int forgetScope(int scopeId);
+
+// #ifndef __JAVACPP_HACK__
+
+// #endif
+        /**
+         * This method adds given op to the end of specified scope
+         *
+         * @param scopeId
+         * @param opNum
+         * @param type
+         * @return
+         */
+        public native @Cast("Nd4jStatus") int attachOpToScope(int scopeId, @Cast("Nd4jIndex") long opNum, int type, @ByVal ArgumentsList inputs);
+
+        /**
+         * This method returns current variable space of this state holder
+         *
+         * @return
+         */
+        public native HalfVariableSpace variableSpace();
+    }
+    @Name("nd4j::graph::GraphState<double>") @NoOffset public static class DoubleGraphState extends Pointer {
+        static { Loader.load(); }
+        /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
+        public DoubleGraphState(Pointer p) { super(p); }
+    
+        public DoubleGraphState(@Cast("Nd4jIndex") long id) { super((Pointer)null); allocate(id); }
+        private native void allocate(@Cast("Nd4jIndex") long id);
+
+        /**
+         *
+         * @return
+         */
+        public native @Cast("Nd4jIndex") long id();
+
+        /**
+         * This method adds scope to this state tracker
+         *
+         * @param scopeId
+         * @return
+         */
+        public native @Cast("Nd4jStatus") int registerScope(int scopeId);
+
+        /**
+         * This method removes specified scope from this state tracker
+         *
+         * @param scopeId
+         * @return
+         */
+        public native @Cast("Nd4jStatus") int forgetScope(int scopeId);
+
+// #ifndef __JAVACPP_HACK__
+
+// #endif
+        /**
+         * This method adds given op to the end of specified scope
+         *
+         * @param scopeId
+         * @param opNum
+         * @param type
+         * @return
+         */
+        public native @Cast("Nd4jStatus") int attachOpToScope(int scopeId, @Cast("Nd4jIndex") long opNum, int type, @ByVal ArgumentsList inputs);
+
+        /**
+         * This method returns current variable space of this state holder
+         *
+         * @return
+         */
+        public native DoubleVariableSpace variableSpace();
     }
 
 
