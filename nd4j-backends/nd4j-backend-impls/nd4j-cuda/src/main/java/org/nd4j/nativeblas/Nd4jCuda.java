@@ -249,6 +249,7 @@ bool verbose = false;
 // #include <array/ShapeList.h>
 // #include <graph/VariablesSet.h>
 // #include <graph/GraphState.h>
+// #include <graph/execution/LogicExecutor.h>
 
 public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
     static { Loader.load(); }
@@ -5304,10 +5305,24 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
     public native void deleteVariablesSetHalf(@Cast("Nd4jPointer") Pointer pointer);
 
     // GraphState creation
-    public native FloatGraphState getGraphStateFloat(@Cast("Nd4jIndex") long id);
-    public native DoubleGraphState getGraphStateDouble(@Cast("Nd4jIndex") long id);
-    public native void deleteGraphStateFloat(FloatGraphState state);
-    public native void deleteGraphStateDouble(DoubleGraphState state);
+    public native @Cast("Nd4jPointer") Pointer getGraphStateHalf(@Cast("Nd4jIndex") long id);
+    public native @Cast("Nd4jPointer") Pointer getGraphStateFloat(@Cast("Nd4jIndex") long id);
+    public native @Cast("Nd4jPointer") Pointer getGraphStateDouble(@Cast("Nd4jIndex") long id);
+
+    public native void deleteGraphStateHalf(@Cast("Nd4jPointer") Pointer state);
+    public native void deleteGraphStateFloat(@Cast("Nd4jPointer") Pointer state);
+    public native void deleteGraphStateDouble(@Cast("Nd4jPointer") Pointer state);
+
+    // this method executes op that requires scope to be present: if/while/cond/whatever
+    public native @Cast("Nd4jStatus") int execCustomOpWithScopeHalf(@Cast("Nd4jPointer*") PointerPointer extraPointers, @Cast("Nd4jPointer") Pointer state, @Cast("Nd4jIndex") long opHash, @Cast("Nd4jIndex*") LongPointer scopes, int numScopes, @Cast("Nd4jPointer*") PointerPointer inputBuffers, @Cast("Nd4jPointer*") PointerPointer inputShapes, int numInputs, @Cast("Nd4jPointer*") PointerPointer outputBuffers, @Cast("Nd4jPointer*") PointerPointer outputShapes, int numOutputs);
+    public native @Cast("Nd4jStatus") int execCustomOpWithScopeHalf(@Cast("Nd4jPointer*") PointerPointer extraPointers, @Cast("Nd4jPointer") Pointer state, @Cast("Nd4jIndex") long opHash, @Cast("Nd4jIndex*") LongBuffer scopes, int numScopes, @Cast("Nd4jPointer*") PointerPointer inputBuffers, @Cast("Nd4jPointer*") PointerPointer inputShapes, int numInputs, @Cast("Nd4jPointer*") PointerPointer outputBuffers, @Cast("Nd4jPointer*") PointerPointer outputShapes, int numOutputs);
+    public native @Cast("Nd4jStatus") int execCustomOpWithScopeHalf(@Cast("Nd4jPointer*") PointerPointer extraPointers, @Cast("Nd4jPointer") Pointer state, @Cast("Nd4jIndex") long opHash, @Cast("Nd4jIndex*") long[] scopes, int numScopes, @Cast("Nd4jPointer*") PointerPointer inputBuffers, @Cast("Nd4jPointer*") PointerPointer inputShapes, int numInputs, @Cast("Nd4jPointer*") PointerPointer outputBuffers, @Cast("Nd4jPointer*") PointerPointer outputShapes, int numOutputs);
+    public native @Cast("Nd4jStatus") int execCustomOpWithScopeFloat(@Cast("Nd4jPointer*") PointerPointer extraPointers, @Cast("Nd4jPointer") Pointer state, @Cast("Nd4jIndex") long opHash, @Cast("Nd4jIndex*") LongPointer scopes, int numScopes, @Cast("Nd4jPointer*") PointerPointer inputBuffers, @Cast("Nd4jPointer*") PointerPointer inputShapes, int numInputs, @Cast("Nd4jPointer*") PointerPointer outputBuffers, @Cast("Nd4jPointer*") PointerPointer outputShapes, int numOutputs);
+    public native @Cast("Nd4jStatus") int execCustomOpWithScopeFloat(@Cast("Nd4jPointer*") PointerPointer extraPointers, @Cast("Nd4jPointer") Pointer state, @Cast("Nd4jIndex") long opHash, @Cast("Nd4jIndex*") LongBuffer scopes, int numScopes, @Cast("Nd4jPointer*") PointerPointer inputBuffers, @Cast("Nd4jPointer*") PointerPointer inputShapes, int numInputs, @Cast("Nd4jPointer*") PointerPointer outputBuffers, @Cast("Nd4jPointer*") PointerPointer outputShapes, int numOutputs);
+    public native @Cast("Nd4jStatus") int execCustomOpWithScopeFloat(@Cast("Nd4jPointer*") PointerPointer extraPointers, @Cast("Nd4jPointer") Pointer state, @Cast("Nd4jIndex") long opHash, @Cast("Nd4jIndex*") long[] scopes, int numScopes, @Cast("Nd4jPointer*") PointerPointer inputBuffers, @Cast("Nd4jPointer*") PointerPointer inputShapes, int numInputs, @Cast("Nd4jPointer*") PointerPointer outputBuffers, @Cast("Nd4jPointer*") PointerPointer outputShapes, int numOutputs);
+    public native @Cast("Nd4jStatus") int execCustomOpWithScopeDouble(@Cast("Nd4jPointer*") PointerPointer extraPointers, @Cast("Nd4jPointer") Pointer state, @Cast("Nd4jIndex") long opHash, @Cast("Nd4jIndex*") LongPointer scopes, int numScopes, @Cast("Nd4jPointer*") PointerPointer inputBuffers, @Cast("Nd4jPointer*") PointerPointer inputShapes, int numInputs, @Cast("Nd4jPointer*") PointerPointer outputBuffers, @Cast("Nd4jPointer*") PointerPointer outputShapes, int numOutputs);
+    public native @Cast("Nd4jStatus") int execCustomOpWithScopeDouble(@Cast("Nd4jPointer*") PointerPointer extraPointers, @Cast("Nd4jPointer") Pointer state, @Cast("Nd4jIndex") long opHash, @Cast("Nd4jIndex*") LongBuffer scopes, int numScopes, @Cast("Nd4jPointer*") PointerPointer inputBuffers, @Cast("Nd4jPointer*") PointerPointer inputShapes, int numInputs, @Cast("Nd4jPointer*") PointerPointer outputBuffers, @Cast("Nd4jPointer*") PointerPointer outputShapes, int numOutputs);
+    public native @Cast("Nd4jStatus") int execCustomOpWithScopeDouble(@Cast("Nd4jPointer*") PointerPointer extraPointers, @Cast("Nd4jPointer") Pointer state, @Cast("Nd4jIndex") long opHash, @Cast("Nd4jIndex*") long[] scopes, int numScopes, @Cast("Nd4jPointer*") PointerPointer inputBuffers, @Cast("Nd4jPointer*") PointerPointer inputShapes, int numInputs, @Cast("Nd4jPointer*") PointerPointer outputBuffers, @Cast("Nd4jPointer*") PointerPointer outputShapes, int numOutputs);
 }
 
 
@@ -5654,6 +5669,7 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         private native void allocate(FloatBuffer buffer/*=nullptr*/, IntBuffer shapeInfo/*=nullptr*/, Workspace workspace/*=nullptr*/);
         public FloatNDArray(float[] buffer/*=nullptr*/, int[] shapeInfo/*=nullptr*/, Workspace workspace/*=nullptr*/) { super((Pointer)null); allocate(buffer, shapeInfo, workspace); }
         private native void allocate(float[] buffer/*=nullptr*/, int[] shapeInfo/*=nullptr*/, Workspace workspace/*=nullptr*/);
+
         
         /**
          * Constructor for scalar NDArray
@@ -5666,6 +5682,9 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         */
         public FloatNDArray(@Const @ByRef FloatNDArray other) { super((Pointer)null); allocate(other); }
         private native void allocate(@Const @ByRef FloatNDArray other);
+
+// #ifndef __JAVACPP_HACK__
+// #endif
 
         /**
         *  constructor, create empty array stored at given workspace
@@ -6493,6 +6512,11 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         public native void tileToShape(@StdVector int[] shape);
 
         /**
+        *  calculates the trace of an array, that is sum of elements on main diagonal = sum array[i, i, i, ...]
+        */
+        public native float getTrace();
+        
+        /**
         *  default destructor
         */ 
 
@@ -6733,6 +6757,7 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         private native void allocate(@Cast("float16*") ShortBuffer buffer/*=nullptr*/, IntBuffer shapeInfo/*=nullptr*/, Workspace workspace/*=nullptr*/);
         public HalfNDArray(@Cast("float16*") short[] buffer/*=nullptr*/, int[] shapeInfo/*=nullptr*/, Workspace workspace/*=nullptr*/) { super((Pointer)null); allocate(buffer, shapeInfo, workspace); }
         private native void allocate(@Cast("float16*") short[] buffer/*=nullptr*/, int[] shapeInfo/*=nullptr*/, Workspace workspace/*=nullptr*/);
+
         
         /**
          * Constructor for scalar NDArray
@@ -6745,6 +6770,9 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         */
         public HalfNDArray(@Const @ByRef HalfNDArray other) { super((Pointer)null); allocate(other); }
         private native void allocate(@Const @ByRef HalfNDArray other);
+
+// #ifndef __JAVACPP_HACK__
+// #endif
 
         /**
         *  constructor, create empty array stored at given workspace
@@ -7572,6 +7600,11 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         public native void tileToShape(@StdVector int[] shape);
 
         /**
+        *  calculates the trace of an array, that is sum of elements on main diagonal = sum array[i, i, i, ...]
+        */
+        public native @Cast("float16") short getTrace();
+        
+        /**
         *  default destructor
         */ 
 
@@ -7812,6 +7845,7 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         private native void allocate(DoubleBuffer buffer/*=nullptr*/, IntBuffer shapeInfo/*=nullptr*/, Workspace workspace/*=nullptr*/);
         public DoubleNDArray(double[] buffer/*=nullptr*/, int[] shapeInfo/*=nullptr*/, Workspace workspace/*=nullptr*/) { super((Pointer)null); allocate(buffer, shapeInfo, workspace); }
         private native void allocate(double[] buffer/*=nullptr*/, int[] shapeInfo/*=nullptr*/, Workspace workspace/*=nullptr*/);
+
         
         /**
          * Constructor for scalar NDArray
@@ -7824,6 +7858,9 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         */
         public DoubleNDArray(@Const @ByRef DoubleNDArray other) { super((Pointer)null); allocate(other); }
         private native void allocate(@Const @ByRef DoubleNDArray other);
+
+// #ifndef __JAVACPP_HACK__
+// #endif
 
         /**
         *  constructor, create empty array stored at given workspace
@@ -8650,6 +8687,11 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         public native void tileToShape(@StdVector int[] shape, DoubleNDArray target/*=nullptr*/);
         public native void tileToShape(@StdVector int[] shape);
 
+        /**
+        *  calculates the trace of an array, that is sum of elements on main diagonal = sum array[i, i, i, ...]
+        */
+        public native double getTrace();
+        
         /**
         *  default destructor
         */ 
@@ -10012,7 +10054,8 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
 // #include <VariableSpace.h>
 // #include <ops/declarable/DeclarableOp.h>
 // #include <types/pair.h>
-// #include "ArgumentsList.h"
+// #include <ArgumentsList.h>
+// #include <Graph.h>
     @Name("nd4j::graph::GraphState<float>") @NoOffset public static class FloatGraphState extends Pointer {
         static { Loader.load(); }
         /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
@@ -10036,6 +10079,14 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         public native @Cast("Nd4jStatus") int registerScope(int scopeId);
 
         /**
+         * This method cheks if scope with given ID exists
+         * 
+         * @param scopeId - ID of the scope
+         * @return - TRUE if scope exists, FALSE otherwise
+         */
+        public native @Cast("bool") boolean hasScope(int scopeId);
+
+        /**
          * This method removes specified scope from this state tracker
          *
          * @param scopeId
@@ -10044,7 +10095,6 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         public native @Cast("Nd4jStatus") int forgetScope(int scopeId);
 
 // #ifndef __JAVACPP_HACK__
-
 // #endif
         /**
          * This method adds given op to the end of specified scope
@@ -10055,6 +10105,18 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
          * @return
          */
         public native @Cast("Nd4jStatus") int attachOpToScope(int scopeId, @Cast("Nd4jIndex") long opNum, int type, @ByVal ArgumentsList inputs);
+
+        /**
+         * This method adds return statement to specified scope
+         *
+         * PLEASE NOTE: should be used only in body scopes
+         *
+         * @param scopeId
+         * @param nodeId
+         * @param args
+         * @return
+         */
+        public native @Cast("Nd4jStatus") int defineReturn(int scopeId, int nodeId, @ByVal ArgumentsList args);
 
         /**
          * This method returns current variable space of this state holder
@@ -10086,6 +10148,14 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         public native @Cast("Nd4jStatus") int registerScope(int scopeId);
 
         /**
+         * This method cheks if scope with given ID exists
+         * 
+         * @param scopeId - ID of the scope
+         * @return - TRUE if scope exists, FALSE otherwise
+         */
+        public native @Cast("bool") boolean hasScope(int scopeId);
+
+        /**
          * This method removes specified scope from this state tracker
          *
          * @param scopeId
@@ -10094,7 +10164,6 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         public native @Cast("Nd4jStatus") int forgetScope(int scopeId);
 
 // #ifndef __JAVACPP_HACK__
-
 // #endif
         /**
          * This method adds given op to the end of specified scope
@@ -10105,6 +10174,18 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
          * @return
          */
         public native @Cast("Nd4jStatus") int attachOpToScope(int scopeId, @Cast("Nd4jIndex") long opNum, int type, @ByVal ArgumentsList inputs);
+
+        /**
+         * This method adds return statement to specified scope
+         *
+         * PLEASE NOTE: should be used only in body scopes
+         *
+         * @param scopeId
+         * @param nodeId
+         * @param args
+         * @return
+         */
+        public native @Cast("Nd4jStatus") int defineReturn(int scopeId, int nodeId, @ByVal ArgumentsList args);
 
         /**
          * This method returns current variable space of this state holder
@@ -10136,6 +10217,14 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         public native @Cast("Nd4jStatus") int registerScope(int scopeId);
 
         /**
+         * This method cheks if scope with given ID exists
+         * 
+         * @param scopeId - ID of the scope
+         * @return - TRUE if scope exists, FALSE otherwise
+         */
+        public native @Cast("bool") boolean hasScope(int scopeId);
+
+        /**
          * This method removes specified scope from this state tracker
          *
          * @param scopeId
@@ -10144,7 +10233,6 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         public native @Cast("Nd4jStatus") int forgetScope(int scopeId);
 
 // #ifndef __JAVACPP_HACK__
-
 // #endif
         /**
          * This method adds given op to the end of specified scope
@@ -10155,6 +10243,18 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
          * @return
          */
         public native @Cast("Nd4jStatus") int attachOpToScope(int scopeId, @Cast("Nd4jIndex") long opNum, int type, @ByVal ArgumentsList inputs);
+
+        /**
+         * This method adds return statement to specified scope
+         *
+         * PLEASE NOTE: should be used only in body scopes
+         *
+         * @param scopeId
+         * @param nodeId
+         * @param args
+         * @return
+         */
+        public native @Cast("Nd4jStatus") int defineReturn(int scopeId, int nodeId, @ByVal ArgumentsList args);
 
         /**
          * This method returns current variable space of this state holder
@@ -10214,6 +10314,8 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
             public native @Cast("nd4j::graph::Variable<float>**") @StdVector PointerPointer getPlaceholders();
             public native RandomBuffer getRNG();
             public native void setRNG(RandomBuffer rng);
+            
+            public native Workspace workspace();
 
             public native @Cast("bool") boolean hasExternalVariable(int it);
             public native @Cast("bool") boolean hasExternalVariable(@ByRef IntIntPair pair);
@@ -10235,6 +10337,9 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
             public native void putVariable(int id, FloatNDArray array);
             public native void putVariable(int id, int idx, FloatNDArray array);
             public native void putVariable(int id, int idx, FloatVariable array);
+
+            public native void dropVariable(@ByRef IntIntPair pair);
+            public native void dropVariable(int id, int idx);
 
             public native void trackList(FloatNDArrayList list);
 
@@ -10279,6 +10384,8 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
             public native @Cast("nd4j::graph::Variable<float16>**") @StdVector PointerPointer getPlaceholders();
             public native RandomBuffer getRNG();
             public native void setRNG(RandomBuffer rng);
+            
+            public native Workspace workspace();
 
             public native @Cast("bool") boolean hasExternalVariable(int it);
             public native @Cast("bool") boolean hasExternalVariable(@ByRef IntIntPair pair);
@@ -10300,6 +10407,9 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
             public native void putVariable(int id, HalfNDArray array);
             public native void putVariable(int id, int idx, HalfNDArray array);
             public native void putVariable(int id, int idx, HalfVariable array);
+
+            public native void dropVariable(@ByRef IntIntPair pair);
+            public native void dropVariable(int id, int idx);
 
             public native void trackList(HalfNDArrayList list);
 
@@ -10344,6 +10454,8 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
             public native @Cast("nd4j::graph::Variable<double>**") @StdVector PointerPointer getPlaceholders();
             public native RandomBuffer getRNG();
             public native void setRNG(RandomBuffer rng);
+            
+            public native Workspace workspace();
 
             public native @Cast("bool") boolean hasExternalVariable(int it);
             public native @Cast("bool") boolean hasExternalVariable(@ByRef IntIntPair pair);
@@ -10365,6 +10477,9 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
             public native void putVariable(int id, DoubleNDArray array);
             public native void putVariable(int id, int idx, DoubleNDArray array);
             public native void putVariable(int id, int idx, DoubleVariable array);
+
+            public native void dropVariable(@ByRef IntIntPair pair);
+            public native void dropVariable(int id, int idx);
 
             public native void trackList(DoubleNDArrayList list);
 
@@ -11754,9 +11869,9 @@ public static final int PREALLOC_SIZE = 33554432;
 // #ifdef __CUDACC__
 // #endif
 
-@Namespace("shape") public static native @Cast("bool") boolean isLikeVector(IntPointer shapeInfo);
-@Namespace("shape") public static native @Cast("bool") boolean isLikeVector(IntBuffer shapeInfo);
-@Namespace("shape") public static native @Cast("bool") boolean isLikeVector(int[] shapeInfo);
+@Namespace("shape") public static native @Cast("bool") boolean isLikeVector(IntPointer shapeInfo, @ByRef IntPointer posOfNonUnityDim);
+@Namespace("shape") public static native @Cast("bool") boolean isLikeVector(IntBuffer shapeInfo, @ByRef IntBuffer posOfNonUnityDim);
+@Namespace("shape") public static native @Cast("bool") boolean isLikeVector(int[] shapeInfo, @ByRef int[] posOfNonUnityDim);
 // #ifdef __CUDACC__
 // #endif
 
