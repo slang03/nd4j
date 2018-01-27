@@ -27,7 +27,7 @@ import static org.nd4j.imports.TFGraphTestAllHelper.*;
 public class TFGraphTestList {
 
     public static String[] modelNames = new String[]{
-            "add_n",
+           /* "add_n",
             "ae",
             "ae_00",
             "bias_add",
@@ -64,13 +64,14 @@ public class TFGraphTestList {
           //  "ssd_mobilenet_v1_coco",
             "stack",
             "stack_1d",
-            "stack_scalar",
-         //     "simple_cond", //JVM crash
-            "simple_while",  //Functions not being added: Need to finish while import
-            "transform_0",
+            "stack_scalar", */
+           "simple_cond", //JVM crash
+           // "simple_while",  //Functions not being added: Need to finish while import
+            /*"transform_0",
             "transpose_00",
             "unstack",
            // "yolov2_608x608"
+           */
     };
 
 
