@@ -67,6 +67,7 @@ import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * SameDiff is the
@@ -4842,7 +4843,7 @@ public class SameDiff {
         }
     }
 
-    protected int asFlatNode(@NonNull DifferentialFunction node, @NonNull FlatBufferBuilder bufferBuilder, List<SDVariable> variables, Map<String, Integer> reverseMap) {
+    protected int asFlatNode(@NonNull DifferentialFunction node, @NonNull FlatBufferBuilder bufferBuilder, List<SDVariable> variables, Map<String, Integer> reverseMap, AtomicInteger idCounter) {
         val hash = getOpNum(node.opName(), node.opType());
         //log.info("Exporting node: [{}:<{}> ; OpType: {}; Hash/opNum: {}]", node.opName(), node.tensorflowName(), node.opType(), hash);
 
@@ -4884,7 +4885,7 @@ public class SameDiff {
         }
 
         log.info("Own Name: {}", node.getOwnName());
-        int ownId = reverseMap.size() + 1;
+        int ownId = idCounter.incrementAndGet();
         reverseMap.put(node.getOwnName(), ownId);
 
         // TODO: Adam, just put your props here, instead of empty list, and they will be saved
@@ -4937,6 +4938,7 @@ public class SameDiff {
     public ByteBuffer asFlatBuffers(@NonNull ExecutorConfiguration configuration) {
         Nd4j.getExecutioner().commit();
         FlatBufferBuilder bufferBuilder = new FlatBufferBuilder(1024);
+        val idCounter = new AtomicInteger(0);
 
         val flatVariables = new ArrayList<Integer>();
         val flatOffsets = new ArrayList<Integer>();
@@ -4968,11 +4970,12 @@ public class SameDiff {
 
             int flatVariable = FlatVariable.createFlatVariable(bufferBuilder, id, name, 0, array, -1);
             flatVariables.add(flatVariable);
+            idCounter.incrementAndGet();
         }
 
         //add functions
         for (val func : functionInstancesById.values()) {
-            flatNodes.add(asFlatNode(func, bufferBuilder, variableList, reverseMap));
+            flatNodes.add(asFlatNode(func, bufferBuilder, variableList, reverseMap, idCounter));
         }
 
         // we're dumping scopes now
@@ -5004,7 +5007,7 @@ public class SameDiff {
 
             //add functions
             for (val func : scope.getValue().functionInstancesById.values()) {
-                flatNodes.add(asFlatNode(func, bufferBuilder, currVarList, reverseMap));
+                flatNodes.add(asFlatNode(func, bufferBuilder, currVarList, reverseMap, idCounter));
             }
 
         }
