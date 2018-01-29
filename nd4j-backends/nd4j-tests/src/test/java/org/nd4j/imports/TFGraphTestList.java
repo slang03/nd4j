@@ -28,13 +28,13 @@ public class TFGraphTestList {
 
     public static String[] modelNames = new String[]{
             "add_n",
-            /* "ae",
+             "ae",
              "ae_00",
              "bias_add",
              "norm_tests/norm_0",
              "concat",
              "conv_0",
-             "conv_1", //Raver is working on this
+            /* "conv_1", //Raver is working on this
              "conv_2", //missing SpaceToBatchND
              "conv_3", //fails due to 4d input: this seems to be related to Conv2d being mapped to Dilation2D which takes 3d input
              "deep_mnist", //broadcast bug? double check with raver

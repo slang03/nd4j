@@ -4959,19 +4959,18 @@ public class SameDiff {
 
 
             val pair = parseVariable(variable.getVarName());
-            reverseMap.put(pair.getFirst(), ++idx);
-            log.info("Adding [{}] as [{}]", pair.getFirst(), idx);
+            reverseMap.put(pair.getFirst(), idCounter.incrementAndGet());
+            log.info("Adding [{}] as [{}]", pair.getFirst(), idCounter.get());
 
             val arr = variable.getArr();
 
             int name = bufferBuilder.createString(variable.getVarName());
             int array = arr.toFlatArray(bufferBuilder);
-            int id = IntPair.createIntPair(bufferBuilder, idx, 0);
+            int id = IntPair.createIntPair(bufferBuilder, idCounter.get(), 0);
 
 
             int flatVariable = FlatVariable.createFlatVariable(bufferBuilder, id, name, 0, array, -1);
             flatVariables.add(flatVariable);
-            idCounter.incrementAndGet();
         }
 
         //add functions
