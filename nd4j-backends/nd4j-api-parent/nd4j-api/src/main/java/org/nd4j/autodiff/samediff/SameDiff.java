@@ -4952,8 +4952,9 @@ public class SameDiff {
         for (val variable : variables()) {
             log.info("Exporting variable: [{}]", variable.getVarName());
             if (variable.getArr() == null || variable.getShape() == null) {
-                putArrayForVarName(variable.getVarName(), Nd4j.scalar(1.0));
-                addAsPlaceHolder(variable.getVarName());
+                //putArrayForVarName(variable.getVarName(), Nd4j.scalar(1.0));
+                //addAsPlaceHolder(variable.getVarName());
+                continue;
             }
 
 

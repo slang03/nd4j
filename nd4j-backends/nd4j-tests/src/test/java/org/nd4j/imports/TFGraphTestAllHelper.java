@@ -123,8 +123,6 @@ public class TFGraphTestAllHelper {
 
     public static SameDiff getGraphAfterExec(String baseDir, String modelName, Map<String, INDArray> inputs, ExecuteWith executeWith) throws IOException {
         log.info("\n\tRUNNING TEST " + modelName + "...");
-        Nd4j.getExecutioner().enableDebugMode(true);
-        Nd4j.getExecutioner().enableVerboseMode(true);
         val graph = TFGraphMapper.getInstance().importGraph(new ClassPathResource(baseDir + "/" + modelName + "/frozen_model.pb").getInputStream());
         if (executeWith.equals(ExecuteWith.SAMEDIFF)) {
             if (!inputs.isEmpty()) {
@@ -137,8 +135,11 @@ public class TFGraphTestAllHelper {
                 graph.associateArrayWithVariable(inputs.get(input), graph.variableMap().get(input));
             }
 
-            //val string = graph.asFlatPrint();
-            //log.info("Graph structure: \n{}", string);
+            Nd4j.getExecutioner().enableDebugMode(true);
+            Nd4j.getExecutioner().enableVerboseMode(true);
+
+            val string = graph.asFlatPrint();
+            log.info("Graph structure: \n{}", string);
             val executioner = new NativeGraphExecutioner();
             val results = executioner.executeGraph(graph, configuration);
 
