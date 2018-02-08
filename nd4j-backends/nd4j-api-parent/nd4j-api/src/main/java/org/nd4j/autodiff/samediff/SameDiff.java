@@ -65,7 +65,6 @@ import org.nd4j.weightinit.WeightInitScheme;
 import org.nd4j.weightinit.impl.ConstantInitScheme;
 import org.nd4j.weightinit.impl.NDArraySupplierInitScheme;
 import org.nd4j.weightinit.impl.ZeroInitScheme;
-import sun.tools.tree.LessExpression;
 
 import java.io.*;
 import java.lang.reflect.Method;
