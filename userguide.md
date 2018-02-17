@@ -576,12 +576,12 @@ For more details on workspaces, see the following links:
 Sometimes with workspaces, you may encounter an exception such as:
 ```
 org.nd4j.linalg.exception.ND4JIllegalStateException: Op [set] Y argument uses leaked workspace pointer from workspace [LOOP_EXTERNAL]
-For more details, see the ND4J User Guide: nd4.org/userguide#workspaces-panic
+For more details, see the ND4J User Guide: nd4j.org/userguide#workspaces-panic
 ```
 or
 ```
 org.nd4j.linalg.exception.ND4JIllegalStateException: Op [set] Y argument uses outdated workspace pointer from workspace [LOOP_EXTERNAL]
-For more details, see the ND4J User Guide: nd4.org/userguide#workspaces-panic
+For more details, see the ND4J User Guide: nd4j.org/userguide#workspaces-panic
 ```
 
 
