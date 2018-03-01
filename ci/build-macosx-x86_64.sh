@@ -41,15 +41,14 @@ fi
 
 cd $TRAVIS_BUILD_DIR/../libnd4j/
 sed -i="" /cmake_minimum_required/d CMakeLists.txt
-MAKEJ=2 bash buildnativeoperations.sh -c cpu -e ${EXT:-}
 if [[ -n "${CUDA:-}" ]]; then
     MAKEJ=1 bash buildnativeoperations.sh -c cuda -v $CUDA -cc 30
-fi
-cd $TRAVIS_BUILD_DIR/
-if [[ -n "${CUDA:-}" ]]; then
+    cd $TRAVIS_BUILD_DIR/
     bash change-cuda-versions.sh $CUDA
-    EXTRA_OPTIONS='-pl !nd4j-uberjar'
+    EXTRA_OPTIONS='-pl !nd4j-uberjar,!nd4j-backends/nd4j-backend-impls/nd4j-native,!nd4j-backends/nd4j-backend-impls/nd4j-native-platform,!nd4j-backends/nd4j-tests'
 else
+    MAKEJ=2 bash buildnativeoperations.sh -c cpu -e ${EXT:-}
+    cd $TRAVIS_BUILD_DIR/
     EXTRA_OPTIONS='-pl !nd4j-uberjar,!nd4j-backends/nd4j-backend-impls/nd4j-cuda,!nd4j-backends/nd4j-backend-impls/nd4j-cuda-platform,!nd4j-backends/nd4j-tests'
 fi
 bash change-scala-versions.sh $SCALA
