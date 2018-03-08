@@ -3,10 +3,9 @@ package org.nd4j.linalg.string;
 import org.apache.commons.lang3.StringUtils;
 import org.nd4j.linalg.api.complex.IComplexNDArray;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.ops.transforms.Transforms;
 
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 
 /**
  * @author Adam Gibson
@@ -14,127 +13,143 @@ import java.text.NumberFormat;
  */
 public class NDArrayStrings {
 
-    private String sep = ",";
-    private int padding = 0;
-
-    private String decFormatNum = "#,###,##0";
-    private String decFormatRest = "";
-    private DecimalFormat decimalFormat = new DecimalFormat(decFormatNum + decFormatRest);
+    private String colSep = ",";
+    private String newLineSep = ",";
+    private int padding = 7;
+    private int precision = 2;
+    private DecimalFormat decimalFormat = new DecimalFormat("##0.####");
+    private boolean dontOverrideFormat = false;
 
     public NDArrayStrings() {
-        this(true);
+        this(",", 4);
     }
 
-    public NDArrayStrings(String sep) {
-        this(sep, true);
-    }
-
-    public NDArrayStrings(String sep, boolean commas) {
-        this(", ", 2, "#,###,##0", commas);
+    public NDArrayStrings(String colSep) {
+        this(colSep, 4);
     }
 
     public NDArrayStrings(int precision) {
-        this(precision, true);
+        this(",", precision);
     }
 
-    public NDArrayStrings(int precision, boolean commas) {
-        this(", ", precision, "#,###,##0", commas);
-    }
-
-    public NDArrayStrings(String sep, int precision) {
-        this(sep, precision, true);
-    }
-
-    public NDArrayStrings(String sep, int precision, boolean commas) {
-        this(sep, precision, "#,###,##0", commas);
-    }
-
-    public NDArrayStrings(String sep, int precision, String decFormat) {
-        this(sep, precision, decFormat, true);
-    }
-
-    public NDArrayStrings(String sep, int precision, String decFormat, boolean commas) {
-        this.decFormatNum = decFormat;
-        this.sep = sep;
-        if (precision != 0) {
-            this.decFormatRest = ".";
-            while (precision > 0) {
-                this.decFormatRest += "0";
-                precision--;
-            }
+    /**
+     * Specify a delimiter for elements in columns for 2d arrays (or in the rank-1th dimension in higher order arrays)
+     * Note that separator in elements in remaining dimensions defaults to ",\n"
+     * @param colSep field separating columns;
+     * @param precision
+     */
+    public NDArrayStrings(String colSep, int precision) {
+        this.colSep = colSep;
+        if(!colSep.replaceAll("\\s","").equals(",")) this.newLineSep = "";
+        this.precision = precision;
+        String decFormatNum = "##0.";
+        while (precision > 0) {
+            decFormatNum += "0";
+            precision -= 1;
         }
+        this.decimalFormat = new DecimalFormat(decFormatNum);
+    }
 
-        this.decimalFormat = new DecimalFormat(decFormatNum + decFormatRest);
-        DecimalFormatSymbols sepNgroup = DecimalFormatSymbols.getInstance();
-        sepNgroup.setDecimalSeparator('.');
-        if (!commas) {
-            NumberFormat format = NumberFormat.getIntegerInstance();
-            format.setGroupingUsed(false);
+    public NDArrayStrings(String colSep, String decFormat) {
+        this.colSep = colSep;
+        this.decimalFormat = new DecimalFormat(decFormat);
+        if (decFormat.toUpperCase().contains("E")) {
+            this.padding = decFormat.length() + 3;
+        } else {
+            this.padding = decFormat.length() + 1;
         }
-
-        sepNgroup.setGroupingSeparator(',');
-        decimalFormat.setDecimalFormatSymbols(sepNgroup);
+        this.dontOverrideFormat = true;
     }
-
-    public NDArrayStrings(boolean commas) {
-        this(", ", 2, "#,###,##0", commas);
-    }
-
 
     /**
      * Format the given ndarray as a string
+     *
      * @param arr the array to format
      * @return the formatted array
      */
     public String format(INDArray arr) {
-        String padding = decimalFormat.format(3.0000);
-        this.padding = padding.length();
-        return format(arr, arr.rank());
-    }
-
-    private String format(INDArray arr, int rank) {
-        return format(arr, arr.rank(), 0);
-    }
-
-    private String format(INDArray arr, int rank, int offset) {
-        StringBuilder sb = new StringBuilder();
-        if (arr.isScalar()) {
-            if (arr instanceof IComplexNDArray)
-                return ((IComplexNDArray) arr).getComplex(0).toString();
-            return decimalFormat.format(arr.getDouble(0));
-        } else if (rank <= 0)
-            return "";
-
-        else if (arr.isVector()) {
-            sb.append("[");
-            for (int i = 0; i < arr.length(); i++) {
-                if (arr instanceof IComplexNDArray)
-                    sb.append(((IComplexNDArray) arr).getComplex(i).toString());
-                else
-                    sb.append(String.format("%1$" + padding + "s", decimalFormat.format(arr.getDouble(i))));
-                if (i < arr.length() - 1) {
-                    sb.append(sep);
-                    sb.append(" ");
+        INDArray arrDup = Transforms.abs(arr);
+        double minAbsValue = arrDup.minNumber().doubleValue();
+        double maxAbsValue = arrDup.maxNumber().doubleValue();
+        if (!dontOverrideFormat) {
+            if ((minAbsValue <= 0.0001) || (maxAbsValue / minAbsValue) > 1000 || (maxAbsValue > 1000)) {
+                String decFormatNum = "0.";
+                while (this.precision > 0) {
+                    decFormatNum += "0";
+                    precision -= 1;
+                }
+                this.decimalFormat = new DecimalFormat(decFormatNum + "E0");
+                this.padding = decFormatNum.length() + 5; //E00? and sign for mantissa and exp
+            } else {
+                if (maxAbsValue < 10) {
+                    this.padding = this.precision + 3;
+                } else if (maxAbsValue < 100) {
+                    this.padding = this.precision + 4;
+                } else {
+                    this.padding = this.precision + 5;
                 }
             }
-            sb.append("]");
-            return sb.toString();
         }
+        return format(arr, 0);
+    }
 
-        else {
+    private String format(INDArray arr, int offset) {
+        int rank = arr.rank();
+        if (arr.isScalar() && rank == 0) {
+            //true scalar i.e shape = [] not legacy which is [1,1]
+            if (arr instanceof IComplexNDArray) {
+                return ((IComplexNDArray) arr).getComplex(0).toString();
+            }
+            return decimalFormat.format(arr.getDouble(0));
+        } else if (rank == 1) {
+            //true vector
+            return vectorToString(arr);
+        } else if (arr.isRowVector()) {
+            //a slice from a higher dim array
+            if (offset == 0) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("[");
+                sb.append(vectorToString(arr));
+                sb.append("]");
+                return sb.toString();
+            }
+            return vectorToString(arr);
+        } else {
             offset++;
+            StringBuilder sb = new StringBuilder();
             sb.append("[");
             for (int i = 0; i < arr.slices(); i++) {
-                sb.append(format(arr.slice(i), rank - 1, offset));
+                if (arr.rank() == 3 && arr.slice(i).isRowVector()) sb.append("[");
+                sb.append(format(arr.slice(i), offset));
                 if (i != arr.slices() - 1) {
-                    sb.append(sep + " \n");
+                    if (arr.rank() == 3 && arr.slice(i).isRowVector()) sb.append("]");
+                    sb.append(newLineSep + " \n");
                     sb.append(StringUtils.repeat("\n", rank - 2));
                     sb.append(StringUtils.repeat(" ", offset));
+                } else {
+                    if (arr.rank() == 3 && arr.slice(i).isRowVector()) sb.append("]");
                 }
             }
             sb.append("]");
             return sb.toString();
         }
+    }
+
+    private String vectorToString(INDArray arr) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (int i = 0; i < arr.length(); i++) {
+            if (arr instanceof IComplexNDArray) {
+                sb.append(((IComplexNDArray) arr).getComplex(i).toString());
+            } else {
+                sb.append(String.format("%1$" + padding + "s", decimalFormat.format(arr.getDouble(i))));
+            }
+            if (i < arr.length() - 1) {
+                sb.append(colSep);
+            }
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
 }
