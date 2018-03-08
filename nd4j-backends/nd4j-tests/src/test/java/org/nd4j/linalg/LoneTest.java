@@ -260,20 +260,15 @@ public class LoneTest extends BaseNd4jTest {
             and accessing a slice of the last two dims
             Gets an index out of bound exception
          */
-        INDArray someArr = Nd4j.rand('c', new int[]{2, 3, 1});
-        log.info("\nDirect print of data buffer, C order:" + ArrayUtils.toString(someArr.data().asDouble()));
-        INDArray view = someArr.slice(0);
-        for (int i = 0; i < view.slices(); i++) {
-            log.info("\nSlice " + i + ", element 0 :" + view.slice(i).getDouble(0));
-        }
-        log.info("\nC order completed succesfully");
-        log.info("\n----------------------------------");
-
-        someArr = Nd4j.rand('f', new int[]{2, 3, 1});
+        INDArray someArr = Nd4j.rand('f', new int[]{2, 3, 1});
+        INDArray sameArrC = someArr.dup('c');
         log.info("\nDirect print of data buffer, F order:" + ArrayUtils.toString(someArr.data().asDouble()));
-        view = someArr.slice(0);
+        INDArray view = someArr.slice(0);
+        INDArray viewC = sameArrC.slice(0);
         for (int i = 0; i < view.slices(); i++) {
-            log.info("\nSlice " + i + ", element 0 :" + view.slice(i).getDouble(0));
+            log.info("\nC order slice " + i + ", element 0 :" + viewC.slice(i).getDouble(0)); //C order is fine
+            log.info("\nF order slice " + i + ", element 0 :" + view.slice(i).getDouble(0)); //throws index out of bound err on F order
+            assertEquals(view.slice(i),viewC.slice(i));
         }
         log.info("\nF order completed succesfully");
         log.info("\n----------------------------------");
