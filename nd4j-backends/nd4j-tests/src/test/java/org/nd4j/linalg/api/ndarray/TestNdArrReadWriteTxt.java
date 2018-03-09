@@ -67,7 +67,7 @@ public class TestNdArrReadWriteTxt extends BaseNd4jTest {
     public void compareAfterWrite() {
         for (INDArray origArray : ARRAYS_TO_TEST_FORDER) {
             log.info("Checking shape ..." + ArrayUtils.toString(origArray.shape()));
-            //log.info(origArray.toString());
+            log.info(origArray.dup('c').toString());
             Nd4j.writeTxt(origArray, "someArr.txt");
             INDArray readBack = Nd4j.readTxt("someArr.txt");
             assertEquals("Not equal on shape " + ArrayUtils.toString(origArray.shape()), origArray, readBack);
