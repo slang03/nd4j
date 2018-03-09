@@ -35,12 +35,13 @@ public class NDArrayStrings {
     /**
      * Specify a delimiter for elements in columns for 2d arrays (or in the rank-1th dimension in higher order arrays)
      * Note that separator in elements in remaining dimensions defaults to ",\n"
-     * @param colSep field separating columns;
+     *
+     * @param colSep    field separating columns;
      * @param precision
      */
     public NDArrayStrings(String colSep, int precision) {
         this.colSep = colSep;
-        if(!colSep.replaceAll("\\s","").equals(",")) this.newLineSep = "";
+        if (!colSep.replaceAll("\\s", "").equals(",")) this.newLineSep = "";
         this.precision = precision;
         String decFormatNum = "##0.";
         while (precision > 0) {
@@ -68,9 +69,8 @@ public class NDArrayStrings {
      * @return the formatted array
      */
     public String format(INDArray arr) {
-        INDArray arrDup = Transforms.abs(arr);
-        double minAbsValue = arrDup.minNumber().doubleValue();
-        double maxAbsValue = arrDup.maxNumber().doubleValue();
+        double minAbsValue = Transforms.abs(arr).minNumber().doubleValue();
+        double maxAbsValue = Transforms.abs(arr).maxNumber().doubleValue();
         if (!dontOverrideFormat) {
             if ((minAbsValue <= 0.0001) || (maxAbsValue / minAbsValue) > 1000 || (maxAbsValue > 1000)) {
                 String decFormatNum = "0.";
@@ -120,7 +120,13 @@ public class NDArrayStrings {
             sb.append("[");
             for (int i = 0; i < arr.slices(); i++) {
                 if (arr.rank() == 3 && arr.slice(i).isRowVector()) sb.append("[");
-                sb.append(format(arr.slice(i), offset));
+                //hack fix for slice issue with 'f' order
+                if (arr.ordering() == 'f' && arr.rank() > 2 && arr.size(arr.rank()-1) == 1) {
+                    sb.append(format(arr.dup('c').slice(i), offset ));
+                }
+                else {
+                    sb.append(format(arr.slice(i), offset));
+                }
                 if (i != arr.slices() - 1) {
                     if (arr.rank() == 3 && arr.slice(i).isRowVector()) sb.append("]");
                     sb.append(newLineSep + " \n");

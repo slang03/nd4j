@@ -2451,7 +2451,13 @@ public class Nd4j {
                         for (int i = 0; i < rank; i++) {
                             theShape[i] = Integer.parseInt(shapeArr[i]);
                         }
-                        newArr = Nd4j.zeros(theShape, theOrder);
+                        if (theOrder == 'f' && theShape[rank-1] == 1) {
+                            //Hack fix for tad issue with 'f' order and rank-1 dim shape == 1
+                            newArr = Nd4j.zeros(theShape, 'c');
+                        }
+                        else {
+                            newArr = Nd4j.zeros(theShape, theOrder);
+                        }
                         subsetArr = new double[theShape[rank - 1]];
                     }
                     continue;
@@ -2480,6 +2486,11 @@ public class Nd4j {
                     }
                 }
             }
+            //Hack fix for tad issue with 'f' order and rank-1 dim shape == 1
+            if (theOrder == 'f' && theShape[rank-1] == 1) {
+                newArr = newArr.dup('f');
+            }
+
         } finally {
             LineIterator.closeQuietly(it);
         }
