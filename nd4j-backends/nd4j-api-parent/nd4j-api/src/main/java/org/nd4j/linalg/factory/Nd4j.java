@@ -2223,7 +2223,7 @@ public class Nd4j {
         String lineThree = "\"ordering\": \"" + write.ordering() + "\",\n";
         String lineFour = "\"shape\":\t" + java.util.Arrays.toString(write.shape()) + ",\n";
         String lineFive = "\"data\":\n";
-        String fileData = new NDArrayStrings(",", format).format(write);
+        String fileData = new NDArrayStrings(",", format).format(write, false);
         String fileEnd = "\n}\n";
         String fileBegin = lineOne + lineTwo + lineThree + lineFour + lineFive;
         String fileContents = fileBegin + fileData + fileEnd;
