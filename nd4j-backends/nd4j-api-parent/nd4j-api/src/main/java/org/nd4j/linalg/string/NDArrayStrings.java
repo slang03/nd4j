@@ -62,13 +62,18 @@ public class NDArrayStrings {
         this.dontOverrideFormat = true;
     }
 
+    public String format(INDArray arr) {
+        return format(arr, true);
+    }
+
     /**
      * Format the given ndarray as a string
      *
-     * @param arr the array to format
+     * @param arr       the array to format
+     * @param summarize If true the number of elements in the array is greater than > 1000 only the first three and last elements in any dimension will print
      * @return the formatted array
      */
-    public String format(INDArray arr) {
+    public String format(INDArray arr, boolean summarize) {
         double minAbsValue = Transforms.abs(arr).minNumber().doubleValue();
         double maxAbsValue = Transforms.abs(arr).maxNumber().doubleValue();
         if (!dontOverrideFormat) {
@@ -90,10 +95,12 @@ public class NDArrayStrings {
                 }
             }
         }
-        return format(arr, 0);
+        if (summarize && arr.length() > 10) return format(arr, 0, true, false);
+        return format(arr, 0, false, false);
     }
 
-    private String format(INDArray arr, int offset) {
+    private String format(INDArray arr, int offset, boolean summarize, boolean bypass) {
+        if (bypass) return "";
         int rank = arr.rank();
         if (arr.isScalar() && rank == 0) {
             //true scalar i.e shape = [] not legacy which is [1,1]
@@ -103,37 +110,40 @@ public class NDArrayStrings {
             return decimalFormat.format(arr.getDouble(0));
         } else if (rank == 1) {
             //true vector
-            return vectorToString(arr);
+            return vectorToString(arr, summarize);
         } else if (arr.isRowVector()) {
             //a slice from a higher dim array
             if (offset == 0) {
                 StringBuilder sb = new StringBuilder();
                 sb.append("[");
-                sb.append(vectorToString(arr));
+                sb.append(vectorToString(arr, summarize));
                 sb.append("]");
                 return sb.toString();
             }
-            return vectorToString(arr);
+            return vectorToString(arr, summarize);
         } else {
             offset++;
             StringBuilder sb = new StringBuilder();
             sb.append("[");
             for (int i = 0; i < arr.slices(); i++) {
-                if (arr.rank() == 3 && arr.slice(i).isRowVector()) sb.append("[");
-                //hack fix for slice issue with 'f' order
-                if (arr.ordering() == 'f' && arr.rank() > 2 && arr.size(arr.rank()-1) == 1) {
-                    sb.append(format(arr.dup('c').slice(i), offset ));
-                }
-                else {
-                    sb.append(format(arr.slice(i), offset));
-                }
-                if (i != arr.slices() - 1) {
-                    if (arr.rank() == 3 && arr.slice(i).isRowVector()) sb.append("]");
-                    sb.append(newLineSep + " \n");
-                    sb.append(StringUtils.repeat("\n", rank - 2));
-                    sb.append(StringUtils.repeat(" ", offset));
+                if (summarize && i > 2 && i < arr.length() - 3) {
+                    if (i == 3) sb.append("  ...");
                 } else {
-                    if (arr.rank() == 3 && arr.slice(i).isRowVector()) sb.append("]");
+                    if (arr.rank() == 3 && arr.slice(i).isRowVector()) sb.append("[");
+                    //hack fix for slice issue with 'f' order
+                    if (arr.ordering() == 'f' && arr.rank() > 2 && arr.size(arr.rank() - 1) == 1) {
+                        sb.append(format(arr.dup('c').slice(i), offset, summarize, false));
+                    } else {
+                        sb.append(format(arr.slice(i), offset, summarize, false));
+                    }
+                    if (i != arr.slices() - 1) {
+                        if (arr.rank() == 3 && arr.slice(i).isRowVector()) sb.append("]");
+                        sb.append(newLineSep + " \n");
+                        sb.append(StringUtils.repeat("\n", rank - 2));
+                        sb.append(StringUtils.repeat(" ", offset));
+                    } else {
+                        if (arr.rank() == 3 && arr.slice(i).isRowVector()) sb.append("]");
+                    }
                 }
             }
             sb.append("]");
@@ -141,17 +151,23 @@ public class NDArrayStrings {
         }
     }
 
-    private String vectorToString(INDArray arr) {
+    private String vectorToString(INDArray arr, boolean summarize) {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (int i = 0; i < arr.length(); i++) {
             if (arr instanceof IComplexNDArray) {
                 sb.append(((IComplexNDArray) arr).getComplex(i).toString());
             } else {
-                sb.append(String.format("%1$" + padding + "s", decimalFormat.format(arr.getDouble(i))));
+                if (summarize && i > 2 && i < arr.length() - 3) {
+                    if (i == 3) sb.append("  ...");
+                } else {
+                    sb.append(String.format("%1$" + padding + "s", decimalFormat.format(arr.getDouble(i))));
+                }
             }
             if (i < arr.length() - 1) {
-                sb.append(colSep);
+                if (!summarize || i < 2 || i > arr.length() - 3) {
+                    sb.append(colSep);
+                }
             }
         }
         sb.append("]");
