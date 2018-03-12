@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.nd4j.autodiff.samediff.SDVariable;
 import org.nd4j.autodiff.samediff.SameDiff;
+import org.nd4j.imports.NoOpNameFoundException;
 import org.nd4j.imports.descriptors.properties.AttributeAdapter;
 import org.nd4j.imports.descriptors.properties.PropertyMapping;
 import org.nd4j.imports.descriptors.properties.adapters.IntArrayIntIndexAdpater;
@@ -150,9 +151,18 @@ public class FullConv3D extends DynamicCustomOp {
 
         }
 
+        try {
+            ret.put(onnxName(),map);
+        } catch (NoOpNameFoundException e) {
+            //
+        }
 
-        ret.put(onnxName(),map);
-        ret.put(tensorflowName(),map);
+        try {
+            ret.put(tensorflowName(),map);
+        } catch (NoOpNameFoundException e) {
+            //
+        }
+
         return ret;
     }
 

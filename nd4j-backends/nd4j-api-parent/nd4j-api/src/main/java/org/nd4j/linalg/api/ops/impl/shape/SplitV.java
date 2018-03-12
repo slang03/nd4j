@@ -2,6 +2,7 @@ package org.nd4j.linalg.api.ops.impl.shape;
 
 import lombok.val;
 import org.nd4j.autodiff.samediff.SameDiff;
+import org.nd4j.imports.NoOpNameFoundException;
 import org.nd4j.imports.descriptors.properties.PropertyMapping;
 import org.nd4j.imports.graphmapper.tf.TFGraphMapper;
 import org.nd4j.linalg.api.ops.DynamicCustomOp;
@@ -73,8 +74,17 @@ public class SplitV extends DynamicCustomOp {
         map.put("numSplit",numSplit);
         map.put("splitDim",splitDim);
 
-        ret.put(tensorflowName(),map);
-        ret.put(onnxName(),map);
+        try {
+            ret.put(tensorflowName(),map);
+        } catch (NoOpNameFoundException e) {
+            //
+        }
+
+        try {
+            ret.put(onnxName(),map);
+        } catch (NoOpNameFoundException e) {
+            //
+        }
 
         return ret;
     }

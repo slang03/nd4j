@@ -136,8 +136,18 @@ public class Conv2D extends DynamicCustomOp {
         onnxMappings.put("isSameMode", new StringEqualsAdapter("SAME"));
         onnxMappings.put("isNHWC", new StringEqualsAdapter("NHWC"));
 
-        ret.put(tensorflowName(), tfMappings);
-        ret.put(onnxName(), onnxMappings);
+        try {
+            ret.put(tensorflowName(), tfMappings);
+        } catch (NoOpNameFoundException e) {
+            //
+        }
+
+        try {
+            ret.put(onnxName(), onnxMappings);
+        } catch (NoOpNameFoundException e) {
+            //
+        }
+
         return ret;
     }
 

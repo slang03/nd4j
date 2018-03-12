@@ -126,8 +126,18 @@ public class Dilation2D extends DynamicCustomOp {
         Map<String,AttributeAdapter> onnxMappings = new HashMap<>();
         onnxMappings.put("isSameMode",new StringEqualsAdapter("SAME"));
 
-        ret.put(tensorflowName(), tfMappings);
-        ret.put(onnxName(), onnxMappings);
+        try {
+            ret.put(tensorflowName(), tfMappings);
+        } catch (NoOpNameFoundException e) {
+            //
+        }
+
+        try {
+            ret.put(onnxName(), onnxMappings);
+        } catch (NoOpNameFoundException e) {
+            //
+        }
+
         return ret;
     }
 

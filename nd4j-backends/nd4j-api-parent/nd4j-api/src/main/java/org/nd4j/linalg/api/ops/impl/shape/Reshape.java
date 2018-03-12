@@ -24,6 +24,7 @@ import lombok.val;
 import onnx.OnnxProto3;
 import org.nd4j.autodiff.samediff.SDVariable;
 import org.nd4j.autodiff.samediff.SameDiff;
+import org.nd4j.imports.NoOpNameFoundException;
 import org.nd4j.imports.descriptors.properties.PropertyMapping;
 import org.nd4j.imports.graphmapper.onnx.OnnxGraphMapper;
 import org.nd4j.imports.graphmapper.tf.TFGraphMapper;
@@ -169,8 +170,17 @@ public class Reshape extends DynamicCustomOp {
 
         map.put("shape", shapeMapping);
 
-        ret.put(tensorflowName(), map);
-        ret.put(onnxName(), map);
+        try {
+            ret.put(tensorflowName(), map);
+        } catch (NoOpNameFoundException e) {
+            //
+        }
+
+        try {
+            ret.put(onnxName(), map);
+        } catch (NoOpNameFoundException e) {
+            //
+        }
 
         return ret;
     }

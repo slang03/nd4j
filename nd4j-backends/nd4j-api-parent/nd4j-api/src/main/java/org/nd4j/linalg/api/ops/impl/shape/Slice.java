@@ -157,8 +157,17 @@ public class Slice extends DynamicCustomOp {
 
 
 
-        ret.put(tensorflowName(),map);
-        ret.put(onnxName(),map);
+        try {
+            ret.put(tensorflowName(), map);
+        } catch (NoOpNameFoundException e) {
+            //
+        }
+
+        try {
+            ret.put(onnxName(), map);
+        } catch (NoOpNameFoundException e) {
+            //
+        }
 
         return ret;
     }

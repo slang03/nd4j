@@ -7,6 +7,7 @@ import lombok.val;
 import onnx.OnnxProto3;
 import org.nd4j.autodiff.samediff.SDVariable;
 import org.nd4j.autodiff.samediff.SameDiff;
+import org.nd4j.imports.NoOpNameFoundException;
 import org.nd4j.imports.descriptors.properties.PropertyMapping;
 import org.nd4j.imports.graphmapper.tf.TFGraphMapper;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -133,8 +134,18 @@ public class DeConv2D extends DynamicCustomOp {
         map.put("ph", paddingWidthHeight);
         map.put("pw", paddingWidthHeight);
 
-        ret.put(onnxName(),map);
-        ret.put(tensorflowName(),map);
+        try {
+            ret.put(onnxName(), map);
+        } catch (NoOpNameFoundException e) {
+            //
+        }
+
+        try {
+            ret.put(tensorflowName(),map);
+        } catch (NoOpNameFoundException e) {
+            //
+        }
+
         return ret;
     }
 
