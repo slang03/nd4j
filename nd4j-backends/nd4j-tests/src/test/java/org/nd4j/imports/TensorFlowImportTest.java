@@ -803,6 +803,16 @@ public class TensorFlowImportTest {
         tg.asFlatFile(new File("../../../libnd4j/tests_cpu/resources/profiling_conv.fb"));
     }
 
+    @Test
+    //@Ignore
+    public void testProfConvNCHW() throws Exception {
+        Nd4j.create(1);
+        val tg = TFGraphMapper.getInstance().importGraph(new File("/home/raver119/develop/workspace/models/profiling_conv_nchw.pb.txt"));
+        assertNotNull(tg);
+
+        tg.asFlatFile(new File("../../../libnd4j/tests_cpu/resources/profiling_conv_nchw.fb"));
+    }
+
 
     @Test(expected = ND4JIllegalStateException.class)
     public void testNonFrozenGraph1() throws Exception {

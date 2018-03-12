@@ -92,6 +92,14 @@ public class Conv2D extends DynamicCustomOp {
     public void initFromTensorFlow(NodeDef nodeDef, SameDiff initWith, Map<String, AttrValue> attributesForNode, GraphDef graph) {
         TFGraphMapper.getInstance().initFunctionFromProperties(nodeDef.getOp(), this, attributesForNode, nodeDef, graph);
         addArgs();
+
+        // we must permute weights once during import
+        val weightsName = nodeDef.getInput(1);
+        val variable = initWith.getVariable(weightsName);
+        val tmp = initWith.getArrForVarName(weightsName);
+        val array = tmp.permute(3, 2, 0, 1).dup('c');
+
+        initWith.associateArrayWithVariable(array, variable);
     }
 
     @Override
@@ -118,8 +126,8 @@ public class Conv2D extends DynamicCustomOp {
         val fields = DifferentialFunctionClassHolder.getInstance().getFieldsForFunction(this);
 
 
-        tfMappings.put("kh", new ConditionalFieldValueNDArrayShapeAdapter("NCHW", 2, 0, fields.get("dataFormat")));
-        tfMappings.put("kw", new ConditionalFieldValueNDArrayShapeAdapter("NCHW", 3, 1, fields.get("dataFormat")));
+        tfMappings.put("kh", new ConditionalFieldValueNDArrayShapeAdapter("NCHW", 0, 0, fields.get("dataFormat")));
+        tfMappings.put("kw", new ConditionalFieldValueNDArrayShapeAdapter("NCHW", 1, 1, fields.get("dataFormat")));
         tfMappings.put("sy", new ConditionalFieldValueIntIndexArrayAdapter("NCHW", 2, 1, fields.get("dataFormat")));
         tfMappings.put("sx", new ConditionalFieldValueIntIndexArrayAdapter("NCHW", 3, 2, fields.get("dataFormat")));
         tfMappings.put("isSameMode", new StringEqualsAdapter("SAME"));
