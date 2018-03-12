@@ -3,6 +3,7 @@ package org.nd4j.autodiff.execution;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nd4j.autodiff.execution.conf.ExecutionMode;
 import org.nd4j.autodiff.execution.conf.ExecutorConfiguration;
@@ -35,6 +36,7 @@ public class GraphExecutionerTest {
     }
 
     @Test
+    @Ignore
     public void testConversion() throws Exception {
         SameDiff sameDiff = SameDiff.create();
         INDArray ones = Nd4j.ones(4);
