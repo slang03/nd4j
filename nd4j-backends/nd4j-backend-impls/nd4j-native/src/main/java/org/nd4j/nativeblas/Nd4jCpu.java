@@ -277,6 +277,7 @@ public class Nd4jCpu extends org.nd4j.nativeblas.Nd4jCpuPresets {
         float_maxpool3dnew.class,
         float_maxpool3dnew_bp.class,
         float_max_pool_with_argmax.class,
+        float_depthwise_conv2d.class,
         float_set_seed.class,
         float_get_seed.class,
         float_randomuniform.class,
@@ -577,6 +578,7 @@ public class Nd4jCpu extends org.nd4j.nativeblas.Nd4jCpuPresets {
         half_maxpool3dnew.class,
         half_maxpool3dnew_bp.class,
         half_max_pool_with_argmax.class,
+        half_depthwise_conv2d.class,
         half_set_seed.class,
         half_get_seed.class,
         half_randomuniform.class,
@@ -877,6 +879,7 @@ public class Nd4jCpu extends org.nd4j.nativeblas.Nd4jCpuPresets {
         double_maxpool3dnew.class,
         double_maxpool3dnew_bp.class,
         double_max_pool_with_argmax.class,
+        double_depthwise_conv2d.class,
         double_set_seed.class,
         double_get_seed.class,
         double_randomuniform.class,
@@ -7198,7 +7201,7 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         *  order - order to set
         *  shape - shape to set
         *
-        * if there was permute applied before or there are weird strides, then new buffer is allocated for new array
+        * if permute have been applied before or there are weird strides, then new buffer is allocated for new array
         */
 		public native FloatNDArray reshape(char order, @StdVector IntPointer shape);
 		public native FloatNDArray reshape(char order, @StdVector IntBuffer shape);
@@ -8275,7 +8278,7 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         *  order - order to set
         *  shape - shape to set
         *
-        * if there was permute applied before or there are weird strides, then new buffer is allocated for new array
+        * if permute have been applied before or there are weird strides, then new buffer is allocated for new array
         */
 		public native HalfNDArray reshape(char order, @StdVector IntPointer shape);
 		public native HalfNDArray reshape(char order, @StdVector IntBuffer shape);
@@ -9352,7 +9355,7 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         *  order - order to set
         *  shape - shape to set
         *
-        * if there was permute applied before or there are weird strides, then new buffer is allocated for new array
+        * if permute have been applied before or there are weird strides, then new buffer is allocated for new array
         */
 		public native DoubleNDArray reshape(char order, @StdVector IntPointer shape);
 		public native DoubleNDArray reshape(char order, @StdVector IntBuffer shape);
@@ -22247,7 +22250,8 @@ public static final int TAD_THRESHOLD = TAD_THRESHOLD();
          * 5: padding width
          * 6: dilation height
          * 7: dilation width
-         * 8: same mode: 0 false, 1 true
+         * 8: same mode:   1 true, 0 false
+         * 9: data format: 1 NHWC, 0 NCHW
          */
         @Name("nd4j::ops::conv2d<float>") public static class float_conv2d extends FloatDeclarableCustomOp {
             static { Loader.load(); }
@@ -24003,6 +24007,54 @@ public static final int TAD_THRESHOLD = TAD_THRESHOLD();
             }
         
                                                                                     public double_max_pool_with_argmax() { super((Pointer)null); allocate(); }
+                                                                                    private native void allocate();
+                                                                                    public native ShapeList calculateOutputShape(ShapeList inputShape, @ByRef DoubleContext block);
+                                                                                }
+
+        @Name("nd4j::ops::depthwise_conv2d<float>") public static class float_depthwise_conv2d extends FloatDeclarableCustomOp {
+            static { Loader.load(); }
+            /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
+            public float_depthwise_conv2d(Pointer p) { super(p); }
+            /** Native array allocator. Access with {@link Pointer#position(long)}. */
+            public float_depthwise_conv2d(long size) { super((Pointer)null); allocateArray(size); }
+            private native void allocateArray(long size);
+            @Override public float_depthwise_conv2d position(long position) {
+                return (float_depthwise_conv2d)super.position(position);
+            }
+        
+                                                                                    public float_depthwise_conv2d() { super((Pointer)null); allocate(); }
+                                                                                    private native void allocate();
+                                                                                    public native ShapeList calculateOutputShape(ShapeList inputShape, @ByRef FloatContext block);
+                                                                                }
+
+        @Name("nd4j::ops::depthwise_conv2d<float16>") public static class half_depthwise_conv2d extends HalfDeclarableCustomOp {
+            static { Loader.load(); }
+            /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
+            public half_depthwise_conv2d(Pointer p) { super(p); }
+            /** Native array allocator. Access with {@link Pointer#position(long)}. */
+            public half_depthwise_conv2d(long size) { super((Pointer)null); allocateArray(size); }
+            private native void allocateArray(long size);
+            @Override public half_depthwise_conv2d position(long position) {
+                return (half_depthwise_conv2d)super.position(position);
+            }
+        
+                                                                                    public half_depthwise_conv2d() { super((Pointer)null); allocate(); }
+                                                                                    private native void allocate();
+                                                                                    public native ShapeList calculateOutputShape(ShapeList inputShape, @ByRef HalfContext block);
+                                                                                }
+
+        @Name("nd4j::ops::depthwise_conv2d<double>") public static class double_depthwise_conv2d extends DoubleDeclarableCustomOp {
+            static { Loader.load(); }
+            /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
+            public double_depthwise_conv2d(Pointer p) { super(p); }
+            /** Native array allocator. Access with {@link Pointer#position(long)}. */
+            public double_depthwise_conv2d(long size) { super((Pointer)null); allocateArray(size); }
+            private native void allocateArray(long size);
+            @Override public double_depthwise_conv2d position(long position) {
+                return (double_depthwise_conv2d)super.position(position);
+            }
+        
+                                                                                    public double_depthwise_conv2d() { super((Pointer)null); allocate(); }
                                                                                     private native void allocate();
                                                                                     public native ShapeList calculateOutputShape(ShapeList inputShape, @ByRef DoubleContext block);
                                                                                 }
