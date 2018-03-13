@@ -678,57 +678,39 @@ public class CudaZeroHandler implements MemoryHandler {
         AllocationPoint dstPoint = ((BaseCudaDataBuffer) dstBuffer).getAllocationPoint();
         AllocationPoint srcPoint = ((BaseCudaDataBuffer) srcBuffer).getAllocationPoint();
 
+        // we're updating host buffer first
         Pointer dP = new CudaPointer(dstPoint.getPointers().getHostPointer().address());
         Pointer sP = null;
 
         if (srcPoint.getAllocationStatus() == AllocationStatus.DEVICE) {
             sP = new CudaPointer(srcPoint.getPointers().getDevicePointer().address());
-            /*
-            JCuda.cudaMemcpyAsync(
-                    dP,
-                    sP,
-                    srcBuffer.length(),
-                    cudaMemcpyKind.cudaMemcpyHostToDevice,
-                    context.getOldStream()
-            );*/
+
             if (nativeOps.memcpyAsync(dP, sP, srcBuffer.length() * srcBuffer.getElementSize(),
                             CudaConstants.cudaMemcpyHostToDevice, context.getOldStream()) == 0) {
                 throw new ND4JIllegalStateException("memcpyAsync failed");
             }
         } else {
             sP = new CudaPointer(srcPoint.getPointers().getHostPointer().address());
-            /*
-            JCuda.cudaMemcpyAsync(
-                    dP,
-                    sP,
-                    srcBuffer.length(),
-                    cudaMemcpyKind.cudaMemcpyHostToDevice,
-                    context.getOldStream()
-            );*/
+
             if (nativeOps.memcpyAsync(dP, sP, srcBuffer.length() * srcBuffer.getElementSize(),
                             CudaConstants.cudaMemcpyHostToDevice, context.getOldStream()) == 0) {
                 throw new ND4JIllegalStateException("memcpyAsync failed");
             }
         }
 
+        // updating target device buffer now
         if (dstPoint.getAllocationStatus() == AllocationStatus.DEVICE) {
             Pointer rDP = new CudaPointer(dstPoint.getPointers().getDevicePointer().address());
 
-            /*
-            JCuda.cudaMemcpyAsync(
-                    rDP,
-                    dP,
-                    srcBuffer.length(),
-                    cudaMemcpyKind.cudaMemcpyHostToDevice,
-                    context.getOldStream()
-            );*/
             if (nativeOps.memcpyAsync(rDP, dP, srcBuffer.length() * srcBuffer.getElementSize(),
                             CudaConstants.cudaMemcpyHostToDevice, context.getOldStream()) == 0) {
                 throw new ND4JIllegalStateException("memcpyAsync failed");
             }
         }
 
+        // both host & device memory are up-to-date now
         dstPoint.tickDeviceWrite();
+        dstPoint.tickHostRead();
 
         // it has to be blocking call
         context.syncOldStream();
