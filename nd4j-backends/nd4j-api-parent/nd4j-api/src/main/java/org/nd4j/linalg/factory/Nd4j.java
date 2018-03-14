@@ -2485,7 +2485,7 @@ public class Nd4j {
                 }
             }
             //Hack fix for tad issue with 'f' order and rank-1 dim shape == 1
-            if (theOrder == 'f' && theShape[rank-1] == 1) {
+            if (theOrder == 'f' && rank > 1 && theShape[rank-1] == 1) {
                 newArr = newArr.dup('f');
             }
 

@@ -1,5 +1,6 @@
 package org.nd4j.linalg.api.string;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +14,7 @@ import org.nd4j.linalg.string.NDArrayStrings;
 /**
  * @author Adam Gibson
  */
+@Slf4j
 @RunWith(Parameterized.class)
 public class TestFormatting extends BaseNd4jTest {
 
@@ -39,6 +41,10 @@ public class TestFormatting extends BaseNd4jTest {
         String expected2 = "[[1.0000E0,4.0838E1],\n" + " [2.0000E7,3.0000E0]]";
         String serializedData2 = new NDArrayStrings().format(arr);
         Assert.assertEquals(expected2.replaceAll(" ", ""), serializedData2.replaceAll(" ", ""));
+
+        String expected3 = "[[100.00E-2,408.3838E-1],\n" + " [200.00E5,300.00E-2]]";
+        String serializedData3 = new NDArrayStrings(",", "000.00##E0").format(arr);
+        Assert.assertEquals(expected3.replaceAll(" ", ""), serializedData3.replaceAll(" ", ""));
     }
 
     @Override

@@ -8,6 +8,15 @@ import org.nd4j.linalg.ops.transforms.Transforms;
 import java.text.DecimalFormat;
 
 /**
+ *  String representation of an ndarray.
+ *
+ * Printing will default to scientific notation if
+ *      - max absolute value is greater than 1000
+ *      - or min absolute value is less than 0.0001
+ *      - or if the ratio of the above is greater than 1000
+ *
+ *  If the number of elements in the array is greater than 1000 only the first and last three elements in a dimension are included
+ *
  * @author Adam Gibson
  * @author Susan Eraly
  */
@@ -28,16 +37,21 @@ public class NDArrayStrings {
         this(colSep, 4);
     }
 
+    /**
+     * Specify the number of digits after the decimal point to include
+     * @param precision
+     */
     public NDArrayStrings(int precision) {
         this(",", precision);
     }
 
+
     /**
      * Specify a delimiter for elements in columns for 2d arrays (or in the rank-1th dimension in higher order arrays)
-     * Note that separator in elements in remaining dimensions defaults to ",\n"
+     * Separator in elements in remaining dimensions defaults to ",\n"
      *
      * @param colSep    field separating columns;
-     * @param precision
+     * @param precision digits after decimal point
      */
     public NDArrayStrings(String colSep, int precision) {
         this.colSep = colSep;
@@ -51,6 +65,11 @@ public class NDArrayStrings {
         this.decimalFormat = new DecimalFormat(decFormatNum);
     }
 
+    /**
+     * Specify a col separator and a decimal format string
+     * @param colSep
+     * @param decFormat
+     */
     public NDArrayStrings(String colSep, String decFormat) {
         this.colSep = colSep;
         this.decimalFormat = new DecimalFormat(decFormat);
@@ -62,6 +81,11 @@ public class NDArrayStrings {
         this.dontOverrideFormat = true;
     }
 
+    /**
+     *
+     * @param arr
+     * @return String representation of the array adhering to options provided in the constructor
+     */
     public String format(INDArray arr) {
         return format(arr, true);
     }
@@ -70,7 +94,7 @@ public class NDArrayStrings {
      * Format the given ndarray as a string
      *
      * @param arr       the array to format
-     * @param summarize If true the number of elements in the array is greater than > 1000 only the first three and last elements in any dimension will print
+     * @param summarize If true and the number of elements in the array is greater than > 1000 only the first three and last elements in any dimension will print
      * @return the formatted array
      */
     public String format(INDArray arr, boolean summarize) {
@@ -95,12 +119,11 @@ public class NDArrayStrings {
                 }
             }
         }
-        if (summarize && arr.length() > 10) return format(arr, 0, true, false);
-        return format(arr, 0, false, false);
+        if (summarize && arr.length() > 1000) return format(arr, 0, true);
+        return format(arr, 0, false);
     }
 
-    private String format(INDArray arr, int offset, boolean summarize, boolean bypass) {
-        if (bypass) return "";
+    private String format(INDArray arr, int offset, boolean summarize) {
         int rank = arr.rank();
         if (arr.isScalar() && rank == 0) {
             //true scalar i.e shape = [] not legacy which is [1,1]
@@ -126,15 +149,20 @@ public class NDArrayStrings {
             StringBuilder sb = new StringBuilder();
             sb.append("[");
             for (int i = 0; i < arr.slices(); i++) {
-                if (summarize && i > 2 && i < arr.length() - 3) {
-                    if (i == 3) sb.append("  ...");
+                if (summarize && i > 2 && i < arr.slices() - 3) {
+                    if (i == 3) {
+                        sb.append(" ...");
+                        sb.append(newLineSep + " \n");
+                        sb.append(StringUtils.repeat("\n", rank - 2));
+                        sb.append(StringUtils.repeat(" ", offset));
+                    }
                 } else {
                     if (arr.rank() == 3 && arr.slice(i).isRowVector()) sb.append("[");
                     //hack fix for slice issue with 'f' order
                     if (arr.ordering() == 'f' && arr.rank() > 2 && arr.size(arr.rank() - 1) == 1) {
-                        sb.append(format(arr.dup('c').slice(i), offset, summarize, false));
+                        sb.append(format(arr.dup('c').slice(i), offset, summarize));
                     } else {
-                        sb.append(format(arr.slice(i), offset, summarize, false));
+                        sb.append(format(arr.slice(i), offset, summarize));
                     }
                     if (i != arr.slices() - 1) {
                         if (arr.rank() == 3 && arr.slice(i).isRowVector()) sb.append("]");
@@ -165,7 +193,7 @@ public class NDArrayStrings {
                 }
             }
             if (i < arr.length() - 1) {
-                if (!summarize || i < 2 || i > arr.length() - 3) {
+                if (!summarize || i < 2 || i > arr.length() - 3 || (summarize && arr.length() == 6)) {
                     sb.append(colSep);
                 }
             }
