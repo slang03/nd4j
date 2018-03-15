@@ -2234,6 +2234,22 @@ public class SameDiffTests {
     }
 
     @Test
+    public void testOneHot() {
+        INDArray indicesArr = Nd4j.zeros(2,2);
+        indicesArr.put(0,1,2);
+        indicesArr.put(1,0,1);
+        indicesArr.put(1,1,-1);
+
+        SameDiff sd = SameDiff.create();
+        SDVariable indices = sd.var("indices",new int[] {2,2});
+        sd.associateArrayWithVariable(indicesArr,indices);
+        SDVariable out = sd.oneHot(indices,3);
+        INDArray out1 = sd.execAndEndResult();
+        log.info(out1.toString());
+
+    }
+
+    @Test
     public void testOnesLikeBackprop(){
         SameDiff sd = SameDiff.create();
         SDVariable var0 = sd.var("in", new int[]{3,4});

@@ -2027,7 +2027,9 @@ public class SameDiff {
      * @param iX
      * @return
      */
-    public SDVariable isNaN(SDVariable iX) { return isNaN(null, iX); }
+    public SDVariable isNaN(SDVariable iX) {
+        return isNaN(null, iX);
+    }
 
     /**
      * @param iX
@@ -2237,7 +2239,7 @@ public class SameDiff {
 
     public SDVariable dilation2D(String name, SDVariable df, SDVariable weights, int[] strides,
                                  int[] rates, boolean isSameMode) {
-        SDVariable ret = f().dilation2D(df, weights,strides, rates, isSameMode);
+        SDVariable ret = f().dilation2D(df, weights, strides, rates, isSameMode);
         return updateVariableNameAndReference(ret, name);
     }
 
@@ -2305,21 +2307,21 @@ public class SameDiff {
         return updateVariableNamesAndReferences(ret, names);
     }
 
-    public  SDVariable erf(SDVariable iX) {
+    public SDVariable erf(SDVariable iX) {
         return erf(null, iX);
     }
 
-    public  SDVariable erf(String name, SDVariable iX) {
+    public SDVariable erf(String name, SDVariable iX) {
         SDVariable ret = f().erf(iX);
         return updateVariableNameAndReference(ret, name);
     }
 
 
-    public  SDVariable erfc(SDVariable iX) {
+    public SDVariable erfc(SDVariable iX) {
         return erfc(null, iX);
     }
 
-    public  SDVariable erfc(String name, SDVariable iX) {
+    public SDVariable erfc(String name, SDVariable iX) {
         SDVariable ret = f().erfc(iX);
         return updateVariableNameAndReference(ret, name);
     }
@@ -2339,6 +2341,23 @@ public class SameDiff {
 
     public SDVariable diagPart(String name, SDVariable iX) {
         SDVariable ret = f().diagPart(iX);
+        return updateVariableNameAndReference(ret, name);
+    }
+
+    public SDVariable oneHot(SDVariable indices, int depth) {
+        return oneHot(null, indices, depth, -1, 1.00f, 0.00f);
+    }
+
+    public SDVariable oneHot(SDVariable indices, int depth, int axis, float on, float off) {
+        return oneHot(null, indices, depth, axis, on, off);
+    }
+
+    public SDVariable oneHot(String name, SDVariable indices, int depth) {
+        return oneHot(name, indices, depth, -1, 1.00f, 0.00f);
+    }
+
+    public SDVariable oneHot(String name, SDVariable indices, int depth, int axis, float on, float off) {
+        SDVariable ret = f().onehot(indices, depth, axis, on, off);
         return updateVariableNameAndReference(ret, name);
     }
 
@@ -2595,20 +2614,20 @@ public class SameDiff {
         return updateVariableNameAndReference(ret, name);
     }
 
-    public SDVariable cumsum(SDVariable in, boolean exclusive, boolean reverse, int... dimensions ){
+    public SDVariable cumsum(SDVariable in, boolean exclusive, boolean reverse, int... dimensions) {
         return cumsum(null, in, exclusive, reverse, dimensions);
     }
 
-    public SDVariable cumsum(String name, SDVariable in, boolean exclusive, boolean reverse, int... dimensions){
+    public SDVariable cumsum(String name, SDVariable in, boolean exclusive, boolean reverse, int... dimensions) {
         SDVariable ret = f().cumsum(in, exclusive, reverse, dimensions);
         return updateVariableNameAndReference(ret, name);
     }
 
-    public SDVariable cumprod(SDVariable in, boolean exclusive, boolean reverse, int... dimensions ){
+    public SDVariable cumprod(SDVariable in, boolean exclusive, boolean reverse, int... dimensions) {
         return cumprod(null, in, exclusive, reverse, dimensions);
     }
 
-    public SDVariable cumprod(String name, SDVariable in, boolean exclusive, boolean reverse, int... dimensions){
+    public SDVariable cumprod(String name, SDVariable in, boolean exclusive, boolean reverse, int... dimensions) {
         SDVariable ret = f().cumprod(in, exclusive, reverse, dimensions);
         return updateVariableNameAndReference(ret, name);
     }
@@ -2624,16 +2643,16 @@ public class SameDiff {
     }
 
 
-    public SDVariable reverse(SDVariable x, int... dimensions){
+    public SDVariable reverse(SDVariable x, int... dimensions) {
         return reverse(null, x, dimensions);
     }
 
-    public SDVariable reverse(String name, SDVariable x, int... dimensions){
+    public SDVariable reverse(String name, SDVariable x, int... dimensions) {
         SDVariable ret = f().reverse(x, dimensions);
         return updateVariableNameAndReference(ret, name);
     }
 
-    public SDVariable assign(SDVariable x, SDVariable y){
+    public SDVariable assign(SDVariable x, SDVariable y) {
         return assign(null, x, y);
     }
 
@@ -3933,11 +3952,11 @@ public class SameDiff {
     }
 
     public SDVariable confusionMatrix(SDVariable labels, SDVariable predictions) {
-        return confusionMatrix((String)null, labels, predictions);
+        return confusionMatrix((String) null, labels, predictions);
     }
 
     public SDVariable confusionMatrix(String name, SDVariable labels, SDVariable pred) {
-        SDVariable result = f().confusionMatrix(labels, pred) ;
+        SDVariable result = f().confusionMatrix(labels, pred);
         return updateVariableNameAndReference(result, name);
     }
 
@@ -3947,7 +3966,7 @@ public class SameDiff {
     }
 
     public SDVariable confusionMatrix(String name, SDVariable labels, SDVariable pred, Integer numClasses) {
-        SDVariable result = f().confusionMatrix(labels, pred, numClasses) ;
+        SDVariable result = f().confusionMatrix(labels, pred, numClasses);
         return updateVariableNameAndReference(result, name);
     }
 
@@ -5131,9 +5150,9 @@ public class SameDiff {
                     // incrementing number of cycles for THIS frame, only if LoopCond is true
                     flowPath.incrementNumberOfCycles(frameName);
                 }
-            }else if (differentialFunction instanceof Enter) {
-              //  if (flowPath.wasExecuted(differentialFunction.getOwnName()))
-              //      continue;
+            } else if (differentialFunction instanceof Enter) {
+                //  if (flowPath.wasExecuted(differentialFunction.getOwnName()))
+                //      continue;
 
                 val inputs = getInputVariablesForFunction(differentialFunction);
 
@@ -5407,17 +5426,17 @@ public class SameDiff {
                             updateArrayForVarName(var.getVarName(), accumulation.z());
                             updateShapeForVarName(var.getVarName(), accumulation.z().shape());
                         }
-                    } else if(differentialFunction instanceof BroadcastOp) {
+                    } else if (differentialFunction instanceof BroadcastOp) {
                         BroadcastOp broadcastOp = (BroadcastOp) differentialFunction;
                         Nd4j.getExecutioner().exec(broadcastOp, axes);
-                    } else if(differentialFunction instanceof GradientOp) {
+                    } else if (differentialFunction instanceof GradientOp) {
                         Nd4j.getExecutioner().exec(op);
-                    } else if(differentialFunction instanceof IndexAccumulation) {
+                    } else if (differentialFunction instanceof IndexAccumulation) {
                         IndexAccumulation indexAccumulation = (IndexAccumulation) differentialFunction;
                         Nd4j.getExecutioner().exec(indexAccumulation, axes);
 
-                    } else if(differentialFunction instanceof TransformOp){
-                        TransformOp t = (TransformOp)differentialFunction;
+                    } else if (differentialFunction instanceof TransformOp) {
+                        TransformOp t = (TransformOp) differentialFunction;
                         Nd4j.getExecutioner().exec(t, axes);
                     }
                 }
@@ -5429,7 +5448,7 @@ public class SameDiff {
             }
 
             //debug
-           // printFunction(differentialFunction);
+            // printFunction(differentialFunction);
         }
 
         return new Pair<>(opMap, ops);
@@ -5633,27 +5652,27 @@ public class SameDiff {
         log.trace("");
         for (val input : inputs) {
             //for (int i = 0; i < outputVertexId.length; i++) {
-                val pair = parseVariable(input.getVarName());
-                if (!reverseMap.containsKey(pair.getFirst())) {
-                    if (pair.getFirst().contains("NextIteration")) {
-                        // forward declaration: Merge node in case of loop will be referring to NextIteration node, which wasn't announced yet
-                        int fwdNodeId = idCounter.incrementAndGet();
-                        forwardMap.put(pair.getFirst(), fwdNodeId);
-                        reverseMap.put(pair.getFirst(), fwdNodeId);
-                    } else {
-                        throw new ND4JIllegalStateException("Unknown variable used in input: [" + pair.getFirst() + "]");
-                    }
+            val pair = parseVariable(input.getVarName());
+            if (!reverseMap.containsKey(pair.getFirst())) {
+                if (pair.getFirst().contains("NextIteration")) {
+                    // forward declaration: Merge node in case of loop will be referring to NextIteration node, which wasn't announced yet
+                    int fwdNodeId = idCounter.incrementAndGet();
+                    forwardMap.put(pair.getFirst(), fwdNodeId);
+                    reverseMap.put(pair.getFirst(), fwdNodeId);
+                } else {
+                    throw new ND4JIllegalStateException("Unknown variable used in input: [" + pair.getFirst() + "]");
                 }
+            }
 
-                int nodeId = reverseMap.get(pair.getFirst());
-                int outputIndex = pair.getSecond();
+            int nodeId = reverseMap.get(pair.getFirst());
+            int outputIndex = pair.getSecond();
 
-                inPaired.add(IntPair.createIntPair(bufferBuilder, nodeId, outputIndex));
+            inPaired.add(IntPair.createIntPair(bufferBuilder, nodeId, outputIndex));
             //}
         }
 
         log.info("Own Name: {}", node.getOwnName());
-        int ownId = forwardMap.containsKey(node.getOwnName()) ? forwardMap.get(node.getOwnName()): idCounter.incrementAndGet();
+        int ownId = forwardMap.containsKey(node.getOwnName()) ? forwardMap.get(node.getOwnName()) : idCounter.incrementAndGet();
         reverseMap.put(node.getOwnName(), ownId);
 
         // TODO: Adam, just put your props here, instead of empty list, and they will be saved

@@ -2,12 +2,11 @@ package org.nd4j.autodiff.functions;
 
 import com.google.common.base.Preconditions;
 import lombok.Data;
-import org.apache.commons.lang3.ArrayUtils;
 import org.nd4j.autodiff.samediff.SDVariable;
 import org.nd4j.autodiff.samediff.SameDiff;
 import org.nd4j.linalg.api.blas.params.MMulTranspose;
-import org.nd4j.linalg.api.ops.impl.accum.Max;
 import org.nd4j.linalg.api.ops.impl.accum.*;
+import org.nd4j.linalg.api.ops.impl.accum.Max;
 import org.nd4j.linalg.api.ops.impl.accum.Min;
 import org.nd4j.linalg.api.ops.impl.accum.distances.*;
 import org.nd4j.linalg.api.ops.impl.indexaccum.IMax;
@@ -568,6 +567,14 @@ public class DifferentialFunctionFactory   {
 
     public SDVariable broadcast(SDVariable iX, int... shape) {
         return new Broadcast(sameDiff(),iX,shape).outputVariables()[0];
+    }
+
+    public SDVariable onehot(SDVariable indices, int depth, int axis, float on, float off) {
+        return new OneHot(sameDiff(), indices, depth, axis, on, off).outputVariables()[0];
+    }
+
+    public SDVariable onehot(SDVariable indices, int depth) {
+        return new OneHot(sameDiff(), indices, depth).outputVariables()[0];
     }
 
 
