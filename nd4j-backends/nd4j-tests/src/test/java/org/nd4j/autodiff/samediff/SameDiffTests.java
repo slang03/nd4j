@@ -2235,17 +2235,29 @@ public class SameDiffTests {
 
     @Test
     public void testOneHot() {
+        //indices = [[0, 2], [1, -1]]
         INDArray indicesArr = Nd4j.zeros(2,2);
         indicesArr.put(0,1,2);
         indicesArr.put(1,0,1);
         indicesArr.put(1,1,-1);
+        INDArray expectedOut = Nd4j.zeros(new int[] {2,2,3});
+        /*
+        # output: [2 x 2 x 3]
+        # [[[1.0, 0.0, 0.0],   # one_hot(0)
+        #   [0.0, 0.0, 1.0]],  # one_hot(2)
+        #  [[0.0, 1.0, 0.0],   # one_hot(1)
+        #   [0.0, 0.0, 0.0]]]  # one_hot(-1)
+        */
+        expectedOut.putScalar(0,0,0,1.0);
+        expectedOut.putScalar(0,1,2,1.0);
+        expectedOut.putScalar(1,0,1,1.0);
 
         SameDiff sd = SameDiff.create();
         SDVariable indices = sd.var("indices",new int[] {2,2});
         sd.associateArrayWithVariable(indicesArr,indices);
-        SDVariable out = sd.oneHot(indices,3);
         INDArray out1 = sd.execAndEndResult();
         log.info(out1.toString());
+        assertEquals(expectedOut,out1);
 
     }
 
