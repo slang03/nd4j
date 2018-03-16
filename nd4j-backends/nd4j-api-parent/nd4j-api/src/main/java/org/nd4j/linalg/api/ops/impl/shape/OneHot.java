@@ -21,8 +21,8 @@ public class OneHot extends DynamicCustomOp {
 
     private int depth;
     private int axis = -1;
-    private float on;
-    private float off;
+    private double on;
+    private double off;
 
     public  OneHot() {
 
@@ -37,7 +37,7 @@ public class OneHot extends DynamicCustomOp {
         addArgs();
     }
 
-    public OneHot(SameDiff sameDiff, SDVariable indices, int depth, int axis, float on, float off) {
+    public OneHot(SameDiff sameDiff, SDVariable indices, int depth, int axis, double on, double off) {
         super(null, sameDiff,  new SDVariable[] {indices}, false);
         this.depth = depth;
         this.axis = axis;
@@ -66,6 +66,12 @@ public class OneHot extends DynamicCustomOp {
         Map<String, Map<String, PropertyMapping>> ret = new HashMap<>();
         Map<String,PropertyMapping> attrs = new LinkedHashMap<>();
 
+        val depth = PropertyMapping.builder()
+                .propertyNames(new String[]{"depth"})
+                .tfInputPosition(1)
+                .build();
+        attrs.put("depth", depth);
+
         val on = PropertyMapping.builder()
                 .propertyNames(new String[]{"on"})
                 .tfInputPosition(2)
@@ -77,6 +83,13 @@ public class OneHot extends DynamicCustomOp {
                 .tfInputPosition(3)
                 .build();
         attrs.put("off", off);
+
+
+        val axis = PropertyMapping.builder()
+                .propertyNames(new String[] {"axis"})
+                .tfAttrName("axis")
+                .build();
+        attrs.put("axis",axis);
 
         ret.put(tensorflowName(),attrs);
         return ret;

@@ -2348,7 +2348,7 @@ public class SameDiff {
         return oneHot(null, indices, depth, -1, 1.00f, 0.00f);
     }
 
-    public SDVariable oneHot(SDVariable indices, int depth, int axis, float on, float off) {
+    public SDVariable oneHot(SDVariable indices, int depth, int axis, double on, double off) {
         return oneHot(null, indices, depth, axis, on, off);
     }
 
@@ -2356,7 +2356,7 @@ public class SameDiff {
         return oneHot(name, indices, depth, -1, 1.00f, 0.00f);
     }
 
-    public SDVariable oneHot(String name, SDVariable indices, int depth, int axis, float on, float off) {
+    public SDVariable oneHot(String name, SDVariable indices, int depth, int axis, double on, double off) {
         SDVariable ret = f().onehot(indices, depth, axis, on, off);
         return updateVariableNameAndReference(ret, name);
     }
