@@ -32,8 +32,8 @@ public class OneHot extends DynamicCustomOp {
         super(null, sameDiff,  new SDVariable[] {indices}, false);
         this.depth = depth;
         this.axis = -1;
-        this.on = 1.00f;
-        this.off = 0.00f;
+        this.on = 1.00;
+        this.off = 0.00;
         addArgs();
     }
 
