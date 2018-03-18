@@ -2568,7 +2568,7 @@ public class SameDiff {
     }
 
     public SDVariable oneHot(SDVariable indices, int depth) {
-        return oneHot(null, indices, depth, -1, 1.00f, 0.00f);
+        return oneHot(null, indices, depth, -1, 1.00, 0.00);
     }
 
     public SDVariable oneHot(SDVariable indices, int depth, int axis, double on, double off) {
