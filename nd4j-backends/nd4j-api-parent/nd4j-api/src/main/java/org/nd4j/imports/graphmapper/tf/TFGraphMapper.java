@@ -1,8 +1,8 @@
 package org.nd4j.imports.graphmapper.tf;
 
+import com.github.os72.protobuf351.Message;
 import com.google.common.primitives.Floats;
 import com.google.common.primitives.Ints;
-import com.google.protobuf.Message;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.nd4j.autodiff.functions.DifferentialFunction;
@@ -706,6 +706,15 @@ public class TFGraphMapper extends BaseGraphMapper<GraphDef,NodeDef,AttrValue,No
                         }
                         else if(currentField.getType().equals(INDArray.class)) {
                             on.setValueFor(currentField,tensor);
+                        }
+                        else if(currentField.getType().equals(int.class)) {
+                            on.setValueFor(currentField,tensor.getInt(0));
+                        }
+                        else if(currentField.getType().equals(double.class)) {
+                            on.setValueFor(currentField,tensor.getDouble(0));
+                        }
+                        else if(currentField.getType().equals(float.class)) {
+                            on.setValueFor(currentField,tensor.getFloat(0));
                         }
                     }
 
