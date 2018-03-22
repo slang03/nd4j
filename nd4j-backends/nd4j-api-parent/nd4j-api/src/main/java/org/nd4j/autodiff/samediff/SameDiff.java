@@ -1783,6 +1783,32 @@ public class SameDiff {
 
 
     /**
+     * Local response normalization operation.
+     *
+     * @param inputs       the inputs to lrn
+     * @param lrnConfig the configuration
+     * @return
+     */
+    public SDVariable localResponseNormalization(SDVariable inputs, LocalResponseNormalizationConfig lrnConfig) {
+        return localResponseNormalization(null, inputs, lrnConfig);
+    }
+
+    /**
+     * Local response normalization operation.
+     *
+     * @param name         name of the operation in SameDiff
+     * @param inputs       the inputs to lrn
+     * @param lrnConfig the configuration
+     * @return
+     */
+    public SDVariable localResponseNormalization(String name, SDVariable inputs,
+                                                 LocalResponseNormalizationConfig lrnConfig) {
+        SDVariable ret = f().localResponseNormalization(inputs, lrnConfig);
+        return updateVariableNameAndReference(ret, name);
+    }
+
+
+    /**
      * Conv2d operation.
      *
      * @param inputs       the inputs to conv2d
@@ -2902,6 +2928,25 @@ public class SameDiff {
         return updateVariableNameAndReference(ret, name);
     }
 
+    public SDVariable reverse_sequence(String name, SDVariable x, SDVariable seq_lengths, int seqDim, int batchDim) {
+        SDVariable ret = f().reverse_sequence(x, seq_lengths, seqDim, batchDim);
+        return updateVariableNameAndReference(ret, name);
+    }
+
+    public SDVariable reverse_sequence(String name, SDVariable x, SDVariable seq_lengths) {
+        SDVariable ret = f().reverse_sequence(x, seq_lengths);
+        return updateVariableNameAndReference(ret, name);
+    }
+
+    public SDVariable reverse_sequence(SDVariable x, SDVariable seq_lengths, int seqDim, int batchDim) {
+        return reverse_sequence(null, x, seq_lengths, seqDim, batchDim);
+    }
+
+    public SDVariable reverse_sequence(SDVariable x, SDVariable seq_lengths){
+        return reverse_sequence(null, x, seq_lengths);
+    }
+
+
     public SDVariable assign(SDVariable x, SDVariable y){
         return assign(null, x, y);
     }
@@ -2944,6 +2989,25 @@ public class SameDiff {
      */
     public SDVariable concat(int dimension, SDVariable... inputs) {
         return concat(null, dimension, inputs);
+    }
+
+    public SDVariable[] moments(SDVariable input, int... axes) {
+        return moments(null, input, axes);
+    }
+
+    public SDVariable[] moments(String[] name, SDVariable input, int... axes) {
+        SDVariable[] res = f().moments(input, axes);
+        return updateVariableNamesAndReferences(res, name);
+    }
+
+    public SDVariable[] normalizeMoments(SDVariable counts, SDVariable means, SDVariable variances, double shift) {
+        return normalizeMoments(null, counts, means, variances, shift);
+    }
+
+    public SDVariable[] normalizeMoments(String[] name, SDVariable counts, SDVariable means, SDVariable variances,
+                                         double shift) {
+        SDVariable[] res = f().normalizeMoments(counts, means, variances, shift);
+        return updateVariableNamesAndReferences(res, name);
     }
 
     /**
@@ -5390,7 +5454,7 @@ public class SameDiff {
 
         for (int i = 0; i < numVariables; i++) {
             SDVariable varToUpdate = variablesToUpdate[i];
-            String name = newVariableNames[i];
+            String name = newVariableNames == null ? null : newVariableNames[i];
             updatedVariables[i] = updateVariableNameAndReference(varToUpdate, name);
         }
 

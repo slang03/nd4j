@@ -123,6 +123,23 @@ public class DifferentialFunctionFactory   {
     }
 
     /**
+     * Local response normalization operation.
+     *
+     * @param inputs       the inputs to lrn
+     * @param lrnConfig the configuration
+     * @return
+     */
+    public SDVariable localResponseNormalization(SDVariable inputs, LocalResponseNormalizationConfig lrnConfig) {
+        LocalResponseNormalization lrn = LocalResponseNormalization.builder()
+                .inputFunctions(new SDVariable[] {inputs})
+                .sameDiff(sameDiff())
+                .config(lrnConfig)
+                .build();
+
+        return lrn.outputVariables()[0];
+    }
+
+    /**
      * Conv1d operation.
      *
      * @param inputs       the inputs to conv1d
@@ -321,6 +338,13 @@ public class DifferentialFunctionFactory   {
         return outputVars[0];
     }
 
+    public SDVariable[] moments(SDVariable input, int... axes) {
+        return new Moments(sameDiff(), input, axes).outputVariables();
+    }
+
+    public SDVariable[] normalizeMoments(SDVariable counts, SDVariable means, SDVariable variances, double shift) {
+        return new NormalizeMoments(sameDiff(), counts, means, variances, shift).outputVariables();
+    }
 
 
     public SDVariable tile(SDVariable iX, int[] repeat) {
@@ -856,6 +880,14 @@ public class DifferentialFunctionFactory   {
 
     public SDVariable reverse(SDVariable x, int... dimensions){
         return new Reverse(sameDiff(),x, dimensions).outputVariables()[0];
+    }
+
+    public SDVariable reverse_sequence(SDVariable x, SDVariable seq_lengths, int seq_dim, int batch_dim) {
+        return new ReverseSequence(sameDiff(), x, seq_lengths, seq_dim, batch_dim).outputVariables()[0];
+    }
+
+    public SDVariable reverse_sequence(SDVariable x, SDVariable seq_lengths) {
+        return new ReverseSequence(sameDiff(), x, seq_lengths).outputVariables()[0];
     }
 
     public SDVariable rollAxis(SDVariable iX, int axis) {
