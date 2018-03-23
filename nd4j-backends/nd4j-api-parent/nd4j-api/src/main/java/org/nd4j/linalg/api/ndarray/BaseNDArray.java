@@ -5305,10 +5305,9 @@ public abstract class BaseNDArray implements INDArray, Iterable {
 
     /**
      * Generate string representation of the matrix.
-     * Printing will default to scientific notation if
-     *      - max absolute value is greater than 1000
-     *      - or min absolute value is less than 0.0001
-     *      - or if the ratio of the above is greater than 1000
+     * Printing will switch to scientific notation on a per element basis
+     *      - when abs value is greater than or equal to 10000
+     *      - when abs value is less than or equal to 0.0001 and not zero
      *
      *  If the number of elements in the array is greater than 1000 only the first and last three elements in a dimension are included
      *

@@ -45,8 +45,11 @@ public class TestNdArrReadWriteTxt extends BaseNd4jTest {
         while (iter.hasNext()) {
             Pair<INDArray,String> currentPair = iter.next();
             INDArray origArray = currentPair.getFirst();
+            //adding elements outside the bounds where print switches to scientific notation
+            origArray.tensorAlongDimension(0,0).muli(0).addi(100000);
+            origArray.putScalar(0,10001.1234);
             log.info("\nChecking shape ..." + currentPair.getSecond());
-            //log.info("\n"+ origArray.dup('c').toString());
+            log.info("\n"+ origArray.dup('c').toString());
             Nd4j.writeTxt(origArray, "someArr.txt");
             INDArray readBack = Nd4j.readTxt("someArr.txt");
             assertEquals("\nNot equal on shape " + ArrayUtils.toString(origArray.shape()), origArray, readBack);
