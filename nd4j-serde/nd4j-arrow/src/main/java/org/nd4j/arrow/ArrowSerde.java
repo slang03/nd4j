@@ -1,14 +1,12 @@
 package org.nd4j.arrow;
 
 import com.google.flatbuffers.FlatBufferBuilder;
-import org.apache.arrow.flatbuf.Tensor;
-import org.apache.arrow.flatbuf.Type;
+import org.apache.arrow.flatbuf.*;
 import org.nd4j.linalg.api.buffer.DataBuffer;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.exception.ND4JIllegalStateException;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.util.ArrayUtil;
-
-import java.nio.ByteBuffer;
 
 /**
  * Conversion to and from arrow {@link Tensor}
@@ -18,11 +16,6 @@ import java.nio.ByteBuffer;
  */
 public class ArrowSerde {
 
-
-    public final static int TYPE_TYPE_OFFSET = 4;
-    public final static int STRIDES_OFFSET = 10;
-    public final static int SHAPES_OFFSET = 8;
-    public final static int DATA_OFFSET = 12;
 
     /**
      * Convert a {@link Tensor}
@@ -34,17 +27,20 @@ public class ArrowSerde {
         byte b = tensor.typeType();
         int[] shape = new int[tensor.shapeLength()];
         int[] stride = new int[tensor.stridesLength()];
-        int length = ArrayUtil.prod(shape);
         for(int i = 0; i < shape.length; i++) {
             shape[i] = (int) tensor.shape(i).size();
             stride[i] = (int) tensor.strides(i);
         }
 
+        int length = ArrayUtil.prod(shape);
+        Buffer buffer = tensor.data();
+        if(buffer == null) {
+            throw new ND4JIllegalStateException("Buffer was not serialized properly.");
+        }
         //deduce element size
-        int elementSize = (int) tensor.data().length() / length;
+        int elementSize = (int) buffer.length() / length;
         DataBuffer.Type  type = typeFromTensorType(b,elementSize);
-        ByteBuffer data = (ByteBuffer) tensor.getByteBuffer().position((int) tensor.data().offset());
-        DataBuffer dataBuffer = Nd4j.createBuffer(data,type,length);
+        DataBuffer dataBuffer = DataBufferStruct.createFromByteBuffer(tensor.getByteBuffer(),(int) tensor.data().offset(),type,length,elementSize);
         INDArray arr = Nd4j.create(dataBuffer,shape);
         arr.setShapeAndStride(shape,stride);
         return arr;
@@ -57,55 +53,83 @@ public class ArrowSerde {
      * @return the equivalent {@link Tensor}
      */
     public static Tensor toTensor(INDArray arr) {
-        FlatBufferBuilder bufferBuilder = new FlatBufferBuilder(1024);;
-
-        bufferBuilder.addInt(tensorTypeFrom(arr));
-        int typeOffset = bufferBuilder.offset();
-
-        int vectorEnd = 0;
-        if(arr.data().dataType() == DataBuffer.Type.DOUBLE) {
-            bufferBuilder.startVector(8, (int) arr.data().length(), 4);
-            for(int i = 0; i < arr.data().length(); i++) {
-                bufferBuilder.addDouble(arr.data().getDouble(i));
-            }
-
-            vectorEnd = bufferBuilder.endVector();
-        }
-        else if(arr.data().dataType() == DataBuffer.Type.FLOAT) {
-            bufferBuilder.startVector(4, (int) arr.data().length(), 4);
-            for(int i = 0; i < arr.data().length(); i++) {
-                bufferBuilder.addFloat(arr.data().getFloat(i));
-            }
-
-            vectorEnd = bufferBuilder.endVector();
-        }
-        else if(arr.data().dataType() == DataBuffer.Type.INT) {
-            bufferBuilder.startVector(4, (int) arr.data().length(), 0);
-            for(int i = 0; i < arr.data().length(); i++) {
-                bufferBuilder.addInt(arr.data().getInt(i));
-            }
-
-            vectorEnd = bufferBuilder.endVector();
-
-        }
-
-
+        FlatBufferBuilder bufferBuilder = new FlatBufferBuilder(1024);
         long[] strides = getArrowStrides(arr);
-        int shapeOffset = Tensor.createShapeVector(bufferBuilder,arr.shape());
+        int shapeOffset = createDims(bufferBuilder,arr);
         int stridesOffset = Tensor.createStridesVector(bufferBuilder,strides);
 
-
         Tensor.startTensor(bufferBuilder);
-        Tensor.addType(bufferBuilder,typeOffset);
+
+        addTypeTypeRelativeToNDArray(bufferBuilder,arr);
         Tensor.addShape(bufferBuilder,shapeOffset);
         Tensor.addStrides(bufferBuilder,stridesOffset);
-        Tensor.finishTensorBuffer(bufferBuilder,vectorEnd);
-        Tensor.endTensor(bufferBuilder);
-        ByteBuffer buffer = bufferBuilder.dataBuffer();
-        buffer.rewind();
-        return Tensor.getRootAsTensor(buffer);
+
+        Tensor.addData(bufferBuilder,addDataForArr(bufferBuilder,arr));
+        int endTensor = Tensor.endTensor(bufferBuilder);
+        Tensor.finishTensorBuffer(bufferBuilder,endTensor);
+        return Tensor.getRootAsTensor(bufferBuilder.dataBuffer());
     }
 
+    public static int createBufferVector(FlatBufferBuilder builder, byte[] data) { builder.startVector(1, data.length, 1); for (int i = data.length - 1; i >= 0; i--) builder.addByte(data[i]); return builder.endVector(); }
+
+
+
+    public static int addDataForArr(FlatBufferBuilder bufferBuilder, INDArray arr) {
+        int offset = DataBufferStruct.createDataBufferStruct(bufferBuilder,arr.data());
+        int ret = Buffer.createBuffer(bufferBuilder,offset,arr.data().length() * arr.data().getElementSize());
+        return ret;
+
+    }
+
+    public static void addTypeTypeRelativeToNDArray(FlatBufferBuilder bufferBuilder,INDArray arr) {
+        switch(arr.data().dataType()) {
+            case LONG:
+            case INT:
+                Tensor.addTypeType(bufferBuilder,Type.Int);
+                break;
+            case FLOAT:
+            case DOUBLE:
+                Tensor.addTypeType(bufferBuilder,Type.FloatingPoint);
+                break;
+        }
+    }
+
+    public static int createDims(FlatBufferBuilder bufferBuilder,INDArray arr) {
+        int[] tensorDimOffsets = new int[arr.rank()];
+        int[] nameOffset = new int[arr.rank()];
+        for(int i = 0; i < tensorDimOffsets.length; i++) {
+            nameOffset[i] = bufferBuilder.createString("");
+            tensorDimOffsets[i] = TensorDim.createTensorDim(bufferBuilder,arr.size(i),nameOffset[i]);
+        }
+
+        return Tensor.createShapeVector(bufferBuilder,tensorDimOffsets);
+    }
+
+
+    public static int createTypeRelativeToNDArray(FlatBufferBuilder bufferBuilder,INDArray arr) {
+        int ret;
+        switch (arr.data().dataType()) {
+            case FLOAT:
+                ret = FloatingPoint.createFloatingPoint(bufferBuilder, Precision.SINGLE);
+                break;
+            case DOUBLE:
+                ret = FloatingPoint.createFloatingPoint(bufferBuilder, Precision.DOUBLE);
+                break;
+            case HALF:
+                ret = FloatingPoint.createFloatingPoint(bufferBuilder,Precision.HALF);
+                break;
+            case INT:
+                ret = Int.createInt(bufferBuilder,32,true);
+                break;
+            case LONG:
+                ret = Int.createInt(bufferBuilder,64,true);
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal type " + arr.data().dataType());
+        }
+
+        return ret;
+    }
 
 
     public static long[] getArrowStrides(INDArray arr) {
@@ -135,7 +159,7 @@ public class ArrowSerde {
     }
 
     public static DataBuffer.Type typeFromTensorType(byte type,int elementSize) {
-        if(type == Type.Decimal) {
+        if(type == Type.Decimal || type == Type.FloatingPoint) {
             if(elementSize == 4) {
                 return DataBuffer.Type.FLOAT;
             }
