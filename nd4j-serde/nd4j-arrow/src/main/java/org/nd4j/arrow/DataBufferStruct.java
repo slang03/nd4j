@@ -6,6 +6,7 @@ import org.nd4j.linalg.api.buffer.DataBuffer;
 import org.nd4j.linalg.factory.Nd4j;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class DataBufferStruct extends Struct {
 
@@ -23,26 +24,31 @@ public class DataBufferStruct extends Struct {
     public DataBufferStruct __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
     public static DataBuffer createFromByteBuffer(ByteBuffer bb,int bb_pos,DataBuffer.Type type,int length,int elementSize) {
+        bb.order(ByteOrder.LITTLE_ENDIAN);
         DataBuffer ret = Nd4j.createBuffer(ByteBuffer.allocateDirect(length *   elementSize),type,length,0);
         switch(type) {
             case DOUBLE:
                 for(int i = 0; i < ret.length(); i++) {
-                    ret.put(i,bb.getDouble(bb_pos + (i * elementSize)));
+                    double doubleGet = bb.getDouble(bb.capacity() - bb_pos + (i * elementSize));
+                    ret.put(i,doubleGet);
                 }
                 break;
             case FLOAT:
                 for(int i = 0; i < ret.length(); i++) {
-                    ret.put(i,bb.getFloat(bb_pos + (i * elementSize)));
+                    float floatGet = bb.getFloat(bb.capacity() - bb_pos + (i * elementSize));
+                    ret.put(i,floatGet);
                 }
                 break;
             case INT:
                 for(int i = 0; i < ret.length(); i++) {
-                    ret.put(i,bb.getInt(bb_pos + (i * elementSize)));
+                    int intGet = bb.getInt(bb.capacity() - bb_pos  + (i * elementSize));
+                    ret.put(i,intGet);
                 }
                 break;
             case LONG:
                 for(int i = 0; i < ret.length(); i++) {
-                    ret.put(i,bb.getLong(bb_pos + (i * elementSize)));
+                    long longGet = bb.getLong(bb.capacity() - bb_pos  + (i * elementSize));
+                    ret.put(i,longGet);
                 }
                 break;
         }
@@ -52,20 +58,24 @@ public class DataBufferStruct extends Struct {
 
 
     public static int createDataBufferStruct(FlatBufferBuilder bufferBuilder,DataBuffer create) {
-        //bufferBuilder.prep(create.getElementSize(), (int) create.length());
+        bufferBuilder.prep(create.getElementSize(), (int) create.length() * create.getElementSize());
         for(int i = (int) (create.length() - 1); i >= 0; i--) {
             switch(create.dataType()) {
                 case DOUBLE:
-                    bufferBuilder.putDouble(create.getDouble(i));
+                    double putDouble = create.getDouble(i);
+                    bufferBuilder.putDouble(putDouble);
                     break;
                 case FLOAT:
-                    bufferBuilder.putFloat(create.getFloat(i));
+                    float putFloat = create.getFloat(i);
+                    bufferBuilder.putFloat(putFloat);
                     break;
                 case INT:
-                    bufferBuilder.putInt(create.getInt(i));
+                    int putInt = create.getInt(i);
+                    bufferBuilder.putInt(putInt);
                     break;
                 case LONG:
-                    bufferBuilder.putLong(create.getLong(i));
+                    long putLong = create.getLong(i);
+                    bufferBuilder.putLong(putLong);
             }
         }
 

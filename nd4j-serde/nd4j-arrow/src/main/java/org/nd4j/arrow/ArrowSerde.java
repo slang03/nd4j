@@ -39,6 +39,11 @@ public class ArrowSerde {
         }
         //deduce element size
         int elementSize = (int) buffer.length() / length;
+        //nd4j strides aren't  based on element size
+        for(int i = 0; i < stride.length; i++) {
+            stride[i] /= elementSize;
+        }
+
         DataBuffer.Type  type = typeFromTensorType(b,elementSize);
         DataBuffer dataBuffer = DataBufferStruct.createFromByteBuffer(tensor.getByteBuffer(),(int) tensor.data().offset(),type,length,elementSize);
         INDArray arr = Nd4j.create(dataBuffer,shape);
@@ -70,10 +75,15 @@ public class ArrowSerde {
         return Tensor.getRootAsTensor(bufferBuilder.dataBuffer());
     }
 
-    public static int createBufferVector(FlatBufferBuilder builder, byte[] data) { builder.startVector(1, data.length, 1); for (int i = data.length - 1; i >= 0; i--) builder.addByte(data[i]); return builder.endVector(); }
 
-
-
+    /**
+     * Create a {@link Buffer}
+     * representing the location metadata of the actual data
+     * contents for the ndarrays' {@link DataBuffer}
+     * @param bufferBuilder the buffer builder in use
+     * @param arr the array to add the underlying data for
+     * @return the offset added
+     */
     public static int addDataForArr(FlatBufferBuilder bufferBuilder, INDArray arr) {
         int offset = DataBufferStruct.createDataBufferStruct(bufferBuilder,arr.data());
         int ret = Buffer.createBuffer(bufferBuilder,offset,arr.data().length() * arr.data().getElementSize());
@@ -81,6 +91,12 @@ public class ArrowSerde {
 
     }
 
+    /**
+     * Convert the given {@link INDArray}
+     * data  type to the proper data type for the tensor.
+     * @param bufferBuilder the buffer builder in use
+     * @param arr the array to conver tthe data type for
+     */
     public static void addTypeTypeRelativeToNDArray(FlatBufferBuilder bufferBuilder,INDArray arr) {
         switch(arr.data().dataType()) {
             case LONG:
@@ -94,6 +110,12 @@ public class ArrowSerde {
         }
     }
 
+    /**
+     * Create the dimensions for the flatbuffer builder
+     * @param bufferBuilder the buffer builder to use
+     * @param arr the input array
+     * @return
+     */
     public static int createDims(FlatBufferBuilder bufferBuilder,INDArray arr) {
         int[] tensorDimOffsets = new int[arr.rank()];
         int[] nameOffset = new int[arr.rank()];
@@ -106,32 +128,13 @@ public class ArrowSerde {
     }
 
 
-    public static int createTypeRelativeToNDArray(FlatBufferBuilder bufferBuilder,INDArray arr) {
-        int ret;
-        switch (arr.data().dataType()) {
-            case FLOAT:
-                ret = FloatingPoint.createFloatingPoint(bufferBuilder, Precision.SINGLE);
-                break;
-            case DOUBLE:
-                ret = FloatingPoint.createFloatingPoint(bufferBuilder, Precision.DOUBLE);
-                break;
-            case HALF:
-                ret = FloatingPoint.createFloatingPoint(bufferBuilder,Precision.HALF);
-                break;
-            case INT:
-                ret = Int.createInt(bufferBuilder,32,true);
-                break;
-            case LONG:
-                ret = Int.createInt(bufferBuilder,64,true);
-                break;
-            default:
-                throw new IllegalArgumentException("Illegal type " + arr.data().dataType());
-        }
-
-        return ret;
-    }
-
-
+    /**
+     * Get the strides of this {@link INDArray}
+     * multiplieed by  the element size.
+     * This is the {@link Tensor} and numpy format
+     * @param arr the array to convert
+     * @return
+     */
     public static long[] getArrowStrides(INDArray arr) {
         long[] ret = new long[arr.rank()];
         for(int i = 0; i < arr.rank(); i++) {
@@ -141,23 +144,15 @@ public class ArrowSerde {
         return ret;
     }
 
-    public static int[] getNd4jStrides(long[] arrowStrides,int elementSize) {
-        int[] ret = new int[arrowStrides.length];
-        for(int i = 0; i < arrowStrides.length; i++) {
-            ret[i] = (int) arrowStrides[i] / elementSize;
-        }
 
-        return ret;
-    }
-
-    public static byte tensorTypeFrom(INDArray arr) {
-        if(arr.data().dataType() == DataBuffer.Type.FLOAT || arr.data().dataType() == DataBuffer.Type.DOUBLE)
-            return Type.Decimal;
-        else if(arr.data().dataType() == DataBuffer.Type.INT || arr.data().dataType() == DataBuffer.Type.LONG)
-            return Type.Int;
-        throw new IllegalArgumentException("Illegal data type " + arr.data().dataType());
-    }
-
+    /**
+     * Create thee databuffer type frm the given type,
+     * relative to the bytes in arrow in class:
+     * {@link Type}
+     * @param type the type to create the nd4j {@link DataBuffer.Type} from
+     * @param elementSize the element size
+     * @return the data buffer type
+     */
     public static DataBuffer.Type typeFromTensorType(byte type,int elementSize) {
         if(type == Type.Decimal || type == Type.FloatingPoint) {
             if(elementSize == 4) {
