@@ -6,8 +6,8 @@ import lombok.val;
 import org.nd4j.autodiff.samediff.SDVariable;
 import org.nd4j.autodiff.samediff.SameDiff;
 import org.nd4j.linalg.api.blas.params.MMulTranspose;
-import org.nd4j.linalg.api.ops.impl.accum.Max;
 import org.nd4j.linalg.api.ops.impl.accum.*;
+import org.nd4j.linalg.api.ops.impl.accum.Max;
 import org.nd4j.linalg.api.ops.impl.accum.Min;
 import org.nd4j.linalg.api.ops.impl.accum.distances.*;
 import org.nd4j.linalg.api.ops.impl.broadcast.BiasAdd;
@@ -17,6 +17,10 @@ import org.nd4j.linalg.api.ops.impl.layers.convolution.*;
 import org.nd4j.linalg.api.ops.impl.layers.convolution.config.*;
 import org.nd4j.linalg.api.ops.impl.scalar.*;
 import org.nd4j.linalg.api.ops.impl.scalar.comparison.*;
+import org.nd4j.linalg.api.ops.impl.scatter.ScatterAdd;
+import org.nd4j.linalg.api.ops.impl.scatter.ScatterDiv;
+import org.nd4j.linalg.api.ops.impl.scatter.ScatterMul;
+import org.nd4j.linalg.api.ops.impl.scatter.ScatterSub;
 import org.nd4j.linalg.api.ops.impl.shape.*;
 import org.nd4j.linalg.api.ops.impl.shape.Stack;
 import org.nd4j.linalg.api.ops.impl.transforms.*;
@@ -120,6 +124,23 @@ public class DifferentialFunctionFactory   {
     public SDVariable onesLike(String name, SDVariable input){
         validateDifferentialFunctionsameDiff(input);
         return new OnesLike(name, sameDiff(),input).outputVariables()[0];
+    }
+
+    /**
+     * Local response normalization operation.
+     *
+     * @param inputs       the inputs to lrn
+     * @param lrnConfig the configuration
+     * @return
+     */
+    public SDVariable localResponseNormalization(SDVariable inputs, LocalResponseNormalizationConfig lrnConfig) {
+        LocalResponseNormalization lrn = LocalResponseNormalization.builder()
+                .inputFunctions(new SDVariable[] {inputs})
+                .sameDiff(sameDiff())
+                .config(lrnConfig)
+                .build();
+
+        return lrn.outputVariables()[0];
     }
 
     /**
@@ -321,6 +342,13 @@ public class DifferentialFunctionFactory   {
         return outputVars[0];
     }
 
+    public SDVariable[] moments(SDVariable input, int... axes) {
+        return new Moments(sameDiff(), input, axes).outputVariables();
+    }
+
+    public SDVariable[] normalizeMoments(SDVariable counts, SDVariable means, SDVariable variances, double shift) {
+        return new NormalizeMoments(sameDiff(), counts, means, variances, shift).outputVariables();
+    }
 
 
     public SDVariable tile(SDVariable iX, int[] repeat) {
@@ -782,6 +810,14 @@ public class DifferentialFunctionFactory   {
         return new Broadcast(sameDiff(),iX,shape).outputVariables()[0];
     }
 
+    public SDVariable onehot(SDVariable indices, int depth, int axis, double on, double off) {
+        return new OneHot(sameDiff(), indices, depth, axis, on, off).outputVariables()[0];
+    }
+
+    public SDVariable onehot(SDVariable indices, int depth) {
+        return new OneHot(sameDiff(), indices, depth).outputVariables()[0];
+    }
+
 
     public SDVariable repeat(SDVariable iX, int axis) {
         return new Repeat(sameDiff(), new SDVariable[]{iX},axis).outputVariables()[0];
@@ -848,6 +884,14 @@ public class DifferentialFunctionFactory   {
 
     public SDVariable reverse(SDVariable x, int... dimensions){
         return new Reverse(sameDiff(),x, dimensions).outputVariables()[0];
+    }
+
+    public SDVariable reverse_sequence(SDVariable x, SDVariable seq_lengths, int seq_dim, int batch_dim) {
+        return new ReverseSequence(sameDiff(), x, seq_lengths, seq_dim, batch_dim).outputVariables()[0];
+    }
+
+    public SDVariable reverse_sequence(SDVariable x, SDVariable seq_lengths) {
+        return new ReverseSequence(sameDiff(), x, seq_lengths).outputVariables()[0];
     }
 
     public SDVariable rollAxis(SDVariable iX, int axis) {
@@ -1474,6 +1518,21 @@ public class DifferentialFunctionFactory   {
                 newAxisMask, shrinkAxisMask).outputVariables()[0];
     }
 
+    public SDVariable scatterAdd(SDVariable ref, SDVariable indices, SDVariable updates) {
+        return new ScatterAdd(sameDiff(), ref, indices, updates).outputVariables()[0];
+    }
+
+    public SDVariable scatterSub(SDVariable ref, SDVariable indices, SDVariable updates) {
+        return new ScatterSub(sameDiff(), ref, indices, updates).outputVariables()[0];
+    }
+
+    public SDVariable scatterMul(SDVariable ref, SDVariable indices, SDVariable updates) {
+        return new ScatterMul(sameDiff(), ref, indices, updates).outputVariables()[0];
+    }
+
+    public SDVariable scatterDiv(SDVariable ref, SDVariable indices, SDVariable updates) {
+        return new ScatterDiv(sameDiff(), ref, indices, updates).outputVariables()[0];
+    }
 
     /**
      *
