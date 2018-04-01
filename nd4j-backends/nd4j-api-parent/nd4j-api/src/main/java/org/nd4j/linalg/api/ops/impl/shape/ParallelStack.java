@@ -12,6 +12,7 @@ import org.tensorflow.framework.AttrValue;
 import org.tensorflow.framework.GraphDef;
 import org.tensorflow.framework.NodeDef;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,8 +69,9 @@ public class ParallelStack extends DynamicCustomOp {
     @Override
     public List<SDVariable> doDiff(List<SDVariable> f1) {
         SDVariable[] values = f1.toArray(new SDVariable[f1.size()]);
-        return f().parallel_stack(values);
-
+        List<SDVariable> ret = new ArrayList<SDVariable>();
+        ret.add(f().parallel_stack(values));
+        return ret;
     }
 
 }
