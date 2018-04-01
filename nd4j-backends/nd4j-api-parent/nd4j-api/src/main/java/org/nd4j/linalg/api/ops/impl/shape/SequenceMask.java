@@ -45,8 +45,15 @@ public class SequenceMask extends DynamicCustomOp {
         }
     }
 
+
     @Override
     public void initFromTensorFlow(NodeDef nodeDef, SameDiff initWith, Map<String, AttrValue> attributesForNode, GraphDef graph) {
+        val targetNode = TFGraphMapper.getInstance().getNodeWithNameFromGraph(graph, nodeDef.getInput(1));
+        val maxlen = TFGraphMapper.getInstance().getNDArrayFromTensor("value", targetNode, graph);
+        if (maxlen == null){
+            // No 2nd input
+            this.maxLen = 0;
+        }
         TFGraphMapper.getInstance().initFunctionFromProperties(nodeDef.getOp(), this, attributesForNode, nodeDef, graph);
         addArguments();
     }
@@ -77,7 +84,7 @@ public class SequenceMask extends DynamicCustomOp {
 
 
     @Override
-    public String[] tensorflowNames() {
-        return new String[]{"SequenceMask"};
+    public String tensorflowName() {
+        return "SequenceMask";
     }
 }
