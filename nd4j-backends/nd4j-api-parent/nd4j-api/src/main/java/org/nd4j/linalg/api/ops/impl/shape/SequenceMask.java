@@ -23,7 +23,8 @@ import java.util.Map;
 @NoArgsConstructor
 public class SequenceMask extends DynamicCustomOp {
 
-    private int maxLen = -1;  // -1 indicates dynamic maxlen
+    private int maxLen;
+    private boolean is_static_maxlen = false;
     public SequenceMask(SameDiff sameDiff, SDVariable input, SDVariable maxLen) {
         super(null, sameDiff, new SDVariable[] {input, maxLen}, false);
     }
@@ -31,7 +32,8 @@ public class SequenceMask extends DynamicCustomOp {
     public SequenceMask(SameDiff sameDiff, SDVariable input, int maxLen) {
         super(null, sameDiff, new SDVariable[] {input}, false);
         this.maxLen = maxLen;
-        addArguments();
+        this.is_static_maxlen = true;
+        addIArgument(maxLen);
     }
 
     public SequenceMask(SameDiff sameDiff, SDVariable input) {
@@ -39,29 +41,24 @@ public class SequenceMask extends DynamicCustomOp {
     }
     
 
-    private void addArguments() {
-        if (maxLen >= 0) {
-            addIArgument(maxLen);
-        }
-    }
-
-
     @Override
     public void initFromTensorFlow(NodeDef nodeDef, SameDiff initWith, Map<String, AttrValue> attributesForNode, GraphDef graph) {
         val targetNode = TFGraphMapper.getInstance().getNodeWithNameFromGraph(graph, nodeDef.getInput(1));
         val maxlen = TFGraphMapper.getInstance().getNDArrayFromTensor("value", targetNode, graph);
         if (maxlen == null){
             // No 2nd input
-            this.maxLen = 0;
+            this.is_static_maxlen = true;
         }
         TFGraphMapper.getInstance().initFunctionFromProperties(nodeDef.getOp(), this, attributesForNode, nodeDef, graph);
-        addArguments();
+        if (is_static_maxlen) {
+            addIArgument(maxLen);
+        }
     }
     @Override
     public Map<String, Map<String, PropertyMapping>> mappingsForFunction() {
         Map<String, Map<String, PropertyMapping>> ret = new HashMap<>();
         Map<String, PropertyMapping> attrs = new LinkedHashMap<>();
-        if (maxLen >= 0) {
+        if (is_static_maxlen) {
             val maxLen = PropertyMapping.builder()
                     .propertyNames(new String[]{"maxLen"})
                     .tfAttrName("maxlen")
