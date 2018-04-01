@@ -51,7 +51,7 @@ public class SequenceMask extends DynamicCustomOp {
         }
         TFGraphMapper.getInstance().initFunctionFromProperties(nodeDef.getOp(), this, attributesForNode, nodeDef, graph);
         if (is_static_maxlen) {
-            addIArgument(maxLen);
+            addIArgument(this.maxLen);
         }
     }
     @Override
