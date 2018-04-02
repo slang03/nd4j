@@ -64,14 +64,6 @@ public class ParallelConcat extends DynamicCustomOp {
         ret.put(tensorflowName(), map);
         return ret;
     }
-
-    @Override
-    public List<SDVariable> doDiff(List<SDVariable> f1) {
-        SDVariable[] values = f1.toArray(new SDVariable[f1.size()]);
-        List<SDVariable> ret = new ArrayList<SDVariable>();
-        SDVariable out = new ParallelConcat(f().sameDiff(), values).outputVariables()[0];
-        ret.add(out);
-        return ret;
-    }
+    
 
 }
