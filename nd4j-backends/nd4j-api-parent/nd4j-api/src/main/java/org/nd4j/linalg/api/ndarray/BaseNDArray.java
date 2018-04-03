@@ -3811,10 +3811,10 @@ public abstract class BaseNDArray implements INDArray, Iterable {
             if (slice == 0 || isVector()) {
                 return createScalarForIndex(slice, true);
             }
-
             else {
                 throw new IllegalArgumentException("Can't slice a 0-d NDArray");
             }
+
         }
 
 
