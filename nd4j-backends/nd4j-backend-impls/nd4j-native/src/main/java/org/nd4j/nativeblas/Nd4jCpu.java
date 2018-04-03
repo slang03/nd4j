@@ -282,6 +282,7 @@ public class Nd4jCpu extends org.nd4j.nativeblas.Nd4jCpuPresets {
         float_gruCell.class,
         float_lstm.class,
         float_gru.class,
+        float_static_rnn.class,
         float_permute.class,
         float_reshapeas.class,
         float_transpose.class,
@@ -323,7 +324,8 @@ public class Nd4jCpu extends org.nd4j.nativeblas.Nd4jCpuPresets {
         float_random_shuffle.class,
         float_clip_by_global_norm.class,
         float_tri.class,
-        float_triu.class,};
+        float_triu.class,
+        float_triu_bp.class,};
     Class[] halfOps = {
         half_testreduction.class,
         half_noop.class,
@@ -597,6 +599,7 @@ public class Nd4jCpu extends org.nd4j.nativeblas.Nd4jCpuPresets {
         half_gruCell.class,
         half_lstm.class,
         half_gru.class,
+        half_static_rnn.class,
         half_permute.class,
         half_reshapeas.class,
         half_transpose.class,
@@ -638,7 +641,8 @@ public class Nd4jCpu extends org.nd4j.nativeblas.Nd4jCpuPresets {
         half_random_shuffle.class,
         half_clip_by_global_norm.class,
         half_tri.class,
-        half_triu.class,};
+        half_triu.class,
+        half_triu_bp.class,};
     Class[] doubleOps = {
         double_testreduction.class,
         double_noop.class,
@@ -912,6 +916,7 @@ public class Nd4jCpu extends org.nd4j.nativeblas.Nd4jCpuPresets {
         double_gruCell.class,
         double_lstm.class,
         double_gru.class,
+        double_static_rnn.class,
         double_permute.class,
         double_reshapeas.class,
         double_transpose.class,
@@ -953,7 +958,57 @@ public class Nd4jCpu extends org.nd4j.nativeblas.Nd4jCpuPresets {
         double_random_shuffle.class,
         double_clip_by_global_norm.class,
         double_tri.class,
-        double_triu.class,};
+        double_triu.class,
+        double_triu_bp.class,};
+
+@Name("std::vector<std::vector<int> >") public static class IntVectorVector extends Pointer {
+    static { Loader.load(); }
+    /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
+    public IntVectorVector(Pointer p) { super(p); }
+    public IntVectorVector(int[] ... array) { this(array.length); put(array); }
+    public IntVectorVector()       { allocate();  }
+    public IntVectorVector(long n) { allocate(n); }
+    private native void allocate();
+    private native void allocate(@Cast("size_t") long n);
+    public native @Name("operator=") @ByRef IntVectorVector put(@ByRef IntVectorVector x);
+
+    public boolean empty() { return size() == 0; }
+    public native long size();
+    public void clear() { resize(0); }
+    public native void resize(@Cast("size_t") long n);
+    public boolean empty(@Cast("size_t") long i) { return size(i) == 0; }
+    public native @Index(function = "at") long size(@Cast("size_t") long i);
+    public void clear(@Cast("size_t") long i) { resize(i, 0); }
+    public native @Index(function = "at") void resize(@Cast("size_t") long i, @Cast("size_t") long n);
+
+    @Index(function = "at") public native int get(@Cast("size_t") long i, @Cast("size_t") long j);
+    public native IntVectorVector put(@Cast("size_t") long i, @Cast("size_t") long j, int value);
+
+    public int[][] get() {
+        int[][] array = new int[size() < Integer.MAX_VALUE ? (int)size() : Integer.MAX_VALUE][];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = new int[size(i) < Integer.MAX_VALUE ? (int)size(i) : Integer.MAX_VALUE];
+            for (int j = 0; j < array[i].length; j++) {
+                array[i][j] = get(i, j);
+            }
+        }
+        return array;
+    }
+    @Override public String toString() {
+        return java.util.Arrays.deepToString(get());
+    }
+
+    public IntVectorVector put(int[] ... array) {
+        if (size() != array.length) { resize(array.length); }
+        for (int i = 0; i < array.length; i++) {
+            if (size(i) != array[i].length) { resize(i, array[i].length); }
+            for (int j = 0; j < array[i].length; j++) {
+                put(i, j, array[i][j]);
+            }
+        }
+        return this;
+    }
+}
 
 @Name("std::vector<nd4j::NDArray<float>*>") public static class FloatNDArrayVector extends Pointer {
     static { Loader.load(); }
@@ -6711,6 +6766,10 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         public FloatNDArray(@Const @ByRef FloatNDArray other) { super((Pointer)null); allocate(other); }
         private native void allocate(@Const @ByRef FloatNDArray other);
 
+        /**
+        *  move constructor
+        */
+
 // #ifndef __JAVACPP_HACK__
 // #endif
 
@@ -6793,9 +6852,13 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         private native void allocate(float[] buffer, char order, @StdVector int[] shape);
 
         /**
-        *  assignment operator
+        *  copy assignment operator
         */
         public native @ByRef @Name("operator =") FloatNDArray put(@Const @ByRef FloatNDArray other);
+
+        /**
+        *  move assignment operator
+        */
 
         /**
         *  assignment operator, assigns the same scalar to all array elements 
@@ -7358,8 +7421,10 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
 
         /**
         *  operator returns sub-array with buffer pointing at this->_buffer with offset defined by given intervals
-        *  idx - intervals of indexes which define the sub-arrays  to point on
+        *  idx - intervals of indexes which define the sub-arrays to point on
+        *  keepUnitiesInShape - if false then eliminate unities from resulting array shape, for example {1,a,1,b} -> {a,b}
         */
+        public native @ByVal @Name("operator ()") FloatNDArray apply(@Const @ByRef Intervals idx, @Cast("bool") boolean keepUnitiesInShape/*=false*/);
         public native @ByVal @Name("operator ()") FloatNDArray apply(@Const @ByRef Intervals idx);
 
         /**
@@ -7797,6 +7862,10 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         public HalfNDArray(@Const @ByRef HalfNDArray other) { super((Pointer)null); allocate(other); }
         private native void allocate(@Const @ByRef HalfNDArray other);
 
+        /**
+        *  move constructor
+        */
+
 // #ifndef __JAVACPP_HACK__
 // #endif
 
@@ -7879,9 +7948,13 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         private native void allocate(@Cast("float16*") short[] buffer, char order, @StdVector int[] shape);
 
         /**
-        *  assignment operator
+        *  copy assignment operator
         */
         public native @ByRef @Name("operator =") HalfNDArray put(@Const @ByRef HalfNDArray other);
+
+        /**
+        *  move assignment operator
+        */
 
         /**
         *  assignment operator, assigns the same scalar to all array elements 
@@ -8444,8 +8517,10 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
 
         /**
         *  operator returns sub-array with buffer pointing at this->_buffer with offset defined by given intervals
-        *  idx - intervals of indexes which define the sub-arrays  to point on
+        *  idx - intervals of indexes which define the sub-arrays to point on
+        *  keepUnitiesInShape - if false then eliminate unities from resulting array shape, for example {1,a,1,b} -> {a,b}
         */
+        public native @ByVal @Name("operator ()") HalfNDArray apply(@Const @ByRef Intervals idx, @Cast("bool") boolean keepUnitiesInShape/*=false*/);
         public native @ByVal @Name("operator ()") HalfNDArray apply(@Const @ByRef Intervals idx);
 
         /**
@@ -8883,6 +8958,10 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         public DoubleNDArray(@Const @ByRef DoubleNDArray other) { super((Pointer)null); allocate(other); }
         private native void allocate(@Const @ByRef DoubleNDArray other);
 
+        /**
+        *  move constructor
+        */
+
 // #ifndef __JAVACPP_HACK__
 // #endif
 
@@ -8965,9 +9044,13 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         private native void allocate(double[] buffer, char order, @StdVector int[] shape);
 
         /**
-        *  assignment operator
+        *  copy assignment operator
         */
         public native @ByRef @Name("operator =") DoubleNDArray put(@Const @ByRef DoubleNDArray other);
+
+        /**
+        *  move assignment operator
+        */
 
         /**
         *  assignment operator, assigns the same scalar to all array elements 
@@ -9530,8 +9613,10 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
 
         /**
         *  operator returns sub-array with buffer pointing at this->_buffer with offset defined by given intervals
-        *  idx - intervals of indexes which define the sub-arrays  to point on
+        *  idx - intervals of indexes which define the sub-arrays to point on
+        *  keepUnitiesInShape - if false then eliminate unities from resulting array shape, for example {1,a,1,b} -> {a,b}
         */
+        public native @ByVal @Name("operator ()") DoubleNDArray apply(@Const @ByRef Intervals idx, @Cast("bool") boolean keepUnitiesInShape/*=false*/);
         public native @ByVal @Name("operator ()") DoubleNDArray apply(@Const @ByRef Intervals idx);
 
         /**
@@ -10937,7 +11022,7 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
 // #include <initializer_list>
 // #include <dll.h>
 
-    @Namespace("nd4j") public static class Intervals extends Pointer {
+    @Namespace("nd4j") @NoOffset public static class Intervals extends Pointer {
         static { Loader.load(); }
         /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
         public Intervals(Pointer p) { super(p); }
@@ -10954,6 +11039,8 @@ public static class NativeOps extends org.nd4j.nativeblas.NativeOps {
         private native void allocate();
         
         // constructor
+        public Intervals(@Const @ByRef IntVectorVector content ) { super((Pointer)null); allocate(content); }
+        private native void allocate(@Const @ByRef IntVectorVector content );
         
         // accessing operator
         public native @StdVector @Name("operator []") IntPointer get(int i);
@@ -25588,9 +25675,69 @@ public static final int TAD_THRESHOLD = TAD_THRESHOLD();
                                                                                     public native ShapeList calculateOutputShape(ShapeList inputShape, @ByRef DoubleContext block);
                                                                                 }
 
-
+           //////////////////////////////////////////////////////////////////////////
+    /**
+       * Implementation of operation "static RNN time sequences" with peep hole connections:
+       *
+       * Input arrays: 
+       *    0: input with shape [time x batchSize x inSize], time - number of time steps, batchSize - batch size, inSize - number of features       
+       *    1: input-to-hidden  weights, [inSize   x numUnits] 
+       *    2: hidden-to-hidden weights, [numUnits x numUnits] 
+       *    3: biases, [2*numUnits] 
+       *    4: (optional) initial cell output [batchSize x numUnits], that is at time step = 0       
+       *    5: (optional) vector with shape [batchSize] containing integer values within [0,time), each element of this vector set max time step per each input in batch, this means there are no calculations for time >= maxTimeStep       
+       *  
+       * Output arrays: 
+       *    0: cell outputs [time x batchSize x numUnits]
+       *    1: cell final non-zero output [batchSize x numUnits]
+       */                  
+        @Name("nd4j::ops::static_rnn<float>") public static class float_static_rnn extends FloatDeclarableCustomOp {
+            static { Loader.load(); }
+            /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
+            public float_static_rnn(Pointer p) { super(p); }
+            /** Native array allocator. Access with {@link Pointer#position(long)}. */
+            public float_static_rnn(long size) { super((Pointer)null); allocateArray(size); }
+            private native void allocateArray(long size);
+            @Override public float_static_rnn position(long position) {
+                return (float_static_rnn)super.position(position);
+            }
+        
+                                                                                    public float_static_rnn() { super((Pointer)null); allocate(); }
+                                                                                    private native void allocate();
+                                                                                    public native ShapeList calculateOutputShape(ShapeList inputShape, @ByRef FloatContext block);
+                                                                                }                  
+        @Name("nd4j::ops::static_rnn<float16>") public static class half_static_rnn extends HalfDeclarableCustomOp {
+            static { Loader.load(); }
+            /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
+            public half_static_rnn(Pointer p) { super(p); }
+            /** Native array allocator. Access with {@link Pointer#position(long)}. */
+            public half_static_rnn(long size) { super((Pointer)null); allocateArray(size); }
+            private native void allocateArray(long size);
+            @Override public half_static_rnn position(long position) {
+                return (half_static_rnn)super.position(position);
+            }
+        
+                                                                                    public half_static_rnn() { super((Pointer)null); allocate(); }
+                                                                                    private native void allocate();
+                                                                                    public native ShapeList calculateOutputShape(ShapeList inputShape, @ByRef HalfContext block);
+                                                                                }                  
+        @Name("nd4j::ops::static_rnn<double>") public static class double_static_rnn extends DoubleDeclarableCustomOp {
+            static { Loader.load(); }
+            /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
+            public double_static_rnn(Pointer p) { super(p); }
+            /** Native array allocator. Access with {@link Pointer#position(long)}. */
+            public double_static_rnn(long size) { super((Pointer)null); allocateArray(size); }
+            private native void allocateArray(long size);
+            @Override public double_static_rnn position(long position) {
+                return (double_static_rnn)super.position(position);
+            }
+        
+                                                                                    public double_static_rnn() { super((Pointer)null); allocate(); }
+                                                                                    private native void allocate();
+                                                                                    public native ShapeList calculateOutputShape(ShapeList inputShape, @ByRef DoubleContext block);
+                                                                                }
     
-
+ 
 
 // Parsed from ops/declarable/headers/transforms.h
 
@@ -26924,6 +27071,54 @@ public static final int TAD_THRESHOLD = TAD_THRESHOLD();
             }
         
                                                                                     public double_triu() { super((Pointer)null); allocate(); }
+                                                                                    private native void allocate();
+                                                                                    public native ShapeList calculateOutputShape(ShapeList inputShape, @ByRef DoubleContext block);
+                                                                                }
+
+        @Name("nd4j::ops::triu_bp<float>") public static class float_triu_bp extends FloatDeclarableCustomOp {
+            static { Loader.load(); }
+            /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
+            public float_triu_bp(Pointer p) { super(p); }
+            /** Native array allocator. Access with {@link Pointer#position(long)}. */
+            public float_triu_bp(long size) { super((Pointer)null); allocateArray(size); }
+            private native void allocateArray(long size);
+            @Override public float_triu_bp position(long position) {
+                return (float_triu_bp)super.position(position);
+            }
+        
+                                                                                    public float_triu_bp() { super((Pointer)null); allocate(); }
+                                                                                    private native void allocate();
+                                                                                    public native ShapeList calculateOutputShape(ShapeList inputShape, @ByRef FloatContext block);
+                                                                                }
+
+        @Name("nd4j::ops::triu_bp<float16>") public static class half_triu_bp extends HalfDeclarableCustomOp {
+            static { Loader.load(); }
+            /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
+            public half_triu_bp(Pointer p) { super(p); }
+            /** Native array allocator. Access with {@link Pointer#position(long)}. */
+            public half_triu_bp(long size) { super((Pointer)null); allocateArray(size); }
+            private native void allocateArray(long size);
+            @Override public half_triu_bp position(long position) {
+                return (half_triu_bp)super.position(position);
+            }
+        
+                                                                                    public half_triu_bp() { super((Pointer)null); allocate(); }
+                                                                                    private native void allocate();
+                                                                                    public native ShapeList calculateOutputShape(ShapeList inputShape, @ByRef HalfContext block);
+                                                                                }
+
+        @Name("nd4j::ops::triu_bp<double>") public static class double_triu_bp extends DoubleDeclarableCustomOp {
+            static { Loader.load(); }
+            /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
+            public double_triu_bp(Pointer p) { super(p); }
+            /** Native array allocator. Access with {@link Pointer#position(long)}. */
+            public double_triu_bp(long size) { super((Pointer)null); allocateArray(size); }
+            private native void allocateArray(long size);
+            @Override public double_triu_bp position(long position) {
+                return (double_triu_bp)super.position(position);
+            }
+        
+                                                                                    public double_triu_bp() { super((Pointer)null); allocate(); }
                                                                                     private native void allocate();
                                                                                     public native ShapeList calculateOutputShape(ShapeList inputShape, @ByRef DoubleContext block);
                                                                                 }
