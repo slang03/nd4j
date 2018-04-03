@@ -269,12 +269,12 @@ public class LoneTest extends BaseNd4jTest {
                 Pair<INDArray,String> currentPair = iter.next();
                 INDArray origArrayF = currentPair.getFirst();
                 INDArray sameArrayC = origArrayF.dup('c');
-                log.info("\nLooping through slices for shape "+ currentPair.getSecond());
-                log.info("\nOriginal array:\n"+origArrayF);
+              /*  log.info("\nLooping through slices for shape "+ currentPair.getSecond());
+                log.info("\nOriginal array:\n"+origArrayF);*/
                 INDArray viewF = origArrayF.slice(0);
                 INDArray viewC = sameArrayC.slice(0);
-                log.info("\nSlice 0, C order:\n"+viewC.toString());
-                log.info("\nSlice 0, F order:\n"+viewF.toString());
+               /* log.info("\nSlice 0, C order:\n"+ viewC.toString());
+                log.info("\nSlice 0, F order:\n" + viewF.toString());*/
                 for (int i = 0; i < viewF.slices(); i++) {
                     assertEquals(viewF.slice(i),viewC.slice(i));
                     log.info("\nC order slice " + i + ", element 0 :" + viewC.slice(i).getDouble(0)); //C order is fine
