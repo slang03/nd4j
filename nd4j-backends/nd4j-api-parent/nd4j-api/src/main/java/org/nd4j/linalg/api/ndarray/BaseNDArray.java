@@ -5799,11 +5799,7 @@ public abstract class BaseNDArray implements INDArray, Iterable {
         }
 
         MemoryWorkspace current = Nd4j.getMemoryManager().getCurrentWorkspace();
-
         MemoryWorkspace target = Nd4j.getWorkspaceManager().getWorkspaceForCurrentThread(id);
-
-        if (current == target)
-            return this;
 
         if (this.data.getParentWorkspace() == target)
             return this;
