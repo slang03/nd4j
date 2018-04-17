@@ -1,4 +1,6 @@
 #!groovy
+@Library('skymind@bugfix/change-platform-object-structure') _
+
 
 /*
     To redefine some job/run parameters,
