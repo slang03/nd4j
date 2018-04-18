@@ -1,7 +1,10 @@
 package org.nd4j.linalg.workspace;
 
 import lombok.NonNull;
+import lombok.val;
 import org.nd4j.linalg.api.memory.MemoryWorkspace;
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.exception.ND4JIllegalStateException;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.memory.abstracts.Nd4jWorkspace;
 
@@ -63,4 +66,42 @@ public class WorkspaceUtils {
         }
     }
 
+    /**
+     * Assert that the specified array is valid, in terms of workspaces: i.e., if it is attached (and not in a circular
+     * workspace), assert that the workspace is open, and that the data is not from an old generation.
+     * @param array Array to check
+     * @param msg   Message (prefix) to include in the exception, if required. May be null
+     */
+    public static void assertValidArray(INDArray array, String msg){
+        if(array == null || !array.isAttached()){
+            return;
+        }
+
+        val ws = array.data().getParentWorkspace();
+
+        if (ws.getWorkspaceType() != MemoryWorkspace.Type.CIRCULAR) {
+
+            if (!ws.isScopeActive()) {
+                throw new ND4JWorkspaceException( (msg == null ? "" : msg + ": ") + "Array uses leaked workspace pointer " +
+                        "from workspace " + ws.getId() + "\nAll open workspaces: " + allOpenWorkspaces());
+            }
+
+            if (ws.getGenerationId() != array.data().getGenerationId()) {
+                throw new ND4JWorkspaceException( (msg == null ? "" : msg + ": ") + "Array outdated workspace pointer " +
+                        "from workspace " + ws.getId() + " (array generation " + array.data().getGenerationId() +
+                        ", current workspace generation " + ws.getGenerationId()  + ")\nAll open workspaces: " + allOpenWorkspaces());
+            }
+        }
+    }
+
+    private static List<String> allOpenWorkspaces(){
+        List<MemoryWorkspace> l = Nd4j.getWorkspaceManager().getAllWorkspacesForCurrentThread();
+        List<String> workspaces = new ArrayList<>(l.size());
+        for( MemoryWorkspace ws : l){
+            if(ws.isScopeActive()) {
+                workspaces.add(ws.getId());
+            }
+        }
+        return workspaces;
+    }
 }
