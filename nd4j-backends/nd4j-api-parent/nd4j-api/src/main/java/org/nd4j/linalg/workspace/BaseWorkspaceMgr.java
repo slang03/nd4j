@@ -91,6 +91,7 @@ public abstract class BaseWorkspaceMgr<T extends Enum<T>> implements WorkspaceMg
     @Override
     public MemoryWorkspace notifyScopeBorrowed(@NonNull T arrayType) {
         validateConfig(arrayType);
+        enforceExistsAndActive(arrayType);
 
         if(scopeOutOfWs.contains(arrayType)){
             return Nd4j.getWorkspaceManager().scopeOutOfWorkspaces();
