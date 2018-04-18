@@ -130,6 +130,14 @@ public abstract class BaseWorkspaceMgr<T extends Enum<T>> implements WorkspaceMg
     }
 
     @Override
+    public void assertOpen(T arrayType, String msg) throws ND4JWorkspaceException {
+        if(!scopeOutOfWs.contains(arrayType) && !isWorkspaceOpen(arrayType)){
+            throw new ND4JWorkspaceException("Assertion failed: expected workspace for array type " + arrayType
+                    + " to be open: " + msg);
+        }
+    }
+
+    @Override
     public void assertNotOpen(@NonNull T arrayType, @NonNull String msg) {
         if(!scopeOutOfWs.contains(arrayType) && isWorkspaceOpen(arrayType)){
             throw new ND4JWorkspaceException("Assertion failed: expected workspace for array type " + arrayType

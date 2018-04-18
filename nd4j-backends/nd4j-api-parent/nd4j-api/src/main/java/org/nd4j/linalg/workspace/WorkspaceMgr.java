@@ -108,6 +108,15 @@ public interface WorkspaceMgr<T extends Enum<T>> {
     boolean isWorkspaceOpen(T arrayType);
 
     /**
+     * Assert thath the workspace for the specified array type is open.
+     * For array types that are set to scoped out, this will be treated as a no-op
+     * @param arrayType Array type to check
+     * @param msg       May be null. If non-null: include this in the exception
+     * @throws ND4JWorkspaceException If the specified workspace is not open
+     */
+    void assertOpen(T arrayType, String msg) throws ND4JWorkspaceException;
+
+    /**
      * Assert thath the workspace for the specified array type is not open.
      * For array types that are set to scoped out, this will be treated as a no-op
      * @param arrayType Array type to check
