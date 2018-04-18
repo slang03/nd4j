@@ -62,6 +62,11 @@ public abstract class BaseWorkspaceMgr<T extends Enum<T>> implements WorkspaceMg
     }
 
     @Override
+    public boolean hasConfiguration(@NonNull T arrayType){
+        return scopeOutOfWs.contains(arrayType) || workspaceNames.containsKey(arrayType);
+    }
+
+    @Override
     public MemoryWorkspace notifyScopeEntered(@NonNull T arrayType) {
         validateConfig(arrayType);
 

@@ -68,6 +68,15 @@ public interface WorkspaceMgr<T extends Enum<T>> {
     boolean isScopedOut(T arrayType);
 
     /**
+     * Has the specified array type been configured in this workspace manager?
+     *
+     * @param arrayType Array type to check
+     * @return True if the array type has been configured (either scoped out, or a workspace has been set for this
+     *  array type)
+     */
+    boolean hasConfiguration(T arrayType);
+
+    /**
      * @param arrayType Array type to enter the scope for
      * @return Workspace for the specified array type
      */
