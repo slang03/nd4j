@@ -5010,6 +5010,7 @@ public abstract class BaseNDArray implements INDArray, Iterable {
             int idx = 0;
             //number of times to repeat each value
             for(int i = 0; i < ret.length(); i++) {
+
                 ret.putScalar(i,getDouble(idx));
                 if(idx >= length())
                     idx = 0;
