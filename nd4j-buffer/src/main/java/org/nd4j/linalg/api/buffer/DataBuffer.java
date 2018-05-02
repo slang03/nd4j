@@ -385,9 +385,20 @@ public interface DataBuffer extends Serializable {
      * or a reference. The reference is preferred for
      * faster access of data and no copying
      *
-     * @return the buffer as a float
+     * @return the buffer as a int
      */
     int[] asInt();
+
+    /**
+     * Return the buffer as an long  array
+     * Relative to the datatype, this will either be a copy
+     * or a reference. The reference is preferred for
+     * faster access of data and no copying
+     *
+     * @return the buffer as a long
+     */
+    long[] asLong();
+
 
     /**
      * Get element i in the buffer as a double

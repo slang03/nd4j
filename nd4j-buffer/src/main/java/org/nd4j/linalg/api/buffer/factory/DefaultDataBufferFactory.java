@@ -403,6 +403,31 @@ public class DefaultDataBufferFactory implements DataBufferFactory {
     }
 
     @Override
+    public DataBuffer createLong(long[] data) {
+        return createLong(data, true);
+    }
+
+    @Override
+    public DataBuffer createLong(long[] data, boolean copy) {
+        return new LongBuffer(data, copy);
+    }
+
+    @Override
+    public DataBuffer createLong(long length) {
+        return new LongBuffer(length);
+    }
+
+    @Override
+    public DataBuffer createLong(long length, boolean initialize) {
+        return new LongBuffer(length, initialize);
+    }
+
+    @Override
+    public DataBuffer createLong(long length, boolean initialize, MemoryWorkspace workspace) {
+        return new LongBuffer(length, initialize, workspace);
+    }
+
+    @Override
     public DataBuffer createDouble(double[] data, boolean copy) {
         return new DoubleBuffer(data, copy);
     }

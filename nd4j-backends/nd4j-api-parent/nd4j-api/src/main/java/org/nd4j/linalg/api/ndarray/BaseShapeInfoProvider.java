@@ -51,6 +51,45 @@ public abstract class BaseShapeInfoProvider implements ShapeInfoProvider {
         return Pair.create(buffer, buffer.asInt());
     }
 
+
+    /**
+     * This method creates shapeInformation buffer, based on shape being passed in
+     *
+     * @param shape
+     * @return
+     */
+    @Override
+    public Pair<DataBuffer, long[]> createShapeInformation(long[] shape) {
+        char order = Nd4j.order();
+
+        return createShapeInformation(shape, order);
+    }
+
+    /**
+     * This method creates shapeInformation buffer, based on shape & order being passed in
+     *
+     * @param shape
+     * @param order
+     * @return
+     */
+    @Override
+    public Pair<DataBuffer, long[]> createShapeInformation(long[] shape, char order) {
+        long[] stride = Nd4j.getStrides(shape, order);
+
+        // this won't be view, so ews is 1
+        int ews = 1;
+
+        return createShapeInformation(shape, stride, 0, ews, order);
+    }
+
+    @Override
+    public Pair<DataBuffer, long[]> createShapeInformation(long[] shape, long[] stride, long offset, long elementWiseStride, char order) {
+        DataBuffer buffer = Shape.createShapeInformation(shape, stride, offset, elementWiseStride, order);
+        buffer.setConstant(true);
+        return Pair.create(buffer, buffer.asLong());
+    }
+
+
     @Override
     public long getCachedBytes() {
         return bytes.get();

@@ -349,6 +349,22 @@ public abstract class BaseDataBuffer implements DataBuffer {
     /**
      *
      * @param data
+     * @param copy
+     */
+    public BaseDataBuffer(long[] data, boolean copy) {
+        allocationMode = AllocUtil.getAllocationModeFromContext();
+        initTypeAndSize();
+
+        pointer = new LongPointer(data);
+        setIndexer(LongIndexer.create((LongPointer) pointer));
+
+        length = data.length;
+        underlyingLength = data.length;
+    }
+
+    /**
+     *
+     * @param data
      */
     public BaseDataBuffer(double[] data) {
         this(data, true);
@@ -943,6 +959,16 @@ public abstract class BaseDataBuffer implements DataBuffer {
         int[] ret = new int[(int) length];
         for (int i = 0; i < length; i++)
             ret[i] = getInt(i);
+        return ret;
+    }
+
+    @Override
+    public long[] asLong() {
+        if (length >= Integer.MAX_VALUE)
+            throw new IllegalArgumentException("Unable to create array of length " + length);
+        long[] ret = new long[(int) length];
+        for (int i = 0; i < length; i++)
+            ret[i] = getLong(i);
         return ret;
     }
 

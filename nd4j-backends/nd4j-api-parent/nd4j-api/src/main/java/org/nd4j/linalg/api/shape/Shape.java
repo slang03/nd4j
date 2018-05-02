@@ -2333,8 +2333,7 @@ public class Shape {
      * @param order the order for the buffer
      * @return the shape information buffer given the parameters
      */
-    public static DataBuffer createShapeInformation(int[] shape, int[] stride, long offset, int elementWiseStride,
-                                                    char order) {
+    public static DataBuffer createShapeInformation(int[] shape, int[] stride, long offset, int elementWiseStride, char order) {
         if (shape.length != stride.length)
             throw new IllegalStateException("Shape and stride must be the same length");
 
@@ -2354,25 +2353,31 @@ public class Shape {
 
         DataBuffer ret = Nd4j.createBufferDetached(shapeBuffer);
         ret.setConstant(true);
-        /*
-        DataBuffer ret = Nd4j.createBuffer(new int[shapeInfoLength(shape.length)]);
-        ret.setConstant(true);
-        int count = 1;
-        ret.put(0,shape.length);
-        if(shape.length != stride.length)
+
+        return ret;
+    }
+
+    public static DataBuffer createShapeInformation(long[] shape, long[] stride, long offset, long elementWiseStride, char order) {
+        if (shape.length != stride.length)
             throw new IllegalStateException("Shape and stride must be the same length");
-        for (int i = 0; i < shape.length; i++) {
-            ret.put(count++,shape[i]);
-        }
-        for (int i = 0; i < shape.length; i++) {
-            ret.put(count++,stride[i]);
-        }
-        
-        ret.put(count++,offset);
-        ret.put(count++,elementWiseStride);
-        ret.put(count++,order);
-        
-        */
+
+        int rank = shape.length;
+        long shapeBuffer[] = new long[rank * 2 + 4];
+        shapeBuffer[0] = rank;
+        int count = 1;
+        for (int e = 0; e < shape.length; e++)
+            shapeBuffer[count++] = shape[e];
+
+        for (int e = 0; e < stride.length; e++)
+            shapeBuffer[count++] = stride[e];
+
+        shapeBuffer[count++] = (int) offset;
+        shapeBuffer[count++] = elementWiseStride;
+        shapeBuffer[count] = (int) order;
+
+        DataBuffer ret = Nd4j.createBufferDetached(shapeBuffer);
+        ret.setConstant(true);
+
         return ret;
     }
 

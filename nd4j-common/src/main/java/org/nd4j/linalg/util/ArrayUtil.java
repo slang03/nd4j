@@ -1397,10 +1397,39 @@ public class ArrayUtil {
     /**
      * Computes the standard packed array strides for a given shape.
      *
+     * @param shape    the shape of a matrix:
+     * @param startNum the start number for the strides
+     * @return the strides for a matrix of n dimensions
+     */
+    public static long[] calcStridesFortran(long[] shape, int startNum) {
+        if (shape.length == 2 && (shape[0] == 1 || shape[1] == 1)) {
+            long[] ret = new long[2];
+            Arrays.fill(ret, startNum);
+            return ret;
+        }
+
+        int dimensions = shape.length;
+        long[] stride = new long[dimensions];
+        int st = startNum;
+        for (int j = 0; j < stride.length; j++) {
+            stride[j] = st;
+            st *= shape[j];
+        }
+
+        return stride;
+    }
+
+    /**
+     * Computes the standard packed array strides for a given shape.
+     *
      * @param shape the shape of a matrix:
      * @return the strides for a matrix of n dimensions
      */
     public static int[] calcStridesFortran(int[] shape) {
+        return calcStridesFortran(shape, 1);
+    }
+
+    public static long[] calcStridesFortran(long[] shape) {
         return calcStridesFortran(shape, 1);
     }
 
@@ -1429,7 +1458,32 @@ public class ArrayUtil {
             st *= shape[j];
         }
 
+        return stride;
+    }
 
+    /**
+     * Computes the standard packed array strides for a given shape.
+     *
+     * @param shape      the shape of a matrix:
+     * @param startValue the startValue for the strides
+     * @return the strides for a matrix of n dimensions
+     */
+    public static long[] calcStrides(long[] shape, int startValue) {
+        if (shape.length == 2 && (shape[0] == 1 || shape[1] == 1)) {
+            long[] ret = new long[2];
+            Arrays.fill(ret, startValue);
+            return ret;
+        }
+
+
+        int dimensions = shape.length;
+        long[] stride = new long[dimensions];
+
+        int st = startValue;
+        for (int j = dimensions - 1; j >= 0; j--) {
+            stride[j] = st;
+            st *= shape[j];
+        }
 
         return stride;
     }
@@ -1507,6 +1561,10 @@ public class ArrayUtil {
      * @return the strides for a matrix of n dimensions
      */
     public static int[] calcStrides(int[] shape) {
+        return calcStrides(shape, 1);
+    }
+
+    public static long[] calcStrides(long[] shape) {
         return calcStrides(shape, 1);
     }
 

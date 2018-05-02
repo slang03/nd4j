@@ -788,4 +788,32 @@ public class CudaDataBufferFactory implements DataBufferFactory {
     public Class<? extends DataBuffer> doubleBufferClass() {
         return CudaDoubleDataBuffer.class;
     }
+
+
+
+    @Override
+    public DataBuffer createLong(long[] data) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DataBuffer createLong(long[] data, boolean copy) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DataBuffer createLong(long length) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DataBuffer createLong(long length, boolean initialize) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DataBuffer createLong(long length, boolean initialize, MemoryWorkspace workspace) {
+        throw new UnsupportedOperationException();
+    }
+
 }

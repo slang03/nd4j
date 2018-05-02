@@ -1443,6 +1443,19 @@ public class Nd4j {
     }
 
     /**
+     * Create a buffer equal of length prod(shape). This method is NOT affected by workspaces
+     *
+     * @param data
+     * @return
+     */
+    public static DataBuffer createBufferDetached(long[] data) {
+        DataBuffer ret;
+        ret = DATA_BUFFER_FACTORY_INSTANCE.createLong(data);
+        logCreationIfNecessary(ret);
+        return ret;
+    }
+
+    /**
      * Creates a buffer of the specified length based on the data opType
      *
      * @param length the length of te buffer
@@ -6196,6 +6209,12 @@ public class Nd4j {
         return ArrayUtil.calcStrides(shape);
     }
 
+    public static long[] getStrides(long[] shape, char order) {
+        if (order == NDArrayFactory.FORTRAN)
+            return ArrayUtil.calcStridesFortran(shape);
+        return ArrayUtil.calcStrides(shape);
+    }
+
     /**
      * Get the strides based on the shape
      * and NDArrays.order()
@@ -6205,6 +6224,18 @@ public class Nd4j {
      * and order specified by NDArrays.order()
      */
     public static int[] getStrides(int[] shape) {
+        return getStrides(shape, Nd4j.order());
+    }
+
+    /**
+     * Get the strides based on the shape
+     * and NDArrays.order()
+     *
+     * @param shape the shape of the ndarray
+     * @return the strides for the given shape
+     * and order specified by NDArrays.order()
+     */
+    public static long[] getStrides(long[] shape) {
         return getStrides(shape, Nd4j.order());
     }
 
