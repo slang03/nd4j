@@ -5007,14 +5007,22 @@ public abstract class BaseNDArray implements INDArray, Iterable {
         }
 
         else {
-            int idx = 0;
-            //number of times to repeat each value
-            for(int i = 0; i < ret.length(); i++) {
+            int[] repeat = new int[shape.length];
+            for(int i = 0; i < shape.length; i++) {
+                if(i < rank()) {
+                    if(size(i) == 1)
+                        repeat[i] = shape[i];
+                    else {
+                        repeat[i] = 1;
+                    }
+                }
 
-                ret.putScalar(i,getDouble(idx));
-                if(idx >= length())
-                    idx = 0;
+                else {
+                    repeat[i] = shape[i];
+                }
             }
+
+            ret = Nd4j.tile(this,repeat);
         }
         return ret;
 
