@@ -193,8 +193,8 @@ public abstract class BaseTransformOp extends BaseOp implements TransformOp {
 
 
     @Override
-    public List<int[]> calculateOutputShape() {
-        List<int[]> ret = new ArrayList<>(1);
+    public List<long[]> calculateOutputShape() {
+        List<long[]> ret = new ArrayList<>(1);
         if(arg() == null)
             throw new ND4JIllegalStateException("No arg found for op!");
 

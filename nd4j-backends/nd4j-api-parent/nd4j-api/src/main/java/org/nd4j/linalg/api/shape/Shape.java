@@ -111,6 +111,19 @@ public class Shape {
         return false;
     }
 
+    public static boolean isPlaceholderShape(long[] shape) {
+        if(shape == null)
+            return true;
+        else {
+            for(int i = 0; i < shape.length; i++) {
+                if(shape[i] < 0)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Compute the broadcast rules according to:
      * https://docs.scipy.org/doc/numpy-1.10.1/user/basics.broadcasting.html

@@ -2075,6 +2075,28 @@ public class ArrayUtil {
         return ret;
     }
 
+    /**
+     * Combines a apply of long arrays in to one flat long array
+     *
+     * @param ints the int arrays to combineDouble
+     * @return one combined int array
+     */
+    public static long[] combine(long[]... ints) {
+        int length = 0;
+        for (int i = 0; i < ints.length; i++)
+            length += ints[i].length;
+        long[] ret = new long[length];
+        int count = 0;
+        for (long[] i : ints) {
+            for (int j = 0; j < i.length; j++) {
+                ret[count++] = i[j];
+            }
+        }
+
+        return ret;
+    }
+
+
     public static <E> E[] combine(E[]... arrs) {
         int length = 0;
         for (int i = 0; i < arrs.length; i++)

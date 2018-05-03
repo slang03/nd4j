@@ -82,7 +82,7 @@ public interface CustomOp {
      * Calculate the output shape for this op
      * @return
      */
-    List<int[]> calculateOutputShape();
+    List<long[]> calculateOutputShape();
 
     /**
      * Get the custom op descriptor if one is available.
