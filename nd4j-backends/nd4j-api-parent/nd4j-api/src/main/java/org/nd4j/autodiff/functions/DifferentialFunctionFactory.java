@@ -112,6 +112,10 @@ public class DifferentialFunctionFactory {
 
 
     public SDVariable one(int[] shape) {
+        return one(ArrayUtil.toLongArray(shape));
+    }
+
+    public SDVariable one(long[] shape) {
         return sameDiff.one("one-" + UUID.randomUUID().toString(), shape);
     }
 

@@ -1672,8 +1672,8 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     }
 
     @Override
-    public int[] shape() {
-        return Shape.shape(shapeInformation);
+    public long[] shape() {
+        return Shape.shape(javaShapeInformation);
     }
 
     protected DataBuffer shapeOf() {
@@ -1683,8 +1683,8 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     }
 
     @Override
-    public int[] stride() {
-        return shape();
+    public long[] stride() {
+        return Shape.stride(javaShapeInformation);
     }
 
     @Override

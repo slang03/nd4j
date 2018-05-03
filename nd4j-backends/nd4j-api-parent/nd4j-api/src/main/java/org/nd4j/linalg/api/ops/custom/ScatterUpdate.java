@@ -113,6 +113,11 @@ public class ScatterUpdate implements CustomOp {
     }
 
     @Override
+    public void addIArgument(long... arg) {
+        op.addIArgument(arg);
+    }
+
+    @Override
     public void removeIArgument(Integer arg) {
         op.removeIArgument(arg);
     }

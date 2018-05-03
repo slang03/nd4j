@@ -166,8 +166,6 @@ public class While extends DifferentialFunction implements CustomOp {
         numLooped++;
     }
 
-
-
     @Override
     public void initFromTensorFlow(NodeDef nodeDef, SameDiff initWith, Map<String, AttrValue> attributesForNode, GraphDef graph) {
         doImport(nodeDef,initWith,attributesForNode,graph,new LinkedHashSet<String>(),new AtomicInteger(0));
@@ -499,6 +497,11 @@ public class While extends DifferentialFunction implements CustomOp {
 
     @Override
     public void addIArgument(int... arg) {
+
+    }
+
+    @Override
+    public void addIArgument(long... arg) {
 
     }
 

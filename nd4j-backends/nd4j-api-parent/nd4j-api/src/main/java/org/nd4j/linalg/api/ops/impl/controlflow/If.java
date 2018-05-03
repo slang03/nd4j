@@ -194,6 +194,11 @@ public class If extends DifferentialFunction implements CustomOp {
     }
 
     @Override
+    public void addIArgument(long... arg) {
+
+    }
+
+    @Override
     public void removeIArgument(Integer arg) {
 
     }

@@ -2427,12 +2427,43 @@ public class ArrayUtil {
         return minIdx;
     }
 
+    public static long argMinOfMax(long[] first, long[] second) {
+        long minIdx = 0;
+        long maxAtMinIdx = Math.max(first[0], second[0]);
+        for (int i = 1; i < first.length; i++) {
+            long maxAtIndex = Math.max(first[i], second[i]);
+            if (maxAtMinIdx > maxAtIndex) {
+                maxAtMinIdx = maxAtIndex;
+                minIdx = i;
+            }
+        }
+        return minIdx;
+    }
+
     public static int argMinOfMax(int[]... arrays) {
         int minIdx = 0;
         int maxAtMinIdx = Integer.MAX_VALUE;
 
         for (int i = 0; i < arrays[0].length; i++) {
             int maxAtIndex = Integer.MIN_VALUE;
+            for (int j = 0; j < arrays.length; j++) {
+                maxAtIndex = Math.max(maxAtIndex, arrays[j][i]);
+            }
+
+            if (maxAtMinIdx > maxAtIndex) {
+                maxAtMinIdx = maxAtIndex;
+                minIdx = i;
+            }
+        }
+        return minIdx;
+    }
+
+    public static long argMinOfMax(long[]... arrays) {
+        int minIdx = 0;
+        long maxAtMinIdx = Long.MAX_VALUE;
+
+        for (int i = 0; i < arrays[0].length; i++) {
+            long maxAtIndex = Long.MIN_VALUE;
             for (int j = 0; j < arrays.length; j++) {
                 maxAtIndex = Math.max(maxAtIndex, arrays[j][i]);
             }
