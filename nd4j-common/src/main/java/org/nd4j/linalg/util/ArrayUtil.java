@@ -1038,6 +1038,32 @@ public class ArrayUtil {
         return ret;
     }
 
+    public static long[] removeIndex(long[] data, int... index) {
+        if (index.length >= data.length) {
+            throw new IllegalStateException("Illegal remove: indexes.length > data.length (index.length="
+                    + index.length + ", data.length=" + data.length + ")");
+        }
+        int offset = 0;
+        /*
+            workaround for non-existent indexes (such as Integer.MAX_VALUE)
+
+
+        for (int i = 0; i < index.length; i ++) {
+            if (index[i] >= data.length || index[i] < 0) offset++;
+        }
+        */
+
+        long[] ret = new long[data.length - index.length + offset];
+        int count = 0;
+        for (int i = 0; i < data.length; i++)
+            if (!Ints.contains(index, i)) {
+                ret[count++] = data[i];
+            }
+
+        return ret;
+    }
+
+
 
     /**
      * Zip 2 arrays in to:
@@ -1721,7 +1747,14 @@ public class ArrayUtil {
             e[i] = e[e.length - i - 1];
             e[e.length - i - 1] = temp;
         }
+    }
 
+    public static void reverse(long[] e) {
+        for (int i = 0; i <= e.length / 2; i++) {
+            long temp = e[i];
+            e[i] = e[e.length - i - 1];
+            e[e.length - i - 1] = temp;
+        }
     }
 
 

@@ -23,6 +23,7 @@ import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.api.shape.Shape;
+import org.nd4j.linalg.exception.ND4JIllegalStateException;
 import org.nd4j.linalg.factory.NDArrayFactory;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.util.ArrayUtil;
@@ -100,7 +101,7 @@ public class Indices {
 
             INDArray arrVector = arr.vectorAlongDimension(floor, -1);
 
-            int columnIndex = index % arr.size(-1);
+            long columnIndex = index % arr.size(-1);
             long retOffset = arrVector.linearIndex(columnIndex);
             return retOffset;
 
@@ -117,7 +118,7 @@ public class Indices {
      * @param indices the indices
      * @return the offsets for the given set of indices
      */
-    public static long[] offsets(int[] shape, INDArrayIndex... indices) {
+    public static long[] offsets(long[] shape, INDArrayIndex... indices) {
         //offset of zero for every new axes
         long[] ret = new long[shape.length];
 
@@ -308,7 +309,10 @@ public class Indices {
         if (start.length() != end.length())
             throw new IllegalArgumentException("Start length must be equal to end length");
         else {
-            INDArrayIndex[] indexes = new INDArrayIndex[start.length()];
+            if (start.length() > Integer.MAX_VALUE)
+                throw new ND4JIllegalStateException("Can't proceed with INDArray with length > Integer.MAX_VALUE");
+
+            INDArrayIndex[] indexes = new INDArrayIndex[(int) start.length()];
             for (int i = 0; i < indexes.length; i++) {
                 indexes[i] = NDArrayIndex.interval(start.getInt(i), end.getInt(i));
             }
@@ -331,7 +335,10 @@ public class Indices {
         if (start.length() != end.length())
             throw new IllegalArgumentException("Start length must be equal to end length");
         else {
-            INDArrayIndex[] indexes = new INDArrayIndex[start.length()];
+            if (start.length() > Integer.MAX_VALUE)
+                throw new ND4JIllegalStateException("Can't proceed with INDArray with length > Integer.MAX_VALUE");
+
+            INDArrayIndex[] indexes = new INDArrayIndex[(int) start.length()];
             for (int i = 0; i < indexes.length; i++) {
                 indexes[i] = NDArrayIndex.interval(start.getInt(i), end.getInt(i), inclusive);
             }

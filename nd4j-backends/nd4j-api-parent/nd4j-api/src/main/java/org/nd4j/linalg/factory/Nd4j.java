@@ -4388,6 +4388,16 @@ public class Nd4j {
         return ret;
     }
 
+    public static INDArray create(DataBuffer data, long[] shape, long[] strides, long offset) {
+        shape = getEnsuredShape(shape);
+
+        checkShapeValues(shape);
+
+        INDArray ret = INSTANCE.create(data, shape, strides, offset);
+        logCreationIfNecessary(ret);
+        return ret;
+    }
+
     /**
      *
      * @param data

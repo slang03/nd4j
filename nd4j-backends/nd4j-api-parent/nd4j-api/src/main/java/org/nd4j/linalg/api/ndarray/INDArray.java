@@ -1007,7 +1007,7 @@ public interface INDArray extends Serializable {
      * @param i the index to getScalar
      * @return the linear index in to the data
      */
-    int linearIndex(int i);
+    long linearIndex(long i);
 
 
 
@@ -1084,7 +1084,7 @@ public interface INDArray extends Serializable {
      * @param toPut the row to insert
      * @return this
      */
-    INDArray putRow(int row, INDArray toPut);
+    INDArray putRow(long row, INDArray toPut);
 
     /**
      * Insert a column in to this array
@@ -1105,7 +1105,7 @@ public interface INDArray extends Serializable {
      * @param column the row of the element to return
      * @return a scalar indarray of the element at this index
      */
-    INDArray getScalar(int row, int column);
+    INDArray getScalar(long row, long column);
 
     /**
      * Returns the element at the specified index
@@ -1113,7 +1113,7 @@ public interface INDArray extends Serializable {
      * @param i the index of the element to return
      * @return a scalar ndarray of the element at this index
      */
-    INDArray getScalar(int i);
+    INDArray getScalar(long i);
 
 
     /**
@@ -2042,6 +2042,9 @@ public interface INDArray extends Serializable {
     @Deprecated
     void setStride(int... stride);
 
+    @Deprecated
+    void setStride(long... stride);
+
     /**
      * Shape setter
      * @param shape
@@ -2049,6 +2052,9 @@ public interface INDArray extends Serializable {
      */
     @Deprecated
     void setShape(int... shape);
+
+    @Deprecated
+    void setShape(long... shape);
     
     /**
      * Shape and stride setter
@@ -2216,7 +2222,7 @@ public interface INDArray extends Serializable {
      * @param dimension the dimension to return the slice for
      * @return the specified slice of this ndarray
      */
-    INDArray slice(int i, int dimension);
+    INDArray slice(long i, int dimension);
 
 
     /**
@@ -2225,7 +2231,7 @@ public interface INDArray extends Serializable {
      * @param i the index of the slice to return
      * @return the specified slice of this ndarray
      */
-    INDArray slice(int i);
+    INDArray slice(long i);
 
 
     /**

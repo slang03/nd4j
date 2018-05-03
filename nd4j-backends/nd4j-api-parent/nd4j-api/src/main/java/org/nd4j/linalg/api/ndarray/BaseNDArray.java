@@ -796,7 +796,7 @@ public abstract class BaseNDArray implements INDArray, Iterable {
         for (int i = 0; i < dimension.length; i++)
             if (dimension[i] < 0)
                 dimension[i] += rank();
-        int[] tensorShape = ArrayUtil.keep(shape(), dimension);
+        long[] tensorShape = ArrayUtil.keep(shape(), dimension);
         long len = ArrayUtil.prodLong(tensorShape);
         if (len == 0)
             throw new IllegalStateException("Illegal length found after removing index");
@@ -924,7 +924,7 @@ public abstract class BaseNDArray implements INDArray, Iterable {
         int[] finalPermuteDims = tadFinalPermuteDimensions[dimension.length];
 
         INDArray permuted = permute(newPermuteDims);
-        int sliceIdx = NDArrayMath.sliceOffsetForTensor(index, permuted, tensorShape);
+        long sliceIdx = NDArrayMath.sliceOffsetForTensor(index, permuted, tensorShape);
 
         INDArray ret2 = permuted.slice(sliceIdx);
         if (dimension.length == tensorShape.length && ArrayUtil.prod(tensorShape) == ret2.length()) {
@@ -3776,10 +3776,10 @@ public abstract class BaseNDArray implements INDArray, Iterable {
 
     @Override
     @Deprecated
-    public int linearIndex(int i) {
-        int idx = i;
+    public long linearIndex(long i) {
+        long idx = i;
         for (int j = 0; j < Shape.rank(javaShapeInformation) - 1; j++) {
-            if (size(i) == 1)
+            if (size((int) i) == 1)
                 continue;
             idx += i * stride(j);
         }
@@ -3799,7 +3799,7 @@ public abstract class BaseNDArray implements INDArray, Iterable {
      * @return the specified slice of this matrix
      */
     @Override
-    public INDArray slice(int slice) {
+    public INDArray slice(long slice) {
         Nd4j.getCompressor().autoDecompress(this);
 
 
@@ -3830,10 +3830,10 @@ public abstract class BaseNDArray implements INDArray, Iterable {
 
 
 
-    protected INDArray createScalarForIndex(int i, boolean applyOffset) {
+    protected INDArray createScalarForIndex(long i, boolean applyOffset) {
         if(isVector())
             return getScalar(i);
-        return create(data(), new int[] {1, 1}, new int[] {1, 1}, i);
+        return Nd4j.create(data(), new long[] {1, 1}, new long[] {1, 1}, i);
     }
 
     protected INDArray createScalar(double d) {
