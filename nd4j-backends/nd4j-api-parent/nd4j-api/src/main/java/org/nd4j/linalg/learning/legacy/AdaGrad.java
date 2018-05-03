@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.api.shape.Shape;
 import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.util.ArrayUtil;
 
 import java.io.Serializable;
 
@@ -59,7 +60,7 @@ public class AdaGrad implements Serializable {
             viewArray.assign(epsilon);
         this.historicalGradient = viewArray;
         //Reshape to match the expected shape of the input gradient arrays
-        this.historicalGradient = Shape.newShapeNoCopy(this.historicalGradient, gradientShape, gradientOrder == 'f');
+        this.historicalGradient = Shape.newShapeNoCopy(this.historicalGradient, ArrayUtil.toLongArray(gradientShape), gradientOrder == 'f');
         if (historicalGradient == null)
             throw new IllegalStateException("Could not correctly reshape gradient view array");
 

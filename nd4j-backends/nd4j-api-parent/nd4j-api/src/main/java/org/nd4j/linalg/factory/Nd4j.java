@@ -2141,7 +2141,7 @@ public class Nd4j {
      * @param n the number for the identity
      * @return
      */
-    public static INDArray eye(int n) {
+    public static INDArray eye(long n) {
         INDArray ret = INSTANCE.eye(n);
         logCreationIfNecessary(ret);
         return ret;
@@ -3197,6 +3197,21 @@ public class Nd4j {
      * @return a random matrix of the specified shape and range
      */
     public static INDArray rand(int[] shape, double min, double max, org.nd4j.linalg.api.rng.Random rng) {
+        INDArray ret = createUninitialized(shape, order()); //INSTANCE.rand(shape, min, max, rng);
+        logCreationIfNecessary(ret);
+        return rand(ret, min, max, rng);
+    }
+
+    /**
+     * Generates a random matrix between min and max
+     *
+     * @param shape the number of rows of the matrix
+     * @param min   the minimum number
+     * @param max   the maximum number
+     * @param rng   the rng to use
+     * @return a random matrix of the specified shape and range
+     */
+    public static INDArray rand(long[] shape, double min, double max, org.nd4j.linalg.api.rng.Random rng) {
         INDArray ret = createUninitialized(shape, order()); //INSTANCE.rand(shape, min, max, rng);
         logCreationIfNecessary(ret);
         return rand(ret, min, max, rng);
@@ -5632,7 +5647,7 @@ public class Nd4j {
      * @param columns the columns of the ndarray
      * @return the created ndarray
      */
-    public static INDArray zeros(int rows, int columns) {
+    public static INDArray zeros(long rows, long columns) {
         INDArray ret = INSTANCE.zeros(rows, columns);
         logCreationIfNecessary(ret);
         return ret;
@@ -6194,7 +6209,17 @@ public class Nd4j {
      */
     public static INDArray zeros(int... shape) {
         return Nd4j.create(shape);
+    }
 
+
+    /**
+     * Create an ndarray of zeros
+     *
+     * @param shape the shape of the ndarray
+     * @return an ndarray with ones filled in
+     */
+    public static INDArray zeros(long... shape) {
+        return Nd4j.create(shape);
     }
 
     /**

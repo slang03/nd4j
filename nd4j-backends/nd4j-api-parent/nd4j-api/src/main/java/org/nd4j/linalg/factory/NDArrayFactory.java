@@ -257,7 +257,7 @@ public interface NDArrayFactory {
      * @param n the number for the identity
      * @return
      */
-    INDArray eye(int n);
+    INDArray eye(long n);
 
     /**
      * Rotate a matrix 90 degrees

@@ -43,6 +43,8 @@ public interface CustomOp {
 
     void addIArgument(int... arg);
 
+    void addIArgument(long... arg);
+
 
     void removeIArgument(Integer arg);
 

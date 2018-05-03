@@ -20,6 +20,7 @@
 package org.nd4j.linalg.util;
 
 import com.google.common.primitives.Ints;
+import com.google.common.primitives.Longs;
 import lombok.val;
 import org.apache.commons.lang3.RandomUtils;
 import org.nd4j.base.Preconditions;
@@ -47,6 +48,17 @@ public class ArrayUtil {
      * @return
      */
     public static boolean containsAnyNegative(int[] arr) {
+        if(arr == null)
+            return false;
+
+        for(int i = 0; i < arr.length; i++) {
+            if(arr[i] < 0)
+                return true;
+        }
+        return false;
+    }
+
+    public static boolean containsAnyNegative(long[] arr) {
         if(arr == null)
             return false;
 
@@ -1088,7 +1100,10 @@ public class ArrayUtil {
      * @param axes the axes to do the multiply
      * @return the shape for tensor matrix multiply
      */
-    public static int[] getTensorMmulShape(int[] aShape, int[] bShape, int[][] axes) {
+    public static long[] getTensorMmulShape(long[] aShape, long[] bShape, int[][] axes) {
+        // FIXME: int cast
+
+
         int validationLength = Math.min(axes[0].length, axes[1].length);
         for (int i = 0; i < validationLength; i++) {
             if (aShape[axes[0][i]] != bShape[axes[1][i]])
@@ -1124,13 +1139,13 @@ public class ArrayUtil {
 
         //if listA and listB are empty these donot initialize.
         //so initializing with {1} which will then get overriden if not empty
-        int[] oldShapeA;
+        long[] oldShapeA;
         if (listA.size() == 0) {
-            oldShapeA = new int[] {1};
+            oldShapeA = new long[] {1};
         } else {
-            oldShapeA = Ints.toArray(listA);
+            oldShapeA = Longs.toArray(listA);
             for (int i = 0; i < oldShapeA.length; i++)
-                oldShapeA[i] = aShape[oldShapeA[i]];
+                oldShapeA[i] = aShape[(int) oldShapeA[i]];
         }
 
         int n3 = 1;
@@ -1140,17 +1155,17 @@ public class ArrayUtil {
         }
 
 
-        int[] oldShapeB;
+        long[] oldShapeB;
         if (listB.size() == 0) {
-            oldShapeB = new int[] {1};
+            oldShapeB = new long[] {1};
         } else {
-            oldShapeB = Ints.toArray(listB);
+            oldShapeB = Longs.toArray(listB);
             for (int i = 0; i < oldShapeB.length; i++)
-                oldShapeB[i] = bShape[oldShapeB[i]];
+                oldShapeB[i] = bShape[(int) oldShapeB[i]];
         }
 
 
-        int[] aPlusB = Ints.concat(oldShapeA, oldShapeB);
+        long[] aPlusB = Longs.concat(oldShapeA, oldShapeB);
         return aPlusB;
     }
 

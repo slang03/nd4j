@@ -88,7 +88,7 @@ public abstract class BaseBroadcastOp extends BaseOp implements BroadcastOp {
 
     public BaseBroadcastOp(SameDiff sameDiff,
                            SDVariable i_v,
-                           int[] shape,
+                           long[] shape,
                            boolean inPlace,
                            int[] dimension,
                            Object[] extraArgs) {
@@ -133,8 +133,8 @@ public abstract class BaseBroadcastOp extends BaseOp implements BroadcastOp {
      *
      * @return
      */
-    public List<int[]> calculateOutputShape() {
-        List<int[]> ret = new ArrayList<>();
+    public List<long[]> calculateOutputShape() {
+        List<long[]> ret = new ArrayList<>();
         if (larg().getShape() != null && rarg().getShape() != null)
             ret.add(Shape.broadcastOutputShape(larg().getShape(), rarg().getShape()));
         else if(larg().getShape() != null)

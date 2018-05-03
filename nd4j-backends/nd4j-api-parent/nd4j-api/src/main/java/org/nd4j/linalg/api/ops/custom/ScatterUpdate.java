@@ -188,7 +188,7 @@ public class ScatterUpdate implements CustomOp {
     }
 
     @Override
-    public List<int[]> calculateOutputShape() {
+    public List<long[]> calculateOutputShape() {
         return Nd4j.getExecutioner().calculateOutputShape(this);
     }
 

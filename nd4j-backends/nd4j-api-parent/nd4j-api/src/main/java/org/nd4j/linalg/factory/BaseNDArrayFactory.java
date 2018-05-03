@@ -335,7 +335,7 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
      * @return
      */
     @Override
-    public INDArray eye(int n) {
+    public INDArray eye(long n) {
         INDArray ret = Nd4j.create(n, n);
         for (int i = 0; i < n; i++) {
             ret.put(i, i, 1.0);
@@ -1136,7 +1136,10 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
         }
 
         int arrOffset = 0;
-        INDArray[] retAlongDimensionArrays = new INDArray[ret.tensorssAlongDimension(dimension)];
+
+        // FIXME: int cast
+
+        INDArray[] retAlongDimensionArrays = new INDArray[(int) ret.tensorssAlongDimension(dimension)];
         for (int i = 0; i < retAlongDimensionArrays.length; i++)
             retAlongDimensionArrays[i] = ret.tensorAlongDimension(i, dimension);
 

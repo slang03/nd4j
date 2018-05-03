@@ -884,6 +884,10 @@ public class DifferentialFunctionFactory {
 
 
     public SDVariable reshape(SDVariable iX, int[] shape) {
+        return new Reshape(sameDiff(), iX, ArrayUtil.toLongArray(shape)).outputVariables()[0];
+    }
+
+    public SDVariable reshape(SDVariable iX, long[] shape) {
         return new Reshape(sameDiff(), iX, shape).outputVariables()[0];
     }
 

@@ -295,6 +295,15 @@ public class DynamicCustomOp extends DifferentialFunction implements CustomOp {
             addIArgument(Ints.asList(arg).toArray(new Integer[arg.length]));
     }
 
+    @Override
+    public void addIArgument(long... arg) {
+        /**
+         * FIXME: we want lArguments now :)
+         */
+        for (long a: arg)
+            iArguments.add((int) a);
+    }
+
     private void addIArgument(Integer... arg) {
         iArguments.addAll(Arrays.asList(arg));
     }
