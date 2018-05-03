@@ -101,6 +101,10 @@ public class DifferentialFunctionFactory {
         return sameDiff.zero("one-" + UUID.randomUUID().toString(), shape);
     }
 
+    public SDVariable zero(long[] shape) {
+        return sameDiff.zero("one-" + UUID.randomUUID().toString(), shape);
+    }
+
     public SDVariable zerosLike(SDVariable input) {
         return zerosLike(null, input);
     }
@@ -809,6 +813,10 @@ public class DifferentialFunctionFactory {
     }
 
     public SDVariable broadcast(SDVariable iX, int... shape) {
+        return broadcast(iX, ArrayUtil.toLongArray(shape));
+    }
+
+    public SDVariable broadcast(SDVariable iX, long... shape) {
         return new Broadcast(sameDiff(), iX, shape).outputVariables()[0];
     }
 

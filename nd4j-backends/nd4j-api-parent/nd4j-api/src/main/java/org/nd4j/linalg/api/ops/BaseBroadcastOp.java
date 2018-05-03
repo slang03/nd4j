@@ -7,6 +7,7 @@ import org.nd4j.autodiff.samediff.SDVariable;
 import org.nd4j.autodiff.samediff.SameDiff;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.api.shape.Shape;
+import org.nd4j.linalg.util.ArrayUtil;
 import org.tensorflow.framework.AttrValue;
 import org.tensorflow.framework.GraphDef;
 import org.tensorflow.framework.NodeDef;
@@ -84,6 +85,16 @@ public abstract class BaseBroadcastOp extends BaseOp implements BroadcastOp {
 
     public BaseBroadcastOp(SameDiff sameDiff, SDVariable i_v, int[] dimension, boolean inPlace) {
         this(sameDiff, i_v, i_v.getShape(), inPlace, dimension, null);
+    }
+
+    public BaseBroadcastOp(SameDiff sameDiff,
+                           SDVariable i_v,
+                           int[] shape,
+                           boolean inPlace,
+                           int[] dimension,
+                           Object[] extraArgs) {
+        // FIXME: int cast
+        this(sameDiff, i_v, ArrayUtil.toLongArray(shape), inPlace, dimension, extraArgs);
     }
 
     public BaseBroadcastOp(SameDiff sameDiff,

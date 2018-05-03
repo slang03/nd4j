@@ -3176,6 +3176,19 @@ public class Nd4j {
     /**
      * Create a random ndarray with the given shape using the given rng
      *
+     * @param shape the shape of the ndarray
+     * @param dist  distribution to use
+     * @return the random ndarray with the specified shape
+     */
+    public static INDArray rand(long[] shape, Distribution dist) {
+        //INDArray ret = INSTANCE.rand(shape, dist);
+        //logCreationIfNecessary(ret);
+        return dist.sample(shape);
+    }
+
+    /**
+     * Create a random ndarray with the given shape using the given rng
+     *
      * @param rows    the number of rows in the matrix
      * @param columns the number of columns in the matrix
      * @param rng       the random generator to use

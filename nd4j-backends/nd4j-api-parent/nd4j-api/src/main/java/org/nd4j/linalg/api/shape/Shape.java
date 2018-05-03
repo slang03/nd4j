@@ -530,12 +530,47 @@ public class Shape {
             }
         }
 
-
-
-
         int[] shape = {left[0], right[1]};
         return shape;
+    }
 
+    public static long[] getMatrixMultiplyShape(long[] left, long[] right) {
+        if(Shape.shapeIsScalar(left)) {
+            return right;
+        }
+
+        if(Shape.shapeIsScalar(right)) {
+            return left;
+        }
+
+        if (left.length != 2 && right.length != 2) {
+            throw new IllegalArgumentException("Illegal shapes for matrix multiply. Must be of length 2");
+        }
+
+        for(int i = 0; i < left.length; i++) {
+            if(left[i] < 1)
+                throw new ND4JIllegalStateException("Left shape contained value < 0 at index " + i);
+        }
+
+
+
+        for(int i = 0; i < right.length; i++) {
+            if(right[i] < 1)
+                throw new ND4JIllegalStateException("Right shape contained value < 0 at index " + i);
+        }
+
+
+        if (left.length > 1 && left[1] != right[0])
+            throw new IllegalArgumentException("Columns of left not equal to rows of right");
+
+        if(left.length < right.length) {
+            if(left[0] == right[0]) {
+                return new long[] {1, right[1]};
+            }
+        }
+
+        long[] shape = {left[0], right[1]};
+        return shape;
     }
 
     /**
