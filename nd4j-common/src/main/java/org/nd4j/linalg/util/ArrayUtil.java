@@ -802,6 +802,13 @@ public class ArrayUtil {
         return ret;
     }
 
+    public static long[] toArrayLong(List<Long> list) {
+        long[] ret = new long[list.size()];
+        for (int i = 0; i < list.size(); i++)
+            ret[i] = list.get(i);
+        return ret;
+    }
+
 
     public static double[] toArrayDouble(List<Double> list) {
         double[] ret = new double[list.size()];
@@ -964,6 +971,28 @@ public class ArrayUtil {
             return data;
 
         int[] ret = new int[index.length];
+        int count = 0;
+        for (int i = 0; i < data.length; i++)
+            if (Ints.contains(index, i))
+                ret[count++] = data[i];
+
+        return ret;
+    }
+
+    /**
+     * Return a copy of this array with only the
+     * given index(es) remaining
+     *
+     * @param data  the data to copy
+     * @param index the index of the item to remove
+     * @return the new array with the omitted
+     * item
+     */
+    public static long[] keep(long[] data, int... index) {
+        if (index.length == data.length)
+            return data;
+
+        long[] ret = new long[index.length];
         int count = 0;
         for (int i = 0; i < data.length; i++)
             if (Ints.contains(index, i))
@@ -1677,6 +1706,14 @@ public class ArrayUtil {
 
     }
 
+
+    public static List<double[]> zerosMatrix(long... dimensions) {
+        List<double[]> ret = new ArrayList<>();
+        for (int i = 0; i < dimensions.length; i++) {
+            ret.add(new double[(int) dimensions[i]]);
+        }
+        return ret;
+    }
 
     public static List<double[]> zerosMatrix(int... dimensions) {
         List<double[]> ret = new ArrayList<>();

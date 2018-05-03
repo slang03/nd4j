@@ -106,7 +106,7 @@ public abstract class BaseNDArray implements INDArray, Iterable {
     protected transient boolean compressed = false;
 
     // this field holds jvm copy of shapeInfo
-    protected int[] javaShapeInformation;
+    protected long[] javaShapeInformation;
 
 
     //Precalculate these arrays (like [3,2,1,0], [2,1,0], [1,0], [0] etc) for use in TAD, to avoid creating same int[]s over and over
@@ -884,7 +884,7 @@ public abstract class BaseNDArray implements INDArray, Iterable {
         return doTad(index, dimension);
     }
 
-    private void setShapeInformation(Pair<DataBuffer, int[]> shapeInfo) {
+    private void setShapeInformation(Pair<DataBuffer, long[]> shapeInfo) {
         this.shapeInformation = shapeInfo.getFirst();
         this.javaShapeInformation = shapeInfo.getSecond();
     }
@@ -917,7 +917,7 @@ public abstract class BaseNDArray implements INDArray, Iterable {
         }
 
 
-        int[] tensorShape = ArrayUtil.keep(shape(), dimension);
+        long[] tensorShape = ArrayUtil.keep(shape(), dimension);
         int[] reverseDimensions = ArrayUtil.reverseCopy(dimension);
         int[] remove = ArrayUtil.removeIndex(ArrayUtil.range(0, rank()), dimension);
         int[] newPermuteDims = Ints.concat(remove, reverseDimensions);
@@ -1046,15 +1046,13 @@ public abstract class BaseNDArray implements INDArray, Iterable {
     }
 
     @Override
-    public void setShape(int... shape) {
-        setShapeInformation(Nd4j.getShapeInfoProvider().createShapeInformation(shape, stride(), 0, elementWiseStride(),
-                ordering()));
+    public void setShape(int[] shape) {
+        setShapeInformation(Nd4j.getShapeInfoProvider().createShapeInformation(ArrayUtil.toLongArray(shape), stride(), 0, elementWiseStride(), ordering()));
     }
 
     @Override
     public void setStride(int[] stride) {
-        setShapeInformation(Nd4j.getShapeInfoProvider().createShapeInformation(shape(), stride, 0, elementWiseStride(),
-                ordering()));
+        setShapeInformation(Nd4j.getShapeInfoProvider().createShapeInformation(shape(), ArrayUtil.toLongArray(stride), 0, elementWiseStride(), ordering()));
     }
 
     @Override
@@ -1355,9 +1353,9 @@ public abstract class BaseNDArray implements INDArray, Iterable {
             throw new IllegalStateException(
                     "Cannot use putScalar(int,int,int,double) on a rank " + rank() + " INDArray");
         long offset = 0; // Shape.getOffsetUnsafe(javaShapeInformation, dim0, dim1, dim2);
-        int size_0 = javaShapeInformation[1];
-        int size_1 = javaShapeInformation[1 + 1];
-        int size_2 = javaShapeInformation[1 + 2];
+        long size_0 = javaShapeInformation[1];
+        long size_1 = javaShapeInformation[1 + 1];
+        long size_2 = javaShapeInformation[1 + 2];
 
         if (size_0 != 1)
             offset += dim0 * javaShapeInformation[1 + 0 + 3];
@@ -1803,14 +1801,14 @@ public abstract class BaseNDArray implements INDArray, Iterable {
         if (!element.isScalar())
             throw new IllegalArgumentException("Unable to insert anything but a scalar");
         if (isRowVector() && indices[0] == 0 && indices.length == 2) {
-            int ix = Shape.offset(javaShapeInformation);
+            int ix = 0; //Shape.offset(javaShapeInformation);
             for (int i = 1; i < indices.length; i++)
                 ix += indices[i] * stride(i);
             if (ix >= data.length())
                 throw new IllegalArgumentException("Illegal indices " + Arrays.toString(indices));
             data.put(ix, element.getDouble(0));
         } else {
-            int ix = Shape.offset(javaShapeInformation);
+            int ix = 0; //Shape.offset(javaShapeInformation);
             for (int i = 0; i < indices.length; i++)
                 if (size(i) != 1)
                     ix += indices[i] * stride(i);
@@ -2013,7 +2011,7 @@ public abstract class BaseNDArray implements INDArray, Iterable {
 
     protected INDArray newShape(int[] newShape, char ordering) {
 
-        return create(data(), newShape, stride(), Shape.offset(javaShapeInformation));
+        return create(data(), newShape, stride(), 0, ordering);
     }
 
     protected INDArray create(DataBuffer data, int[] newShape, int[] newStrides, long offset, char ordering) {
@@ -4832,7 +4830,7 @@ public abstract class BaseNDArray implements INDArray, Iterable {
      *
      * @return the shape of this matrix
      */
-    public int[] shape() {
+    public long[] shape() {
         return Shape.shape(javaShapeInformation);
     }
 
@@ -4853,7 +4851,7 @@ public abstract class BaseNDArray implements INDArray, Iterable {
      * @return the stride of this array
      */
     @Override
-    public int[] stride() {
+    public long[] stride() {
         return Shape.stride(javaShapeInformation);
     }
 

@@ -185,7 +185,7 @@ public interface NDArrayFactory {
      * @param offset  the offset of the ndarray
      * @return the instance
      */
-    IComplexNDArray createComplex(int rows, int columns, int[] stride, long offset);
+    IComplexNDArray createComplex(long rows, long columns, int[] stride, long offset);
 
     /**
      * Generate a linearly spaced vector
@@ -343,7 +343,7 @@ public interface NDArrayFactory {
      * @param rng     the rng to use
      * @return a drandom matrix of the specified shape and range
      */
-    INDArray rand(int rows, int columns, float min, float max, org.nd4j.linalg.api.rng.Random rng);
+    INDArray rand(long rows, long columns, float min, float max, org.nd4j.linalg.api.rng.Random rng);
 
     INDArray appendBias(INDArray... vectors);
 
@@ -521,7 +521,7 @@ public interface NDArrayFactory {
      * @param r       the random generator to use
      * @return the random ndarray with the specified shape
      */
-    INDArray rand(int rows, int columns, org.nd4j.linalg.api.rng.Random r);
+    INDArray rand(long rows, long columns, org.nd4j.linalg.api.rng.Random r);
 
     /**
      * Create a random ndarray with the given shape using the given rng
@@ -531,7 +531,7 @@ public interface NDArrayFactory {
      * @param seed    the  seed to use
      * @return the random ndarray with the specified shape
      */
-    INDArray rand(int rows, int columns, long seed);
+    INDArray rand(long rows, long columns, long seed);
 
     /**
      * Create a random ndarray with the given shape using
@@ -541,7 +541,7 @@ public interface NDArrayFactory {
      * @param columns the number of columns in the matrix
      * @return the random ndarray with the specified shape
      */
-    INDArray rand(int rows, int columns);
+    INDArray rand(long rows, long columns);
 
     /**
      * Create a random (uniform 0-1) NDArray with the specified shape and order
@@ -549,7 +549,7 @@ public interface NDArrayFactory {
      * @param rows       Number of rows of the output array
      * @param columns    Number of columns of the output array
      */
-    INDArray rand(char order, int rows, int columns);
+    INDArray rand(char order, long rows, long columns);
 
     /**
      * Random normal using the given rng
@@ -559,7 +559,7 @@ public interface NDArrayFactory {
      * @param r       the random generator to use
      * @return
      */
-    INDArray randn(int rows, int columns, org.nd4j.linalg.api.rng.Random r);
+    INDArray randn(long rows, long columns, org.nd4j.linalg.api.rng.Random r);
 
     /**
      * Random normal (N(0,1)) using the current time stamp
@@ -569,7 +569,7 @@ public interface NDArrayFactory {
      * @param columns the number of columns in the matrix
      * @return
      */
-    INDArray randn(int rows, int columns);
+    INDArray randn(long rows, long columns);
 
     /**
      * Random normal N(0,1), with specified output order
@@ -577,7 +577,7 @@ public interface NDArrayFactory {
      * @param rows    the number of rows in the matrix
      * @param columns the number of columns in the matrix
      */
-    INDArray randn(char order, int rows, int columns);
+    INDArray randn(char order, long rows, long columns);
 
     /**
      * Random normal using the specified seed
@@ -586,7 +586,7 @@ public interface NDArrayFactory {
      * @param columns the number of columns in the matrix
      * @return
      */
-    INDArray randn(int rows, int columns, long seed);
+    INDArray randn(long rows, long columns, long seed);
 
 
     /**
@@ -714,7 +714,7 @@ public interface NDArrayFactory {
      * @param columns the columns of the ndarray
      * @return the created ndarray
      */
-    INDArray create(int columns);
+    INDArray create(long columns);
 
     /**
      * Creates an ndarray
@@ -722,7 +722,7 @@ public interface NDArrayFactory {
      * @param columns the number of columns in the row vector
      * @return ndarray
      */
-    IComplexNDArray createComplex(int columns);
+    IComplexNDArray createComplex(long columns);
 
     /**
      * Creates a row vector with the specified number of columns
@@ -731,7 +731,7 @@ public interface NDArrayFactory {
      * @param columns the columns of the ndarray
      * @return the created ndarray
      */
-    INDArray zeros(int rows, int columns);
+    INDArray zeros(long rows, long columns);
 
     /**
      * Creates a matrix of zeros
@@ -740,7 +740,7 @@ public interface NDArrayFactory {
      * @param columns the number of columns in the row vector
      * @return ndarray
      */
-    IComplexNDArray complexZeros(int rows, int columns);
+    IComplexNDArray complexZeros(long rows, long columns);
 
 
     /**
@@ -749,7 +749,7 @@ public interface NDArrayFactory {
      * @param columns the columns of the ndarray
      * @return the created ndarray
      */
-    INDArray zeros(int columns);
+    INDArray zeros(long columns);
 
     /**
      * Creates an ndarray
@@ -757,7 +757,7 @@ public interface NDArrayFactory {
      * @param columns the number of columns in the row vector
      * @return ndarray
      */
-    IComplexNDArray complexZeros(int columns);
+    IComplexNDArray complexZeros(long columns);
 
 
     /**
@@ -770,6 +770,8 @@ public interface NDArrayFactory {
      */
     INDArray valueArrayOf(int[] shape, double value);
 
+    INDArray valueArrayOf(long[] shape, double value);
+
 
     /**
      * Creates a row vector with the specified number of columns
@@ -779,7 +781,7 @@ public interface NDArrayFactory {
      * @param value   the value to assign
      * @return the created ndarray
      */
-    INDArray valueArrayOf(int rows, int columns, double value);
+    INDArray valueArrayOf(long rows, long columns, double value);
 
 
     /**
@@ -789,7 +791,7 @@ public interface NDArrayFactory {
      * @param columns the columns of the ndarray
      * @return the created ndarray
      */
-    INDArray ones(int rows, int columns);
+    INDArray ones(long rows, long columns);
 
     /**
      * Creates an ndarray
@@ -798,7 +800,7 @@ public interface NDArrayFactory {
      * @param columns the number of columns in the row vector
      * @return ndarray
      */
-    IComplexNDArray complexOnes(int rows, int columns);
+    IComplexNDArray complexOnes(long rows, long columns);
 
     /**
      * Creates a row vector with the specified number of columns
@@ -806,7 +808,7 @@ public interface NDArrayFactory {
      * @param columns the columns of the ndarray
      * @return the created ndarray
      */
-    INDArray ones(int columns);
+    INDArray ones(long columns);
 
     /**
      * Creates an ndarray
@@ -814,7 +816,7 @@ public interface NDArrayFactory {
      * @param columns the number of columns in the row vector
      * @return ndarray
      */
-    IComplexNDArray complexOnes(int columns);
+    IComplexNDArray complexOnes(long columns);
 
 
     /**
@@ -858,6 +860,8 @@ public interface NDArrayFactory {
      */
     INDArray ones(int[] shape);
 
+    INDArray ones(long[] shape);
+
     /**
      * Create an ndarray of ones
      *
@@ -876,7 +880,7 @@ public interface NDArrayFactory {
      * @param offset  the offset of the ndarray
      * @return the instance
      */
-    IComplexNDArray createComplex(float[] data, int rows, int columns, int[] stride, long offset);
+    IComplexNDArray createComplex(float[] data, long rows, long columns, int[] stride, long offset);
 
 
     /**
@@ -889,7 +893,7 @@ public interface NDArrayFactory {
      * @param offset  the offset of the ndarray
      * @return the instance
      */
-    IComplexNDArray createComplex(DataBuffer data, int rows, int columns, int[] stride, long offset);
+    IComplexNDArray createComplex(DataBuffer data, long rows, long columns, int[] stride, long offset);
 
     /**
      * Creates an ndarray with the specified shape
@@ -901,7 +905,7 @@ public interface NDArrayFactory {
      * @param offset  the offset of the ndarray
      * @return the instance
      */
-    INDArray create(DataBuffer data, int rows, int columns, int[] stride, long offset);
+    INDArray create(DataBuffer data, long rows, long columns, int[] stride, long offset);
 
     /**
      * Creates a complex ndarray with the specified shape
@@ -923,7 +927,7 @@ public interface NDArrayFactory {
      * @param offset
      * @return
      */
-    INDArray create(float[] data, int rows, int columns, int[] stride, long offset);
+    INDArray create(float[] data, long rows, long columns, int[] stride, long offset);
 
     /**
      * Creates a complex ndarray with the specified shape
@@ -1054,7 +1058,7 @@ public interface NDArrayFactory {
      * @param offset  the offset of the ndarray
      * @return the instance
      */
-    IComplexNDArray createComplex(double[] data, int rows, int columns, int[] stride, long offset);
+    IComplexNDArray createComplex(double[] data, long rows, long columns, int[] stride, long offset);
 
     /**
      * Creates an ndarray with the specified shape
@@ -1066,7 +1070,7 @@ public interface NDArrayFactory {
      * @param offset  the offset of the ndarray
      * @return the instance
      */
-    INDArray create(double[] data, int rows, int columns, int[] stride, long offset);
+    INDArray create(double[] data, long rows, long columns, int[] stride, long offset);
 
     /**
      * Creates a complex ndarray with the specified shape
@@ -1098,6 +1102,9 @@ public interface NDArrayFactory {
      * @return the created ndarray
      */
     INDArray create(DataBuffer data, int[] shape);
+
+
+    INDArray create(DataBuffer data, long[] shape);
 
     /**
      * Create an ndrray with the specified shape
@@ -1131,6 +1138,9 @@ public interface NDArrayFactory {
     INDArray create(DataBuffer data, int[] shape, int[] stride, long offset);
 
 
+    INDArray create(DataBuffer data, long[] shape, long[] stride, long offset);
+
+
     /**
      * Creates an ndarray with the specified shape
      *
@@ -1158,7 +1168,9 @@ public interface NDArrayFactory {
      * @param offset  the offset of the ndarray
      * @return the instance
      */
-    INDArray create(int rows, int columns, int[] stride, long offset);
+    INDArray create(long rows, long columns, int[] stride, long offset);
+
+    INDArray create(long rows, long columns, long[] stride, long offset);
 
 
     /**
@@ -1182,6 +1194,9 @@ public interface NDArrayFactory {
     INDArray create(int[] shape, int[] stride, long offset);
 
 
+    INDArray create(long[] shape, long[] stride, long offset);
+
+
     /**
      * Creates a complex ndarray with the specified shape
      *
@@ -1190,7 +1205,7 @@ public interface NDArrayFactory {
      * @param stride  the stride for the ndarray
      * @return the instance
      */
-    IComplexNDArray createComplex(int rows, int columns, int[] stride);
+    IComplexNDArray createComplex(long rows, long columns, int[] stride);
 
     /**
      * Creates an ndarray with the specified shape
@@ -1200,7 +1215,7 @@ public interface NDArrayFactory {
      * @param stride  the stride for the ndarray
      * @return the instance
      */
-    INDArray create(int rows, int columns, int[] stride);
+    INDArray create(long rows, long columns, int[] stride);
 
 
     /**
@@ -1229,7 +1244,7 @@ public interface NDArrayFactory {
      * @param columns the columns of the ndarray
      * @return the instance
      */
-    IComplexNDArray createComplex(int rows, int columns);
+    IComplexNDArray createComplex(long rows, long columns);
 
     /**
      * Creates an ndarray with the specified shape
@@ -1238,7 +1253,7 @@ public interface NDArrayFactory {
      * @param columns the columns of the ndarray
      * @return the instance
      */
-    INDArray create(int rows, int columns);
+    INDArray create(long rows, long columns);
 
 
     /**
@@ -1545,6 +1560,9 @@ public interface NDArrayFactory {
     INDArray create(int[] shape, char ordering);
 
 
+    INDArray create(long[] shape, char ordering);
+
+
     INDArray createUninitialized(int[] shape, char ordering);
 
     /**
@@ -1586,7 +1604,7 @@ public interface NDArrayFactory {
      * @param rng
      * @return
      */
-    INDArray rand(int rows, int columns, double min, double max, org.nd4j.linalg.api.rng.Random rng);
+    INDArray rand(long rows, long columns, double min, double max, org.nd4j.linalg.api.rng.Random rng);
 
     /**
      *
@@ -1616,7 +1634,7 @@ public interface NDArrayFactory {
      * @param ordering
      * @return
      */
-    INDArray create(float[] data, int rows, int columns, int[] stride, long offset, char ordering);
+    INDArray create(float[] data, long rows, long columns, int[] stride, long offset, char ordering);
 
     /**
      *
@@ -1704,7 +1722,7 @@ public interface NDArrayFactory {
      * @param ordering
      * @return
      */
-    INDArray create(int rows, int columns, char ordering);
+    INDArray create(long rows, long columns, char ordering);
 
     /**
      *

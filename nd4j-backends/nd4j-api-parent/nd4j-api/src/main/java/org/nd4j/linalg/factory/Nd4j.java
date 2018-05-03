@@ -380,7 +380,7 @@ public class Nd4j {
         if (padAmount == 0)
             return arr;
 
-        int[] paShape = ArrayUtil.copy(arr.shape());
+        long[] paShape = ArrayUtil.copy(arr.shape());
         if (axis < 0)
             axis = axis + arr.shape().length;
         paShape[axis] = padAmount;
@@ -400,8 +400,8 @@ public class Nd4j {
     public static INDArray expandDims(INDArray input, int dimension) {
         if (dimension < 0)
             dimension += input.rank();
-        int[] shape = input.shape();
-        int[] indexes = new int[input.rank() + 1];
+        long[] shape = input.shape();
+        long[] indexes = new long[input.rank() + 1];
         for (int i = 0; i < indexes.length; i++)
             indexes[i] = i < dimension ? shape[i] : i == dimension ? 1 : shape[i - 1];
         return input.reshape(input.ordering(), indexes);
@@ -3557,6 +3557,8 @@ public class Nd4j {
      * @return the complex
      */
     public static IComplexNDArray createComplex(INDArray real, INDArray imag) {
+        throw new UnsupportedOperationException();
+        /*
         assert Shape.shapeEquals(real.shape(), imag.shape());
         IComplexNDArray ret = Nd4j.createComplex(real.shape());
         INDArray realLinear = real.linearView();
@@ -3567,6 +3569,7 @@ public class Nd4j {
         }
         logCreationIfNecessary(ret);
         return ret;
+        */
     }
 
     /**
@@ -4261,6 +4264,16 @@ public class Nd4j {
         return create(shape, order());
     }
 
+
+    /**
+     * Creates an ndarray with the specified shape
+     *
+     * @param shape the shape of the ndarray
+     * @return the instance
+     */
+    public static INDArray create(long... shape) {
+        return create(shape, order());
+    }
 
     /**
      *
@@ -5084,6 +5097,24 @@ public class Nd4j {
         return ret;
     }
 
+    public static INDArray create(long[] shape, char ordering) {
+        //ensure shapes that wind up being scalar end up with the write shape
+
+        checkShapeValues(shape);
+
+        INDArray ret = INSTANCE.create(shape, ordering);
+        logCreationIfNecessary(ret);
+        return ret;
+    }
+
+    public static void checkShapeValues(long[] shape) {
+        for (long e: shape) {
+            if (e < 1)
+                throw new ND4JIllegalStateException("Invalid shape: Requested INDArray shape " + Arrays.toString(shape)
+                        + " contains dimension size values < 1 (all dimensions must be 1 or more)");
+        }
+    }
+
     public static void checkShapeValues(int[] shape) {
         for (int e: shape) {
             if (e < 1)
@@ -5533,6 +5564,26 @@ public class Nd4j {
      * @return the created ndarray
      */
     public static INDArray valueArrayOf(int[] shape, double value) {
+        if (shape.length == 0)
+            return trueScalar(value);
+
+        checkShapeValues(shape);
+
+        INDArray ret = INSTANCE.valueArrayOf(shape, value);
+        logCreationIfNecessary(ret);
+        return ret;
+    }
+
+    /**
+     * Creates an ndarray with the specified value
+     * as the  only value in the ndarray.
+     * Some people may know this as np.full
+     *
+     * @param shape the shape of the ndarray
+     * @param value the value to assign
+     * @return the created ndarray
+     */
+    public static INDArray valueArrayOf(long[] shape, double value) {
         if (shape.length == 0)
             return trueScalar(value);
 
@@ -6008,6 +6059,15 @@ public class Nd4j {
         return ret;
     }
 
+
+    public static INDArray ones(long... shape) {
+        checkShapeValues(shape);
+
+        INDArray ret = INSTANCE.ones(shape);
+        logCreationIfNecessary(ret);
+        return ret;
+    }
+
     /**
      * Create an ndarray of ones
      *
@@ -6248,8 +6308,8 @@ public class Nd4j {
      */
     public static INDArray tile(INDArray tile, int... repeat) {
         int d = repeat.length;
-        int[] shape = ArrayUtil.copy(tile.shape());
-        int n = Math.max(tile.length(), 1);
+        long[] shape = ArrayUtil.copy(tile.shape());
+        long n = Math.max(tile.length(), 1);
         if (d < tile.rank()) {
             repeat = Ints.concat(ArrayUtil.nTimes(tile.rank() - d, 1), repeat);
         }
@@ -6258,8 +6318,8 @@ public class Nd4j {
                 tile = tile.reshape(-1, n).repeat(0, new int[] {repeat[i]});
             }
 
-            int in = shape[i];
-            int nOut = in * repeat[i];
+            long in = shape[i];
+            long nOut = in * repeat[i];
             shape[i] = nOut;
             n /= Math.max(in, 1);
 

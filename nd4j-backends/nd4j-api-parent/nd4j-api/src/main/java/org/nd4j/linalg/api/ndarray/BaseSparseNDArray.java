@@ -51,7 +51,7 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     protected long length = -1;
     public static final boolean isSparse = true;
     protected transient volatile DataBuffer shapeInformation;
-    protected transient volatile int[] javaShapeInformation;
+    protected transient volatile long[] javaShapeInformation;
     protected transient volatile DataBuffer sparseInformation;
     protected transient DataBuffer shape;
     protected transient DataBuffer stride;
@@ -1708,7 +1708,7 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
         return shapeOf().getInt(dimension);
     }
 
-    protected void setShapeInformation(Pair<DataBuffer, int[]> shapeInfo) {
+    protected void setShapeInformation(Pair<DataBuffer, long[]> shapeInfo) {
         this.shapeInformation = shapeInfo.getFirst();
         this.javaShapeInformation = shapeInfo.getSecond();
     }

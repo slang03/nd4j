@@ -234,8 +234,8 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
     }
 
     @Override
-    public INDArray create(int rows, int columns, char ordering) {
-        return create(new int[] {rows, columns}, ordering);
+    public INDArray create(long rows, long columns, char ordering) {
+        return create(new long[] {rows, columns}, ordering);
     }
 
 
@@ -533,8 +533,8 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
      * @return the random ndarray with the specified shape
      */
     @Override
-    public INDArray rand(int rows, int columns, org.nd4j.linalg.api.rng.Random r) {
-        return rand(new int[] {rows, columns}, r);
+    public INDArray rand(long rows, long columns, org.nd4j.linalg.api.rng.Random r) {
+        return rand(new long[] {rows, columns}, r);
     }
 
     /**
@@ -546,9 +546,9 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
      * @return the random ndarray with the specified shape
      */
     @Override
-    public INDArray rand(int rows, int columns, long seed) {
+    public INDArray rand(long rows, long columns, long seed) {
         Nd4j.getRandom().setSeed(seed);
-        return rand(new int[] {rows, columns}, Nd4j.getRandom());
+        return rand(new long[] {rows, columns}, Nd4j.getRandom());
     }
 
     /**
@@ -700,6 +700,11 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
         return r.nextGaussian(shape);
     }
 
+    @Override
+    public INDArray randn(long[] shape, org.nd4j.linalg.api.rng.Random r) {
+        return r.nextGaussian(shape);
+    }
+
     /**
      * Random normal using the current time stamp
      * as the seed
@@ -723,6 +728,11 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
         return randn(shape, System.currentTimeMillis());
     }
 
+    @Override
+    public INDArray randn(long[] shape) {
+        return randn(shape, System.currentTimeMillis());
+    }
+
     /**
      * Random normal using the specified seed
      *
@@ -731,6 +741,12 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
      */
     @Override
     public INDArray randn(int[] shape, long seed) {
+        Nd4j.getRandom().setSeed(seed);
+        return randn(shape, Nd4j.getRandom());
+    }
+
+    @Override
+    public INDArray randn(long[] shape, long seed) {
         Nd4j.getRandom().setSeed(seed);
         return randn(shape, Nd4j.getRandom());
     }
@@ -1268,7 +1284,15 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
         INDArray ret = create(shape);
         ret.assign(1);
         return ret;
+    }
 
+    @Override
+    public INDArray ones(long[] shape) {
+        //ensure shapes that wind up being scalar end up with the write shape
+
+        INDArray ret = create(shape);
+        ret.assign(1);
+        return ret;
     }
 
     /**
@@ -1578,7 +1602,17 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
         }
         DataBuffer buffer = Nd4j.createBuffer(ArrayUtil.prodLong(shape));
         return create(buffer, shape, stride, offset);
+    }
 
+    @Override
+    public INDArray create(long[] shape, long[] stride, long offset) {
+        //ensure shapes that wind up being scalar end up with the write shape
+        if (shape.length == 1 && shape[0] == 0) {
+            shape = new long[] {1, 1};
+        }
+
+        DataBuffer buffer = Nd4j.createBuffer(ArrayUtil.prodLong(shape));
+        return create(buffer, shape, stride, offset);
     }
 
 
@@ -1591,8 +1625,9 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
      * @return the instance
      */
     @Override
-    public IComplexNDArray createComplex(int rows, int columns, int[] stride) {
-        return createComplex(new int[] {rows, columns}, stride);
+    public IComplexNDArray createComplex(long rows, long columns, int[] stride) {
+        //return createComplex(new int[] {rows, columns}, stride);
+        throw new UnsupportedOperationException();
     }
 
 
@@ -1605,8 +1640,8 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
      * @return the instance
      */
     @Override
-    public INDArray create(int rows, int columns, int[] stride) {
-        return create(new int[] {rows, columns}, stride);
+    public INDArray create(long rows, long columns, int[] stride) {
+        return create(new long[] {rows, columns}, ArrayUtil.toLongArray(stride));
     }
 
 
@@ -1673,6 +1708,18 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
         return createComplex(shape, Nd4j.getComplexStrides(shape), 0);
     }
 
+    /**
+     * Creates an ndarray with the specified shape
+     *
+     * @param shape the shape of the ndarray
+     * @return the instance
+     */
+    @Override
+    public INDArray create(long[] shape) {
+        //ensure shapes that wind up being scalar end up with the write shape
+
+        return create(shape, Nd4j.getStrides(shape), 0L);
+    }
 
     /**
      * Creates an ndarray with the specified shape

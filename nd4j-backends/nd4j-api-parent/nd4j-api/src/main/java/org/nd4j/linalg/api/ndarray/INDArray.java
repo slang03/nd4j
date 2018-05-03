@@ -2244,7 +2244,7 @@ public interface INDArray extends Serializable {
      * @param newShape the new shape of the ndarray
      * @return the reshaped ndarray
      */
-    INDArray reshape(char order, int... newShape);
+    INDArray reshape(char order, long... newShape);
 
 
     /**
@@ -2265,7 +2265,7 @@ public interface INDArray extends Serializable {
      * @param newShape the new shape of the ndarray
      * @return the reshaped ndarray
      */
-    INDArray reshape(int... newShape);
+    INDArray reshape(long... newShape);
 
 
     /**
@@ -2437,7 +2437,7 @@ public interface INDArray extends Serializable {
      *
      * @return the shape of this ndarray
      */
-    int[] shape();
+    long[] shape();
 
 
     /**
@@ -2445,7 +2445,7 @@ public interface INDArray extends Serializable {
      *
      * @return the stride of this ndarray
      */
-    int[] stride();
+    long[] stride();
 
     /**
      * Return the ordering (fortran or c  'f' and 'c' respectively) of this ndarray
@@ -2459,14 +2459,14 @@ public interface INDArray extends Serializable {
      * @param dimension the dimension to return the size for
      * @return the size of the array along the specified dimension
      */
-    int size(int dimension);
+    long size(int dimension);
 
     /**
      * Returns the total number of elements in the ndarray
      *
      * @return the number of elements in the ndarray
      */
-    int length();
+    long length();
 
     /**
      * Returns the total number of elements in the ndarray
@@ -2482,7 +2482,7 @@ public interface INDArray extends Serializable {
      * @param shape the new shape of this ndarray
      * @return the broadcasted ndarray
      */
-    INDArray broadcast(int... shape);
+    INDArray broadcast(long... shape);
 
 
     /**
