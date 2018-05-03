@@ -607,6 +607,8 @@ public interface NDArrayFactory {
      */
     INDArray rand(int[] shape, org.nd4j.linalg.api.rng.Random r);
 
+    INDArray rand(long[] shape, org.nd4j.linalg.api.rng.Random r);
+
     /**
      * Create a random ndarray with the given shape using the given rng
      *
@@ -615,6 +617,8 @@ public interface NDArrayFactory {
      * @return the random ndarray with the specified shape
      */
     INDArray rand(int[] shape, long seed);
+
+    INDArray rand(long[] shape, long seed);
 
     /**
      * Create a random ndarray with the given shape using
@@ -625,6 +629,8 @@ public interface NDArrayFactory {
      */
     INDArray rand(int[] shape);
 
+    INDArray rand(long[] shape);
+
     /**
      * Create a random ndarray with the given shape, and specified output order
      *
@@ -632,6 +638,8 @@ public interface NDArrayFactory {
      * @return the random ndarray with the specified shape
      */
     INDArray rand(char order, int[] shape);
+
+    INDArray rand(char order, long[] shape);
 
     /**
      * Random normal using the given rng
@@ -641,6 +649,8 @@ public interface NDArrayFactory {
      */
     INDArray randn(int[] shape, org.nd4j.linalg.api.rng.Random r);
 
+    INDArray randn(long[] shape, org.nd4j.linalg.api.rng.Random r);
+
     /**
      * Random normal N(0,1) using the current time stamp
      * as the seed
@@ -648,6 +658,7 @@ public interface NDArrayFactory {
      * @param shape the shape of the ndarray
      */
     INDArray randn(int[] shape);
+    INDArray randn(long[] shape);
 
     /**
      * Random normal N(0,1) with the specified shape and order
@@ -656,6 +667,7 @@ public interface NDArrayFactory {
      * @param shape the shape of the ndarray
      */
     INDArray randn(char order, int[] shape);
+    INDArray randn(char order, long[] shape);
 
     /**
      * Random normal using the specified seed
@@ -664,6 +676,7 @@ public interface NDArrayFactory {
      * @return
      */
     INDArray randn(int[] shape, long seed);
+    INDArray randn(long[] shape, long seed);
 
 
     /**
@@ -1149,6 +1162,8 @@ public interface NDArrayFactory {
      */
     INDArray create(List<INDArray> list, int[] shape);
 
+    INDArray create(List<INDArray> list, long[] shape);
+
 
     /**
      * Creates a complex ndarray with the specified shape
@@ -1565,6 +1580,8 @@ public interface NDArrayFactory {
 
     INDArray createUninitialized(int[] shape, char ordering);
 
+    INDArray createUninitialized(long[] shape, char ordering);
+
     /**
      * Cretes uninitialized INDArray detached from any (if any) workspace
      * @param shape
@@ -1572,6 +1589,8 @@ public interface NDArrayFactory {
      * @return
      */
     INDArray createUninitializedDetached(int[] shape, char ordering);
+
+    INDArray createUninitializedDetached(long[] shape, char ordering);
 
     /**
      *
@@ -1583,6 +1602,8 @@ public interface NDArrayFactory {
      * @return
      */
     INDArray create(DataBuffer data, int[] newShape, int[] newStride, long offset, char ordering);
+
+    INDArray create(DataBuffer data, long[] newShape, long[] newStride, long offset, char ordering);
 
     /**
      *
@@ -1653,6 +1674,8 @@ public interface NDArrayFactory {
      * @return
      */
     INDArray create(List<INDArray> list, int[] shape, char ordering);
+
+    INDArray create(List<INDArray> list, long[] shape, char ordering);
 
     /**
      *

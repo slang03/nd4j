@@ -204,6 +204,8 @@ public interface Distribution {
      */
     INDArray sample(int[] shape);
 
+    INDArray sample(long[] shape);
+
 
     /**
      * Fill the target array by sampling from the distribution

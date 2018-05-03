@@ -483,6 +483,7 @@ public class Shape {
 
     private static INDArray toOffsetZeroCopyHelper(final INDArray arr, char order, boolean anyOrder) {
         if (arr instanceof IComplexNDArray) {
+            /*
             if (arr.isRowVector()) {
                 IComplexNDArray ret = Nd4j.createComplex(arr.shape(), order);
                 for (int i = 0; i < ret.length(); i++)
@@ -493,6 +494,8 @@ public class Shape {
             for (int i = 0; i < ret.slices(); i++)
                 ret.putSlice(i, arr.slice(i));
             return ret;
+            */
+            throw new UnsupportedOperationException();
         } else {
             //Use CopyOp:
             char outOrder = (anyOrder ? arr.ordering() : order);
@@ -525,7 +528,7 @@ public class Shape {
      *
      */
     public static void iterate(INDArray arr, CoordinateFunction coordinateFunction) {
-        Shape.iterate(0, arr.rank(), arr.shape(), new int[arr.rank()], coordinateFunction);
+        Shape.iterate(0, arr.rank(), arr.shape(), new long[arr.rank()], coordinateFunction);
     }
 
     /**
@@ -537,8 +540,8 @@ public class Shape {
      *
      */
     public static void iterate(INDArray arr, INDArray arr2, CoordinateFunction coordinateFunction) {
-        Shape.iterate(0, arr.rank(), arr.shape(), new int[arr.rank()], 0, arr2.rank(), arr2.shape(),
-                new int[arr2.rank()], coordinateFunction);
+        Shape.iterate(0, arr.rank(), arr.shape(), new long[arr.rank()], 0, arr2.rank(), arr2.shape(),
+                new long[arr2.rank()], coordinateFunction);
     }
 
     /**
@@ -555,6 +558,44 @@ public class Shape {
      */
     public static void iterate(int dimension, int n, int[] size, int[] res, int dimension2, int n2, int[] size2,
                                int[] res2, CoordinateFunction func) {
+        if (dimension >= n || dimension2 >= n2) {
+            // stop clause
+            func.process(ArrayUtil.toLongArray(res), ArrayUtil.toLongArray(res2));
+            return;
+        }
+
+        if (size2.length != size.length) {
+            if (dimension >= size.length)
+                return;
+            for (int i = 0; i < size[dimension]; i++) {
+                if (dimension2 >= size2.length)
+                    break;
+                for (int j = 0; j < size2[dimension2]; j++) {
+                    res[dimension] = i;
+                    res2[dimension2] = j;
+                    iterate(dimension + 1, n, size, res, dimension2 + 1, n2, size2, res2, func);
+                }
+
+            }
+        } else {
+            if (dimension >= size.length)
+                return;
+
+            for (int i = 0; i < size[dimension]; i++) {
+                for (int j = 0; j < size2[dimension2]; j++) {
+                    if (dimension2 >= size2.length)
+                        break;
+                    res[dimension] = i;
+                    res2[dimension2] = j;
+                    iterate(dimension + 1, n, size, res, dimension2 + 1, n2, size2, res2, func);
+                }
+
+            }
+        }
+    }
+
+    public static void iterate(int dimension, int n, long[] size, long[] res, int dimension2, int n2, long[] size2,
+                               long[] res2, CoordinateFunction func) {
         if (dimension >= n || dimension2 >= n2) {
             // stop clause
             func.process(res, res2);
@@ -599,6 +640,17 @@ public class Shape {
      * @param size
      */
     public static void iterate(int dimension, int n, int[] size, int[] res, CoordinateFunction func) {
+        if (dimension >= n) { //stop clause
+            func.process(ArrayUtil.toLongArray(res));
+            return;
+        }
+        for (int i = 0; i < size[dimension]; i++) {
+            res[dimension] = i;
+            iterate(dimension + 1, n, ArrayUtil.toLongArray(size), ArrayUtil.toLongArray(res), func);
+        }
+    }
+
+    public static void iterate(int dimension, int n, long[] size, long[] res, CoordinateFunction func) {
         if (dimension >= n) { //stop clause
             func.process(res);
             return;
@@ -1277,6 +1329,16 @@ public class Shape {
         return false;
     }
 
+    public static boolean scalarEquals(long[] shape1, long[] shape2) {
+        if (shape1.length == 0 && shape2.length == 1 && shape2[0] == 1) {
+            return true;
+        } else if (shape2.length == 0 && shape1.length == 1 && shape1[0] == 1) {
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * Returns true if the given shape is of length 1
      * or provided the shape length is 2:
@@ -1509,13 +1571,13 @@ public class Shape {
      * @param isFOrder whether the array will be fortran ordered or not
      * @return null if a reshape isn't possible, or a new ndarray
      */
-    public static INDArray newShapeNoCopy(INDArray arr, int[] newShape, boolean isFOrder) {
+    public static INDArray newShapeNoCopy(INDArray arr, long[] newShape, boolean isFOrder) {
         int oldnd;
-        int[] olddims = ArrayUtil.copy(arr.shape());
-        int[] oldstrides = ArrayUtil.copy(arr.stride());
-        int np, op, last_stride;
+        long[] olddims = ArrayUtil.copy(arr.shape());
+        long[] oldstrides = ArrayUtil.copy(arr.stride());
+        long np, op, last_stride;
         int oi, oj, ok, ni, nj, nk;
-        int[] newStrides = new int[newShape.length];
+        long[] newStrides = new long[newShape.length];
         oldnd = 0;
         /*
          * Remove axes with dimension 1 from the old array. They have no effect
@@ -1614,7 +1676,8 @@ public class Shape {
         }
 
         if (arr instanceof IComplexNDArray)
-            return Nd4j.createComplex(arr.data(), newShape, newStrides, arr.offset());
+            //return Nd4j.createComplex(arr.data(), newShape, newStrides, arr.offset());
+            throw new UnsupportedOperationException();
 
 
         INDArray ret = Nd4j.create(arr.data(), newShape, newStrides, arr.offset(), isFOrder ? 'f' : 'c');
@@ -1728,6 +1791,56 @@ public class Shape {
 
     }
 
+
+    public static char getOrder(long[] shape, long[] stride, long elementStride) {
+        long sd;
+        long dim;
+        int i;
+        boolean cContiguous = true;
+        boolean isFortran = true;
+
+        sd = 1;
+        for (i = shape.length - 1; i >= 0; --i) {
+            dim = shape[i];
+
+            if (stride[i] != sd) {
+                cContiguous = false;
+                break;
+            }
+            /* contiguous, if it got this far */
+            if (dim == 0) {
+                break;
+            }
+            sd *= dim;
+
+        }
+
+
+        /* check if fortran contiguous */
+        sd = elementStride;
+        for (i = 0; i < shape.length; ++i) {
+            dim = shape[i];
+            if (stride[i] != sd) {
+                isFortran = false;
+            }
+            if (dim == 0) {
+                break;
+            }
+            sd *= dim;
+
+        }
+
+        if (isFortran && cContiguous)
+            return 'a';
+        else if (isFortran && !cContiguous)
+            return 'f';
+        else if (!isFortran && !cContiguous)
+            return 'c';
+        else
+            return 'c';
+
+    }
+
     /**
      * Infer the order for the ndarray based on the
      * array's strides
@@ -1779,6 +1892,20 @@ public class Shape {
         return ret;
     }
 
+
+    public static long[] ind2sub(long[] shape, long index, long numIndices) {
+        long denom = numIndices;
+        long[] ret = new long[shape.length];
+        for (int i = ret.length - 1; i >= 0; i--) {
+            denom /= shape[i];
+            if (index / denom >= Integer.MAX_VALUE)
+                throw new IllegalArgumentException("Dimension can not be >= Integer.MAX_VALUE");
+            ret[i] = (index / denom);
+            index %= denom;
+        }
+        return ret;
+    }
+
     /**
      * Convert a linear index to
      * the equivalent nd index.
@@ -1792,6 +1919,10 @@ public class Shape {
         return ind2sub(shape, index, ArrayUtil.prodLong(shape));
     }
 
+    public static long[] ind2sub(long[] shape, long index) {
+        return ind2sub(shape, index, ArrayUtil.prodLong(shape));
+    }
+
     /**
      * Convert a linear index to
      * the equivalent nd index based on the shape of the specified ndarray.
@@ -1802,9 +1933,9 @@ public class Shape {
      * @param index the index to map
      * @return the mapped indexes along each dimension
      */
-    public static int[] ind2sub(INDArray arr, long index) {
+    public static long[] ind2sub(INDArray arr, long index) {
         if (arr.rank() == 1)
-            return new int[]{(int) index};
+            return new long[]{(int) index};
         return ind2sub(arr.shape(), index, ArrayUtil.prodLong(arr.shape()));
     }
 
@@ -1857,6 +1988,10 @@ public class Shape {
      * @return the mapped indexes along each dimension
      */
     public static int[] ind2subC(int[] shape, long index) {
+        return ind2subC(shape, index, ArrayUtil.prodLong(shape));
+    }
+
+    public static long[] ind2subC(long[] shape, long index) {
         return ind2subC(shape, index, ArrayUtil.prodLong(shape));
     }
 

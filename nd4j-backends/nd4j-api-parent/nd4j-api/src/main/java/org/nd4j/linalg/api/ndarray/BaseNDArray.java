@@ -1290,7 +1290,7 @@ public abstract class BaseNDArray implements INDArray, Iterable {
         } else if (isColumnVector()) {
             return putScalar(i, 0, value);
         }
-        int[] indexes = ordering() == 'c' ? Shape.ind2subC(this, i) : Shape.ind2sub(this, i);
+        long[] indexes = ordering() == 'c' ? Shape.ind2subC(this, i) : Shape.ind2sub(this, i);
         return putScalar(indexes, value);
 
     }

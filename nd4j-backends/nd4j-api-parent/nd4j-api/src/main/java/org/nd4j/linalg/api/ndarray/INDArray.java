@@ -335,6 +335,11 @@ public interface INDArray extends Serializable {
      */
     INDArray putScalar(int[] i, double value);
 
+
+    INDArray putScalar(long[] i, double value);
+    INDArray putScalar(long[] i, float value);
+    INDArray putScalar(long[] i, int value);
+
     /**
      * Insert the value at the specified indices, in a 2d (rank 2) NDArray<br>
      * Equivalent to {@link #putScalar(int[], double)} but avoids int[] creation

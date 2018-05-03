@@ -381,12 +381,14 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
      * @param reverse the matrix to reverse
      * @return the reversed matrix
      */
+    
     @Override
     public INDArray reverse(INDArray reverse) {
+        // FIXME: native method should be used instead
         INDArray rev = reverse.linearView();
         INDArray ret = Nd4j.create(rev.shape());
         int count = 0;
-        for (int i = rev.length() - 1; i >= 0; i--) {
+        for (long i = rev.length() - 1; i >= 0; i--) {
             ret.putScalar(count++, rev.getFloat(i));
 
         }
@@ -453,6 +455,15 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
         return Nd4j.getDistributions().createUniform(min, max).sample(shape);
     }
 
+    @Override
+    public INDArray rand(long[] shape, float min, float max, org.nd4j.linalg.api.rng.Random rng) {
+        //ensure shapes that wind up being scalar end up with the write shape
+        if (shape.length == 1 && shape[0] == 0) {
+            shape = new long[] {1, 1};
+        }
+        return Nd4j.getDistributions().createUniform(min, max).sample(shape);
+    }
+
     /**
      * Generates a random matrix between min and max
      *
@@ -464,8 +475,8 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
      * @return a random matrix of the specified shape and range
      */
     @Override
-    public INDArray rand(int rows, int columns, float min, float max, org.nd4j.linalg.api.rng.Random rng) {
-        return rand(new int[] {rows, columns}, min, max, rng);
+    public INDArray rand(long rows, long columns, float min, float max, org.nd4j.linalg.api.rng.Random rng) {
+        return rand(new long[] {rows, columns}, min, max, rng);
     }
 
     /**
