@@ -1340,6 +1340,24 @@ public class ArrayUtil {
         return result;
     }
 
+    public static long[] removeIndex(long[] data, int index) {
+        if (data == null)
+            return null;
+
+        if (index >= data.length)
+            throw new IllegalArgumentException("Unable to remove index " + index + " was >= data.length");
+        if (data.length < 1)
+            return data;
+        if (index < 0)
+            return data;
+
+        int len = data.length;
+        long[] result = new long[len - 1];
+        System.arraycopy(data, 0, result, 0, index);
+        System.arraycopy(data, index + 1, result, index, len - index - 1);
+        return result;
+    }
+
 
     /**
      * Create a copy of the given array

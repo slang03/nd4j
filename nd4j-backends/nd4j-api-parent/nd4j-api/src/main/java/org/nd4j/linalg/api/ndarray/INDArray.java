@@ -2110,6 +2110,8 @@ public interface INDArray extends Serializable {
      */
     float getFloat(int[] indices);
 
+    float getFloat(long[] indices);
+
 
     /**
      * Get the double value at the specified linear index in the array
@@ -2117,7 +2119,7 @@ public interface INDArray extends Serializable {
      * @param i Index
      * @return Double value at the specified index
      */
-    double getDouble(int i);
+    double getDouble(long i);
 
     /**
      * Get the double value at the specified indices. Can only be used for 2D (rank 2) arrays.
@@ -2126,7 +2128,7 @@ public interface INDArray extends Serializable {
      * @param j Dimension 1 (column) index
      * @return
      */
-    double getDouble(int i, int j);
+    double getDouble(long i, long j);
 
     /**
      * Return the item at the linear index i
@@ -2134,7 +2136,7 @@ public interface INDArray extends Serializable {
      * @param i the index of the item to getScalar
      * @return the item at index j
      */
-    float getFloat(int i);
+    float getFloat(long i);
 
     /**
      * Return the item at row i column j
@@ -2144,7 +2146,7 @@ public interface INDArray extends Serializable {
      * @param j the column to getScalar
      * @return the item at row i column j
      */
-    float getFloat(int i, int j);
+    float getFloat(long i, long j);
 
 
     /**

@@ -4235,6 +4235,10 @@ public class Nd4j {
         return create(shape, stride, order());
     }
 
+    public static INDArray create(long[] shape, long[] stride) {
+        return create(shape, stride, order());
+    }
+
 
     /**
      *
@@ -5034,6 +5038,16 @@ public class Nd4j {
      * @return the instance
      */
     public static INDArray create(int[] shape, int[] stride, char ordering) {
+        shape = getEnsuredShape(shape);
+
+        checkShapeValues(shape);
+
+        INDArray ret = INSTANCE.create(shape, stride, 0, ordering);
+        logCreationIfNecessary(ret);
+        return ret;
+    }
+
+    public static INDArray create(long[] shape, long[] stride, char ordering) {
         shape = getEnsuredShape(shape);
 
         checkShapeValues(shape);

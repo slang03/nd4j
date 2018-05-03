@@ -333,6 +333,8 @@ public interface NDArrayFactory {
      */
     INDArray rand(int[] shape, float min, float max, org.nd4j.linalg.api.rng.Random rng);
 
+    INDArray rand(long[] shape, float min, float max, org.nd4j.linalg.api.rng.Random rng);
+
     /**
      * Generates a random matrix between min and max
      *
@@ -415,6 +417,7 @@ public interface NDArrayFactory {
      * @return
      */
     INDArray pullRows(INDArray source, int sourceDimension, int[] indexes);
+    INDArray pullRows(INDArray source, int sourceDimension, long[] indexes);
 
     /**
      * This method produces concatenated array, that consist from tensors, fetched from source array, against some dimension and specified indexes
@@ -857,6 +860,8 @@ public interface NDArrayFactory {
      */
     INDArray zeros(int[] shape);
 
+    INDArray zeros(long[] shape);
+
     /**
      * Create an ndarray of ones
      *
@@ -1006,6 +1011,8 @@ public interface NDArrayFactory {
      */
     INDArray create(float[] data, int[] shape, int[] stride, long offset);
 
+    INDArray create(float[] data, long[] shape, long[] stride, long offset);
+
     /**
      * Create an ndrray with the specified shape
      *
@@ -1105,6 +1112,8 @@ public interface NDArrayFactory {
      * @return the instance
      */
     INDArray create(double[] data, int[] shape, int[] stride, long offset);
+
+    INDArray create(double[] data, long[] shape, long[] stride, long offset);
 
 
     /**
@@ -1251,14 +1260,18 @@ public interface NDArrayFactory {
      */
     INDArray create(int[] shape, int[] stride);
 
+    INDArray create(long[] shape, long[] stride);
+
+    INDArray create(long[] shape);
+
 
     /**
-     * Creates a complex ndarray with the specified shape
-     *
-     * @param rows    the rows of the ndarray
-     * @param columns the columns of the ndarray
-     * @return the instance
-     */
+    * Creates a complex ndarray with the specified shape
+    *
+    * @param rows    the rows of the ndarray
+    * @param columns the columns of the ndarray
+    * @return the instance
+    */
     IComplexNDArray createComplex(long rows, long columns);
 
     /**
@@ -1707,6 +1720,8 @@ public interface NDArrayFactory {
      */
     INDArray rand(int[] shape, double min, double max, org.nd4j.linalg.api.rng.Random rng);
 
+    INDArray rand(long[] shape, double min, double max, org.nd4j.linalg.api.rng.Random rng);
+
     /**
      *
      * @param ints
@@ -1774,6 +1789,8 @@ public interface NDArrayFactory {
      */
     INDArray create(float[] data, int[] shape, int[] stride, char order, long offset);
 
+    INDArray create(float[] data, long[] shape, long[] stride, char order, long offset);
+
     /**
      *
      * @param buffer
@@ -1813,6 +1830,8 @@ public interface NDArrayFactory {
      * @return
      */
     INDArray create(int[] shape, int[] stride, long offset, char ordering);
+
+    INDArray create(long[] shape, long[] stride, long offset, char ordering);
 
     /**
      *
