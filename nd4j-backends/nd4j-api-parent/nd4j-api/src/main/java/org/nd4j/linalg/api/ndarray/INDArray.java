@@ -216,7 +216,7 @@ public interface INDArray extends Serializable {
      * @param dimension the dimension to calculate the number of vectors for
      * @return the number of possible vectors along a dimension
      */
-    int vectorsAlongDimension(int dimension);
+    long vectorsAlongDimension(int dimension);
 
     /**
      * Get the vector along a particular dimension
@@ -233,7 +233,7 @@ public interface INDArray extends Serializable {
      * @param dimension the dimension to calculate the number of vectors for
      * @return the number of possible vectors along a dimension
      */
-    int tensorssAlongDimension(int... dimension);
+    long tensorssAlongDimension(int... dimension);
 
     /**
      * Get the vector along a particular dimension
@@ -1123,7 +1123,7 @@ public interface INDArray extends Serializable {
      * @param column the column to getScalar the linear index for
      * @return the linear index of the given row and column
      */
-    int index(int row, int column);
+    long index(long row, long column);
 
     /**
      * Returns the square of the Euclidean distance.
@@ -2094,6 +2094,8 @@ public interface INDArray extends Serializable {
      */
     INDArray getScalar(int... indices);
 
+    INDArray getScalar(long... indices);
+
     /**
      * Get an integer value at the specified indices. Result will be cast to an integer, precision loss is possible.
      * @param indices Indices to get the integer at. Number of indices must match the array rank.
@@ -2107,6 +2109,8 @@ public interface INDArray extends Serializable {
      * @return Double value at the specified index
      */
     double getDouble(int... indices);
+
+    double getDouble(long... indices);
 
     /**
      * Returns the elements at the the specified indices
@@ -2197,7 +2201,7 @@ public interface INDArray extends Serializable {
      *
      * @return the number of slices in this ndarray
      */
-    int slices();
+    long slices();
 
     /**
      * Get the number of trailing ones in the array shape. For example, a rank 3 array with shape [10, 1, 1] would
@@ -2289,7 +2293,7 @@ public interface INDArray extends Serializable {
      * @param columns the columns of the matrix
      * @return the reshaped ndarray
      */
-    INDArray reshape(int rows, int columns);
+    INDArray reshape(long rows, long columns);
 
     /**
      * Flip the rows and columns of a matrix
@@ -2390,14 +2394,14 @@ public interface INDArray extends Serializable {
      *
      * @return the number of columns in this matrix
      */
-    int columns();
+    long columns();
 
     /**
      * Returns the number of rows in this matrix (throws exception if not 2d)
      *
      * @return the number of rows in this matrix
      */
-    int rows();
+    long rows();
 
     /**
      * Returns true if the number of columns is 1

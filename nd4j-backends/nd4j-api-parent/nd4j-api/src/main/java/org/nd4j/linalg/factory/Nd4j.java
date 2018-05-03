@@ -76,6 +76,7 @@ import org.nd4j.linalg.compression.BasicNDArrayCompressor;
 import org.nd4j.linalg.compression.CompressedDataBuffer;
 import org.nd4j.linalg.convolution.ConvolutionInstance;
 import org.nd4j.linalg.convolution.DefaultConvolutionInstance;
+import org.nd4j.linalg.exception.ND4JArraySizeException;
 import org.nd4j.linalg.exception.ND4JIllegalStateException;
 import org.nd4j.linalg.factory.Nd4jBackend.NoAvailableBackendException;
 import org.nd4j.linalg.memory.BasicMemoryManager;
@@ -908,9 +909,9 @@ public class Nd4j {
                                 INDArray b,
                                 boolean transposeA,
                                 boolean transposeB) {
-        int cRows = (transposeA ? a.columns() : a.rows());
-        int cCols = (transposeB ? b.rows() : b.columns());
-        INDArray c = Nd4j.createUninitialized(new int[] {cRows, cCols}, 'f');
+        long cRows = (transposeA ? a.columns() : a.rows());
+        long cCols = (transposeB ? b.rows() : b.columns());
+        INDArray c = Nd4j.createUninitialized(new long[] {cRows, cCols}, 'f');
         return gemm(a, b, c, transposeA, transposeB, 1.0, 0.0);
     }
 
@@ -1352,24 +1353,51 @@ public class Nd4j {
      * @return the created buffer
      */
     public static DataBuffer createBuffer(int[] shape, DataBuffer.Type type) {
-        int length = ArrayUtil.prod(shape);
-        if (type == DataBuffer.Type.INT)
-            return createBuffer(new int[length]);
-        else if (type == DataBuffer.Type.HALF)
-            return createBuffer(new float[length]);
+        long length = ArrayUtil.prodLong(shape);
 
-        return type == DataBuffer.Type.DOUBLE ? createBuffer(new double[length]) : createBuffer(new float[length]);
+        if (type == DataBuffer.Type.INT)
+            return Nd4j.getMemoryManager().getCurrentWorkspace() == null ? DATA_BUFFER_FACTORY_INSTANCE.createInt(length, true) : DATA_BUFFER_FACTORY_INSTANCE.createInt(length, true, Nd4j.getMemoryManager().getCurrentWorkspace());
+        else if (type == DataBuffer.Type.HALF)
+            return Nd4j.getMemoryManager().getCurrentWorkspace() == null ? DATA_BUFFER_FACTORY_INSTANCE.createHalf(length, true) : DATA_BUFFER_FACTORY_INSTANCE.createHalf(length, true, Nd4j.getMemoryManager().getCurrentWorkspace());
+        else if (type == DataBuffer.Type.DOUBLE)
+            return Nd4j.getMemoryManager().getCurrentWorkspace() == null ? DATA_BUFFER_FACTORY_INSTANCE.createDouble(length, true) : DATA_BUFFER_FACTORY_INSTANCE.createDouble(length, true, Nd4j.getMemoryManager().getCurrentWorkspace());
+        else
+            return Nd4j.getMemoryManager().getCurrentWorkspace() == null ? DATA_BUFFER_FACTORY_INSTANCE.createFloat(length, true) : DATA_BUFFER_FACTORY_INSTANCE.createFloat(length, true, Nd4j.getMemoryManager().getCurrentWorkspace());
     }
 
 
     public static DataBuffer createBufferDetached(int[] shape, DataBuffer.Type type) {
-        int length = ArrayUtil.prod(shape);
+        long length = ArrayUtil.prodLong(shape);
         if (type == DataBuffer.Type.INT)
-            return createBufferDetached(new int[length]);
+            return DATA_BUFFER_FACTORY_INSTANCE.createInt(length);
         else if (type == DataBuffer.Type.HALF)
-            return createBufferDetached(new float[length]);
+            return DATA_BUFFER_FACTORY_INSTANCE.createHalf(length);
 
-        return type == DataBuffer.Type.DOUBLE ? createBufferDetached(new double[length]) : createBufferDetached(new float[length]);
+        return type == DataBuffer.Type.DOUBLE ? DATA_BUFFER_FACTORY_INSTANCE.createDouble(length) : DATA_BUFFER_FACTORY_INSTANCE.createFloat(length);
+    }
+
+    public static DataBuffer createBuffer(long[] shape, DataBuffer.Type type) {
+        long length = ArrayUtil.prodLong(shape);
+
+        if (type == DataBuffer.Type.INT)
+            return Nd4j.getMemoryManager().getCurrentWorkspace() == null ? DATA_BUFFER_FACTORY_INSTANCE.createInt(length, true) : DATA_BUFFER_FACTORY_INSTANCE.createInt(length, true, Nd4j.getMemoryManager().getCurrentWorkspace());
+        else if (type == DataBuffer.Type.HALF)
+            return Nd4j.getMemoryManager().getCurrentWorkspace() == null ? DATA_BUFFER_FACTORY_INSTANCE.createHalf(length, true) : DATA_BUFFER_FACTORY_INSTANCE.createHalf(length, true, Nd4j.getMemoryManager().getCurrentWorkspace());
+        else if (type == DataBuffer.Type.DOUBLE)
+            return Nd4j.getMemoryManager().getCurrentWorkspace() == null ? DATA_BUFFER_FACTORY_INSTANCE.createDouble(length, true) : DATA_BUFFER_FACTORY_INSTANCE.createDouble(length, true, Nd4j.getMemoryManager().getCurrentWorkspace());
+        else
+            return Nd4j.getMemoryManager().getCurrentWorkspace() == null ? DATA_BUFFER_FACTORY_INSTANCE.createFloat(length, true) : DATA_BUFFER_FACTORY_INSTANCE.createFloat(length, true, Nd4j.getMemoryManager().getCurrentWorkspace());
+    }
+
+
+    public static DataBuffer createBufferDetached(long[] shape, DataBuffer.Type type) {
+        long length = ArrayUtil.prodLong(shape);
+        if (type == DataBuffer.Type.INT)
+            return DATA_BUFFER_FACTORY_INSTANCE.createInt(length);
+        else if (type == DataBuffer.Type.HALF)
+            return DATA_BUFFER_FACTORY_INSTANCE.createHalf(length);
+
+        return type == DataBuffer.Type.DOUBLE ? DATA_BUFFER_FACTORY_INSTANCE.createDouble(length) : DATA_BUFFER_FACTORY_INSTANCE.createFloat(length);
     }
 
     /**
@@ -1879,9 +1907,12 @@ public class Nd4j {
         if (colIdx < 0 || colIdx >= in.columns())
             throw new IllegalArgumentException("Cannot sort on values in column " + colIdx + ", nCols=" + in.columns());
 
+        if (in.rows() > Integer.MAX_VALUE)
+            throw new ND4JArraySizeException();
+
         INDArray out = Nd4j.create(in.shape());
-        int nRows = in.rows();
-        ArrayList<Integer> list = new ArrayList<>(nRows);
+        int nRows = (int) in.rows();
+        ArrayList<Integer> list = new ArrayList<Integer>(nRows);
         for (int i = 0; i < nRows; i++)
             list.add(i);
         Collections.sort(list, new Comparator<Integer>() {
@@ -1921,8 +1952,11 @@ public class Nd4j {
         if (rowIdx < 0 || rowIdx >= in.rows())
             throw new IllegalArgumentException("Cannot sort on values in row " + rowIdx + ", nRows=" + in.rows());
 
+        if (in.columns() > Integer.MAX_VALUE)
+            throw new ND4JArraySizeException();
+
         INDArray out = Nd4j.create(in.shape());
-        int nCols = in.columns();
+        int nCols = (int) in.columns();
         ArrayList<Integer> list = new ArrayList<>(nCols);
         for (int i = 0; i < nCols; i++)
             list.add(i);
@@ -5329,6 +5363,17 @@ public class Nd4j {
             throw new IllegalStateException("INDArray length should be positive value");
 
         int[] shape = new int[] {1, length};
+
+        INDArray ret = INSTANCE.createUninitialized(shape, order());
+        logCreationIfNecessary(ret);
+        return ret;
+    }
+
+    public static INDArray createUninitialized(long length) {
+        if (length < 1)
+            throw new IllegalStateException("INDArray length should be positive value");
+
+        long[] shape = new long[] {1, length};
 
         INDArray ret = INSTANCE.createUninitialized(shape, order());
         logCreationIfNecessary(ret);

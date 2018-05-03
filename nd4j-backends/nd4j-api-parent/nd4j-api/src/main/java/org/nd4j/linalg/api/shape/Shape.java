@@ -21,6 +21,7 @@ package org.nd4j.linalg.api.shape;
 
 
 import com.google.common.primitives.Ints;
+import com.google.common.primitives.Longs;
 import lombok.NonNull;
 import lombok.val;
 import org.nd4j.linalg.api.buffer.DataBuffer;
@@ -149,6 +150,31 @@ public class Shape {
         return Ints.toArray(dims);
     }
 
+    public static int[] getBroadcastDimensions(long[] left, long[] right) {
+        if(Arrays.equals(left,right))
+            return null;
+
+        int n = Math.min(left.length,right.length);
+        List<Integer> dims = new ArrayList<>();
+        int leftIdx = left.length - 1;
+        int rightIdx = right.length - 1;
+        for(int i = n - 1; i >= 0; i--) {
+            if(left[leftIdx] != right[rightIdx] && right[rightIdx] == 1 || left[leftIdx] == 1) {
+                dims.add(i);
+            }
+            else if(left[leftIdx] != right[rightIdx]) {
+                throw new IllegalArgumentException("Unable to broadcast dimension " + i + " due to shape mismatch. Right shape must be 1. "
+                        + "Left array shape: " + Arrays.toString(left) + ", right array shape: " + Arrays.toString(right));
+            }
+
+            leftIdx--;
+            rightIdx--;
+        }
+
+        Collections.reverse(dims);
+        return Ints.toArray(dims);
+    }
+
 
     /**
      * Get the broadcast output shape
@@ -192,7 +218,40 @@ public class Shape {
 
         Collections.reverse(dims);
         return Ints.toArray(dims);
+    }
 
+
+    public static long[] broadcastOutputShape(long[] left,long[] right) {
+        assertBroadcastable(left, right);
+        if(Arrays.equals(left,right))
+            return left;
+        int n = Math.max(left.length,right.length);
+        List<Long> dims = new ArrayList<>();
+        int leftIdx = left.length - 1;
+        int rightIdx = right.length - 1;
+        for(int i = n - 1; i >= 0; i--) {
+            if(leftIdx < 0) {
+                dims.add(right[rightIdx]);
+            }
+            else if(rightIdx < 0) {
+                dims.add(left[leftIdx]);
+            }
+            else if(left[leftIdx] != right[rightIdx] && right[rightIdx] == 1 || left[leftIdx] == 1) {
+                dims.add(Math.max(left[leftIdx],right[rightIdx]));
+            }
+            else if(left[leftIdx] == right[rightIdx]) {
+                dims.add(left[leftIdx]);
+            }
+            else {
+                throw new IllegalArgumentException("Unable to broadcast dimension " + i + " due to shape mismatch. Right shape must be 1.");
+            }
+
+            leftIdx--;
+            rightIdx--;
+        }
+
+        Collections.reverse(dims);
+        return Longs.toArray(dims);
     }
 
 
@@ -2042,6 +2101,16 @@ public class Shape {
         }
     }
 
+    public static void assertShapeLessThan(long[] shape, long[] lessThan) {
+        if (shape.length != lessThan.length) {
+            throw new IllegalArgumentException("Shape length must be == less than length");
+        }
+        for (int i = 0; i < shape.length; i++) {
+            if (shape[i] >= lessThan[i])
+                throw new IllegalStateException("Shape[" + i + "] should be less than lessThan[" + i + "]");
+        }
+    }
+
 
 
     /**
@@ -2855,6 +2924,15 @@ public class Shape {
         return true;
     }
 
+    public static boolean contentEquals(long[] arr, DataBuffer other) {
+        for (int i = 0; i < arr.length; i++) {
+            if (other.getLong(i) != arr[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      *
      * Compare the contents of a buffer and
@@ -2864,6 +2942,17 @@ public class Shape {
      * @return true if the content equals false otherwise
      */
     public static boolean contentEquals(int[] arr, IntBuffer other) {
+        for (int i = 0; i < arr.length; i++) {
+            Buffer buffer2 = (Buffer) other;
+            buffer2.position(i);
+            if (arr[i] != other.get()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean contentEquals(long[] arr, IntBuffer other) {
         for (int i = 0; i < arr.length; i++) {
             Buffer buffer2 = (Buffer) other;
             buffer2.position(i);
