@@ -88,7 +88,7 @@ public class While extends DifferentialFunction implements CustomOp {
         this.predicate = whileStatement.predicate;
         this.predicateExecution = whileStatement.predicateExecution;
         this.inputVars = whileStatement.inputVars;
-        this.dummyResult =  this.sameDiff.var("dummyresult-" + UUID.randomUUID().toString(),new int[]{1,1},new ZeroInitScheme('f'));
+        this.dummyResult =  this.sameDiff.var("dummyresult-" + UUID.randomUUID().toString(),new long[]{1,1},new ZeroInitScheme('f'));
 
 
     }
@@ -117,7 +117,7 @@ public class While extends DifferentialFunction implements CustomOp {
         this.predicate = predicate;
         this.trueBody = trueBody;
         this.blockName = blockName;
-        this.dummyResult =  parent.var("dummyresult-" + UUID.randomUUID().toString(),new int[]{1,1},new ZeroInitScheme('f'));
+        this.dummyResult =  parent.var("dummyresult-" + UUID.randomUUID().toString(),new long[]{1,1},new ZeroInitScheme('f'));
         parent.putFunctionForId(getOwnName(),this);
 
         parent.addArgsFor(inputVars,this);
@@ -577,8 +577,8 @@ public class While extends DifferentialFunction implements CustomOp {
         return 0;
     }
     @Override
-    public List<int[]> calculateOutputShape() {
-        List<int[]> ret =  new ArrayList<>();
+    public List<long[]> calculateOutputShape() {
+        List<long[]> ret =  new ArrayList<>();
         for(SDVariable var : args()) {
             ret.add(sameDiff.getShapeForVarName(var.getVarName()));
         }

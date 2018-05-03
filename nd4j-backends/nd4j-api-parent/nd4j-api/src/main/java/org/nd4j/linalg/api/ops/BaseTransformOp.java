@@ -122,7 +122,7 @@ public abstract class BaseTransformOp extends BaseOp implements TransformOp {
 
     public BaseTransformOp(SameDiff sameDiff,
                            SDVariable i_v,
-                           int[] shape,
+                           long[] shape,
                            boolean inPlace,
                            Object[] extraArgs) {
         super(sameDiff,inPlace,extraArgs);

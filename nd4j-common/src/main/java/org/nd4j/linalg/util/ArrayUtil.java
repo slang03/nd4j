@@ -1173,6 +1173,16 @@ public class ArrayUtil {
     }
 
 
+    public static long[] permute(long[] shape, int[] dimensions) {
+        val ret = new long[shape.length];
+        for (int i = 0; i < shape.length; i++) {
+            ret[i] = shape[dimensions[i]];
+        }
+
+        return ret;
+    }
+
+
     /**
      * Original credit: https://github.com/alberts/array4j/blob/master/src/main/java/net/lunglet/util/ArrayUtils.java
      * @param a

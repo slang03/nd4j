@@ -329,6 +329,10 @@ public class Shape {
         return isWholeArray(shape.length, dimension);
     }
 
+    public static boolean isWholeArray(long[] shape, int... dimension) {
+        return isWholeArray(shape.length, dimension);
+    }
+
     /**
      * Returns true if the dimension is null
      * or the dimension length is 1 and the first entry
@@ -352,11 +356,29 @@ public class Shape {
      * @param dimensions the dimensions the reduce op is being performed on
      * @return the shape of the result array as the result of the reduce
      */
-    public static int[] getReducedShape(int[] wholeShape, int[] dimensions) {
+    public static long[] getReducedShape(int[] wholeShape, int[] dimensions) {
         if (isWholeArray(wholeShape, dimensions))
-            return new int[] {};
+            return new long[] {};
         else if (dimensions.length == 1 && wholeShape.length == 2) {
-            int[] ret = new int[2];
+            val ret = new long[2];
+            if (dimensions[0] == 1) {
+                ret[0] = wholeShape[0];
+                ret[1] = 1;
+            } else if (dimensions[0] == 0) {
+                ret[0] = 1;
+                ret[1] = wholeShape[1];
+            }
+            return ret;
+        }
+
+        return ArrayUtil.toLongArray(ArrayUtil.removeIndex(wholeShape, dimensions));
+    }
+
+    public static long[] getReducedShape(long[] wholeShape, int[] dimensions) {
+        if (isWholeArray(wholeShape, dimensions))
+            return new long[] {};
+        else if (dimensions.length == 1 && wholeShape.length == 2) {
+            val ret = new long[2];
             if (dimensions[0] == 1) {
                 ret[0] = wholeShape[0];
                 ret[1] = 1;
@@ -379,7 +401,7 @@ public class Shape {
      * @param keepDims if set to true, corresponding dimensions will be set to 1
      * @return the shape of the result array as the result of the reduce
      */
-    public static int[] getReducedShape(int[] wholeShape, int[] dimensions, boolean keepDims, boolean newFormat) {
+    public static long[] getReducedShape(int[] wholeShape, int[] dimensions, boolean keepDims, boolean newFormat) {
         // we need to normalize dimensions, in case they have negative values or unsorted, or whatever
         dimensions = Shape.normalizeAxis(wholeShape.length, dimensions);
 
@@ -392,9 +414,52 @@ public class Shape {
                 return getReducedShape(wholeShape, dimensions);
             else {
                 if (isWholeArray(wholeShape, dimensions))
-                    return new int[] {};
+                    return new long[] {};
                 else if (dimensions.length == 1 && wholeShape.length == 2) {
-                    int[] ret = new int[1];
+                    val ret = new long[1];
+                    if (dimensions[0] == 1) {
+                        ret[0] = wholeShape[0];
+                    } else if (dimensions[0] == 0) {
+                        ret[0] = wholeShape[1];
+                    }
+                    return ret;
+                }
+
+                return ArrayUtil.toLongArray(ArrayUtil.removeIndex(wholeShape, dimensions));
+            }
+
+
+        // we'll return full array of 1 as shape
+        if (isWholeArray(wholeShape, dimensions)) {
+            val result = new long[wholeShape.length];
+
+            Arrays.fill(result, 1);
+            return result;
+        }
+
+        val result = ArrayUtil.toLongArray(Arrays.copyOf(wholeShape, wholeShape.length));
+        for (val dim: dimensions)
+            result[dim] = 1;
+
+        return result;
+    }
+
+    public static long[] getReducedShape(long[] wholeShape, int[] dimensions, boolean keepDims, boolean newFormat) {
+        // we need to normalize dimensions, in case they have negative values or unsorted, or whatever
+        dimensions = Shape.normalizeAxis(wholeShape.length, dimensions);
+
+        // strip leading keepDims argument
+        //if (newFormat)
+        //    dimensions = Arrays.copyOfRange(dimensions, 1, dimensions.length);
+
+        if (!keepDims)
+            if (!newFormat)
+                return getReducedShape(wholeShape, dimensions);
+            else {
+                if (isWholeArray(wholeShape, dimensions))
+                    return new long[] {};
+                else if (dimensions.length == 1 && wholeShape.length == 2) {
+                    val ret = new long[1];
                     if (dimensions[0] == 1) {
                         ret[0] = wholeShape[0];
                     } else if (dimensions[0] == 0) {
@@ -409,7 +474,7 @@ public class Shape {
 
         // we'll return full array of 1 as shape
         if (isWholeArray(wholeShape, dimensions)) {
-            val result = new int[wholeShape.length];
+            val result = new long[wholeShape.length];
 
             Arrays.fill(result, 1);
             return result;
@@ -1262,6 +1327,12 @@ public class Shape {
      * @return true if the shape is a matrix false otherwise
      */
     public static boolean isMatrix(int[] shape) {
+        if (shape.length != 2)
+            return false;
+        return !isVector(shape);
+    }
+
+    public static boolean isMatrix(long[] shape) {
         if (shape.length != 2)
             return false;
         return !isVector(shape);
@@ -3029,6 +3100,13 @@ public class Shape {
      * @throws ND4JIllegalStateException If shape array is null
      */
     public static int rankFromShape(int[] shape){
+        if(shape == null){
+            throw new ND4JIllegalStateException("Cannot get rank from null shape array");
+        }
+        return shape.length;
+    }
+
+    public static int rankFromShape(long[] shape){
         if(shape == null){
             throw new ND4JIllegalStateException("Cannot get rank from null shape array");
         }

@@ -35,7 +35,7 @@ public abstract class ShapeOp extends BaseOp {
 
     public ShapeOp(SameDiff sameDiff,
                    SDVariable i_v,
-                   int[] shape,
+                   long[] shape,
                    boolean inPlace,
                    Object[] extraArgs) {
         super(sameDiff,inPlace,extraArgs);
@@ -68,7 +68,7 @@ public abstract class ShapeOp extends BaseOp {
     }
 
     @Override
-    public List<int[]> calculateOutputShape() {
+    public List<long[]> calculateOutputShape() {
         throw new UnsupportedOperationException();
     }
 

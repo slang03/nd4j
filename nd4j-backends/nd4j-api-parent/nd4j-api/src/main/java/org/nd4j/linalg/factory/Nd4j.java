@@ -3254,6 +3254,18 @@ public class Nd4j {
     }
 
     /**
+     * Random normal N(0,1) with the specified shape and array order
+     *
+     * @param order order of the output ndarray
+     * @param shape the shape of the ndarray
+     */
+    public static INDArray randn(char order, long[] shape) {
+        INDArray ret = Nd4j.createUninitialized(shape, order);
+        logCreationIfNecessary(ret);
+        return randn(ret);
+    }
+
+    /**
      * Random normal using the specified seed
      *
      * @param shape the shape of the ndarray

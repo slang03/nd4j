@@ -18,6 +18,7 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.api.shape.Shape;
 import org.nd4j.linalg.exception.ND4JIllegalStateException;
 import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.util.ArrayUtil;
 import org.tensorflow.framework.AttrValue;
 import org.tensorflow.framework.GraphDef;
 import org.tensorflow.framework.NodeDef;
@@ -49,7 +50,7 @@ public class DynamicCustomOp extends DifferentialFunction implements CustomOp {
     @Getter
     private long hash;
     protected SDVariable[] outputVariables;
-    private List<int[]> outputShapes;
+    private List<long[]> outputShapes;
 
     public DynamicCustomOp() {
         iArguments = new ArrayList<>();
@@ -210,7 +211,7 @@ public class DynamicCustomOp extends DifferentialFunction implements CustomOp {
     }
 
 
-    private INDArray attemptToGetOrCreateArrForVar(SDVariable var, int[] currShape) {
+    private INDArray attemptToGetOrCreateArrForVar(SDVariable var, long[] currShape) {
         INDArray arr = null;
         if (Shape.isPlaceholderShape(var.getShape())) {
             if (var.getShape() == null) {
@@ -438,7 +439,7 @@ public class DynamicCustomOp extends DifferentialFunction implements CustomOp {
     }
 
     @Override
-    public List<int[]> calculateOutputShape() {
+    public List<long[]> calculateOutputShape() {
         val descriptor = getDescriptor();
         for (val arg : args()) {
             if (sameDiff.isPlaceHolder(arg.getVarName()) && !sameDiff.shapeAlreadyExistsForVarName(arg.getVarName()))
@@ -719,7 +720,7 @@ public class DynamicCustomOp extends DifferentialFunction implements CustomOp {
         protected boolean inplaceCall;
         protected boolean inplaceAllowed;
         protected long opHash;
-        protected List<int[]> outputShapes = new ArrayList<>();
+        protected List<long[]> outputShapes = new ArrayList<>();
 
         private List<INDArray> inputArguments = new ArrayList<>();
         private List<INDArray> outputArguments = new ArrayList<>();
@@ -899,6 +900,11 @@ public class DynamicCustomOp extends DifferentialFunction implements CustomOp {
          * @return
          */
         public DynamicCustomOpsBuilder addOutputShape(int[] shape) {
+            this.outputShapes.add(ArrayUtil.toLongArray(shape));
+            return this;
+        }
+
+        public DynamicCustomOpsBuilder addOutputShape(long[] shape) {
             this.outputShapes.add(shape);
             return this;
         }

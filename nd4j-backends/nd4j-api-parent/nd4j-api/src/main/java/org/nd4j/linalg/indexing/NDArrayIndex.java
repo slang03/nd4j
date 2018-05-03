@@ -22,9 +22,11 @@ package org.nd4j.linalg.indexing;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.nd4j.linalg.api.buffer.DataBuffer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.api.shape.Shape;
+import org.nd4j.linalg.exception.ND4JArraySizeException;
 import org.nd4j.linalg.util.ArrayUtil;
 import org.nd4j.linalg.util.NDArrayUtil;
 
@@ -551,10 +553,13 @@ public class NDArrayIndex implements INDArrayIndex {
 
         if (index.isMatrix()) {
 
-            NDArrayIndex[] ret = new NDArrayIndex[index.rows()];
+            if (index.rows() > Integer.MAX_VALUE)
+                throw new ND4JArraySizeException();
+
+            NDArrayIndex[] ret = new NDArrayIndex[(int) index.rows()];
             for (int i = 0; i < index.rows(); i++) {
                 INDArray row = index.getRow(i);
-                long[] nums = new long[index.getRow(i).columns()];
+                val nums = new long[(int) index.getRow(i).columns()];
                 for (int j = 0; j < row.columns(); j++) {
                     nums[j] = (int) row.getFloat(j);
                 }
