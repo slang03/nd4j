@@ -529,6 +529,31 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     }
 
     @Override
+    public INDArray putScalar(long[] i, double value) {
+        return null;
+    }
+
+    @Override
+    public INDArray putScalar(long[] i, float value) {
+        return null;
+    }
+
+    @Override
+    public INDArray putScalar(long[] i, int value) {
+        return null;
+    }
+
+    @Override
+    public void setStride(long... stride) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setShape(long... shape) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public INDArray putScalar(long row, long col, double value) {
         return null;
     }
@@ -1444,6 +1469,21 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     @Override
     public INDArray getScalar(int... indices) {
         return null;
+    }
+
+    @Override
+    public INDArray getScalar(long... indices) {
+        return null;
+    }
+
+    @Override
+    public float getFloat(long[] indices) {
+        return 0;
+    }
+
+    @Override
+    public double getDouble(long... indices) {
+        return 0;
     }
 
     @Override

@@ -297,7 +297,21 @@ public class CpuNDArrayFactory extends BaseNDArrayFactory {
     }
 
     @Override
+    public INDArray createUninitialized(long[] shape, char ordering) {
+        return new NDArray(shape, Nd4j.getStrides(shape, ordering), 0, ordering, false);
+    }
+
+    @Override
     public INDArray createUninitializedDetached(int[] shape, char ordering) {
+        MemoryWorkspace workspace = Nd4j.getMemoryManager().getCurrentWorkspace();
+        Nd4j.getMemoryManager().setCurrentWorkspace(null);
+        INDArray ret = new NDArray(shape, Nd4j.getStrides(shape, ordering), 0, ordering, false);
+        Nd4j.getMemoryManager().setCurrentWorkspace(workspace);
+        return ret;
+    }
+
+    @Override
+    public INDArray createUninitializedDetached(long[] shape, char ordering) {
         MemoryWorkspace workspace = Nd4j.getMemoryManager().getCurrentWorkspace();
         Nd4j.getMemoryManager().setCurrentWorkspace(null);
         INDArray ret = new NDArray(shape, Nd4j.getStrides(shape, ordering), 0, ordering, false);
@@ -800,6 +814,11 @@ public class CpuNDArrayFactory extends BaseNDArrayFactory {
      */
     @Override
     public INDArray pullRows(INDArray source, int sourceDimension, int[] indexes) {
+        return pullRows(source, sourceDimension, ArrayUtil.toLongArray(indexes));
+    }
+
+    @Override
+    public INDArray pullRows(INDArray source, int sourceDimension, long[] indexes) {
         return pullRows(source, sourceDimension, indexes, Nd4j.order());
     }
 
@@ -811,8 +830,8 @@ public class CpuNDArrayFactory extends BaseNDArrayFactory {
      * @param indexes         indexes from source array
      * @return
      */
-    @Override
-    public INDArray pullRows(INDArray source, int sourceDimension, int[] indexes, char order) {
+
+    public INDArray pullRows(INDArray source, int sourceDimension, long[] indexes, char order) {
         if (indexes == null || indexes.length < 1)
             throw new IllegalStateException("Indexes can't be null or zero-length");
 
@@ -827,7 +846,16 @@ public class CpuNDArrayFactory extends BaseNDArrayFactory {
     }
 
     @Override
+    public INDArray pullRows(INDArray source, int sourceDimension, int[] indexes, char order) {
+        return pullRows(source, sourceDimension, ArrayUtil.toLongArray(indexes), order);
+    }
+
+    @Override
     public INDArray pullRows(INDArray source, INDArray destination, int sourceDimension, int[] indexes) {
+        return pullRows(source, destination, sourceDimension, ArrayUtil.toLongArray(indexes));
+    }
+
+    public INDArray pullRows(INDArray source, INDArray destination, int sourceDimension, long[] indexes) {
         if (indexes == null || indexes.length < 1)
             throw new IllegalStateException("Indexes can't be null or zero-length");
 
@@ -863,7 +891,7 @@ public class CpuNDArrayFactory extends BaseNDArrayFactory {
 
         Pointer zTadShapeInfo = zTadBuffers.getFirst().addressPointer();
 
-        IntPointer pIndex = new IntPointer(indexes);
+        LongPointer pIndex = new LongPointer(indexes);
 
         DataBuffer offsets = tadBuffers.getSecond();
         Pointer hostTadOffsets = offsets == null ? null : offsets.addressPointer();

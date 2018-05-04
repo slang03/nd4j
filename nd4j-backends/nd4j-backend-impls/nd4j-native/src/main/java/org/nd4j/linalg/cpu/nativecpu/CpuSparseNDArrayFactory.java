@@ -78,6 +78,71 @@ public class CpuSparseNDArrayFactory extends BaseSparseNDArrayFactory {
 
 
     @Override
+    public INDArray pullRows(INDArray source, int sourceDimension, long[] indexes) {
+        return null;
+    }
+
+    @Override
+    public INDArray create(float[] data, long[] shape, long[] stride, long offset) {
+        return null;
+    }
+
+    @Override
+    public INDArray create(double[] data, long[] shape, long[] stride, long offset) {
+        return null;
+    }
+
+    @Override
+    public INDArray create(DataBuffer data, long[] shape) {
+        return null;
+    }
+
+    @Override
+    public INDArray create(DataBuffer data, long[] shape, long[] stride, long offset) {
+        return null;
+    }
+
+    @Override
+    public INDArray create(List<INDArray> list, long[] shape) {
+        return null;
+    }
+
+    @Override
+    public INDArray create(long rows, long columns, long[] stride, long offset) {
+        return null;
+    }
+
+    @Override
+    public INDArray create(long[] shape, char ordering) {
+        return null;
+    }
+
+    @Override
+    public INDArray createUninitialized(long[] shape, char ordering) {
+        return null;
+    }
+
+    @Override
+    public INDArray createUninitializedDetached(long[] shape, char ordering) {
+        return null;
+    }
+
+    @Override
+    public INDArray create(DataBuffer data, long[] newShape, long[] newStride, long offset, char ordering) {
+        return null;
+    }
+
+    @Override
+    public INDArray create(List<INDArray> list, long[] shape, char ordering) {
+        return null;
+    }
+
+    @Override
+    public INDArray create(float[] data, long[] shape, long[] stride, char order, long offset) {
+        return null;
+    }
+
+    @Override
     public INDArray trueScalar(Number value) {
         throw new UnsupportedOperationException();
     }
