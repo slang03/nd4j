@@ -151,10 +151,7 @@ public class Reshape extends DynamicCustomOp {
     @Override
     public void initFromOnnx(OnnxProto3.NodeProto node, SameDiff initWith, Map<String, OnnxProto3.AttributeProto> attributesForNode, OnnxProto3.GraphProto graph) {
         val shape = new OnnxGraphMapper().getShape(node);
-
-        // FIXME: int cast
-        this.shape = ArrayUtil.toLongArray(shape);
-
+        this.shape = shape;
     }
 
 

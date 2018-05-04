@@ -1748,6 +1748,128 @@ public class Shape {
         return (int) newStrides[newShapeRank - 1];
     }
 
+    public static long elementWiseStride(long[] shape, long[] stride, boolean isFOrder) {
+        // 0D edge case
+        if (shape.length == 0 && stride.length == 0)
+            return 1;
+
+        if (shape.length == 1 && stride.length == 1)
+            return 1;
+
+        int oldnd;
+        long[] olddims = ArrayUtil.copy(shape);
+        long[] oldstrides = ArrayUtil.copy(stride);
+        long np, op, last_stride;
+        int oi, oj, ok, ni, nj, nk;
+        long[] newStrides = new long[stride.length];
+        oldnd = 0;
+        //set the shape to be 1 x length
+        int newShapeRank = 2;
+        long[] newShape = new long[shape.length];
+        newShape[0] = 1;
+        newShape[1] = ArrayUtil.prodLong(shape);
+
+        /*
+         * Remove axes with dimension 1 from the old array. They have no effect
+         * but would need special cases since their strides do not matter.
+         */
+        for (oi = 0; oi < shape.length; oi++) {
+            if (shape[oi] != 1) {
+                olddims[oldnd] = shape[oi];
+                oldstrides[oldnd] = stride[oi];
+                oldnd++;
+            }
+        }
+
+        np = 1;
+        for (ni = 0; ni < newShapeRank; ni++) {
+            np *= newShape[ni];
+        }
+        op = 1;
+        for (oi = 0; oi < oldnd; oi++) {
+            op *= olddims[oi];
+        }
+        if (np != op) {
+            /* different total sizes; no hope */
+            return -1;
+        }
+
+        if (np == 0) {
+            /* the current code does not handle 0-sized arrays, so give up */
+            return -1;
+        }
+
+        /* oi to oj and ni to nj give the axis ranges currently worked with */
+        oi = 0;
+        oj = 1;
+        ni = 0;
+        nj = 1;
+        while (ni < newShapeRank && oi < oldnd) {
+            np = newShape[ni];
+            op = olddims[oi];
+
+            while (np != op) {
+                if (np < op) {
+                    /* Misses trailing 1s, these are handled later */
+                    np *= newShape[nj++];
+                } else {
+                    op *= olddims[oj++];
+                }
+            }
+
+            /* Check whether the original axes can be combined */
+            for (ok = oi; ok < oj - 1; ok++) {
+                if (isFOrder) {
+                    if (oldstrides[ok + 1] != olddims[ok] * oldstrides[ok]) {
+                        /* not contiguous enough */
+                        return -1;
+                    }
+                } else {
+                    /* C order */
+                    if (oldstrides[ok] != olddims[ok + 1] * oldstrides[ok + 1]) {
+                        /* not contiguous enough */
+                        return -1;
+                    }
+                }
+            }
+
+            /* Calculate new strides for all axes currently worked with */
+            if (isFOrder) {
+                newStrides[ni] = oldstrides[oi];
+                for (nk = ni + 1; nk < nj; nk++) {
+                    newStrides[nk] = newStrides[nk - 1] * newShape[nk - 1];
+                }
+            } else {
+                /* C order */
+                newStrides[nj - 1] = oldstrides[oj - 1];
+                for (nk = nj - 1; nk > ni; nk--) {
+                    newStrides[nk - 1] = newStrides[nk] * newShape[nk];
+                }
+            }
+            ni = nj++;
+            oi = oj++;
+        }
+
+        /*
+         * Set strides corresponding to trailing 1s of the new shape.
+         */
+        if (ni >= 1) {
+            last_stride = newStrides[ni - 1];
+        } else {
+            last_stride = stride[shape.length - 1];
+        }
+        if (isFOrder && ni >= 1) {
+            last_stride *= newShape[ni - 1];
+        }
+        for (nk = ni; nk < newShapeRank; nk++) {
+            newStrides[nk] = last_stride;
+        }
+        if (newStrides[newShapeRank - 1] >= Integer.MAX_VALUE)
+            throw new IllegalArgumentException("Element size can not be >= Integer.MAX_VALUE");
+        //returns the last element of the new stride array
+        return newStrides[newShapeRank - 1];
+    }
+
     /**
      * A port of numpy's reshaping algorithm that leverages
      * no copy where possible and returns

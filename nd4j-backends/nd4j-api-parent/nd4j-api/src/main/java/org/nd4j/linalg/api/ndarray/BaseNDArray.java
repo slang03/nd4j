@@ -173,6 +173,15 @@ public abstract class BaseNDArray implements INDArray, Iterable {
 
     }
 
+    public BaseNDArray(DataBuffer buffer, long[] shape, long[] stride, long offset, char ordering) {
+        this.data = offset > 0 ? Nd4j.createBuffer(buffer, offset, ArrayUtil.prodLong(shape)) : buffer;
+        setShapeInformation(Nd4j.getShapeInfoProvider().createShapeInformation(shape, stride, offset,
+                Shape.elementWiseStride(shape, stride, ordering == 'f'), ordering));
+        init(shape, stride);
+        // Shape.setElementWiseStride(this.shapeInfo(),Shape.elementWiseStride(shape, stride, ordering == 'f'));
+
+    }
+
     /**
      * Initialize the ndarray as a matrix
      * with the given data (indices preserved)
@@ -2461,6 +2470,21 @@ public abstract class BaseNDArray implements INDArray, Iterable {
         //null character
         if (ordering() == '\u0000') {
             Shape.setOrder(shapeInfo(), Nd4j.order());
+            throw new IllegalStateException("setOrder() shouldn't ever happen here");
+        }
+
+    }
+
+    protected void init(long[] shape, long[] stride) {
+
+        //default row vector
+        if (shape.length == 1) {
+            init(new long[] {1, shape[0]}, new long[] {1, stride[0]});
+        }
+
+        //null character
+        if (ordering() == '\u0000') {
+            //Shape.setOrder(shapeInfo(), Nd4j.order());
             throw new IllegalStateException("setOrder() shouldn't ever happen here");
         }
 

@@ -523,6 +523,14 @@ public class NDArrayIndex implements INDArrayIndex {
         return ret;
     }
 
+    public static INDArrayIndex[] createCoveringShape(long[] shape) {
+        INDArrayIndex[] ret = new INDArrayIndex[shape.length];
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = NDArrayIndex.interval(0, shape[i]);
+        }
+        return ret;
+    }
+
 
     /**
      * Create a range based on the given indexes.

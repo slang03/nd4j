@@ -2,6 +2,7 @@ package org.nd4j.linalg.api.ndarray;
 
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Ints;
+import com.google.common.primitives.Longs;
 import com.google.flatbuffers.FlatBufferBuilder;
 import net.ericaro.neoitertools.Generator;
 import org.nd4j.linalg.api.blas.params.MMulTranspose;
@@ -161,7 +162,7 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
                     }
                 } else {
                     int lowerBound = sparseOffsets()[dim];
-                    int upperBound = sparseOffsets()[dim] + shape()[idxNotFixed];
+                    long upperBound = sparseOffsets()[dim] + shape()[idxNotFixed];
                     if (!(idx[dim] >= lowerBound && idx[dim] < upperBound)) {
                         isIn = false;
                         break;
@@ -245,7 +246,7 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
             addOrUpdate(new int[] {i, 0}, value);
             return this;
         }
-        int[] indexes = ordering() == 'c' ? Shape.ind2subC(this, i) : Shape.ind2sub(this, i);
+        long[] indexes = ordering() == 'c' ? Shape.ind2subC(this, i) : Shape.ind2sub(this, i);
         return putScalar(indexes, value);
     }
 
@@ -280,6 +281,21 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
     }
 
     @Override
+    public INDArray putScalar(long[] i, double value) {
+        return null;
+    }
+
+    @Override
+    public INDArray putScalar(long[] i, float value) {
+        return null;
+    }
+
+    @Override
+    public INDArray putScalar(long[] i, int value) {
+        return null;
+    }
+
+    @Override
     public INDArray putScalar(int row, int col, double value) {
         return putScalar(new int[] {row, col}, value);
     }
@@ -295,7 +311,7 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
     }
 
     @Override
-    public INDArray putRow(int row, INDArray toPut) {
+    public INDArray putRow(long row, INDArray toPut) {
         if (isRowVector() && toPut.isVector()) {
             return assign(toPut);
         }
@@ -547,7 +563,9 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
     public int reverseIndexes(int... indexes) {
         int[] idx = translateToPhysical(indexes);
         sort();
-        return indexesBinarySearch(0, length(), idx);
+
+        // FIXME: int cast
+        return indexesBinarySearch(0, (int) length(), idx);
     }
 
     /**
@@ -585,6 +603,11 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
     }
 
     @Override
+    public INDArray getScalar(long... indices) {
+        return null;
+    }
+
+    @Override
     public int getInt(int... indices) {
         return super.getInt(indices);
     }
@@ -600,12 +623,22 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
     }
 
     @Override
+    public double getDouble(long... indices) {
+        return 0;
+    }
+
+    @Override
     public float getFloat(int[] indices) {
         return (float) getDouble(indices);
     }
 
     @Override
-    public double getDouble(int i) {
+    public float getFloat(long[] indices) {
+        return 0;
+    }
+
+    @Override
+    public double getDouble(long i) {
         if (i >= length()) {
             throw new IllegalArgumentException("Unable to get linear index >= " + length());
         }
@@ -616,23 +649,23 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
         if (i == 0)
             return data().getDouble(i);
 
-        int[] dimensions = ordering() == 'c' ? Shape.ind2subC(this, i) : Shape.ind2sub(this, i);
+        long[] dimensions = ordering() == 'c' ? Shape.ind2subC(this, i) : Shape.ind2sub(this, i);
         Shape.assertShapeLessThan(dimensions, shape());
         return getDouble(dimensions);
     }
 
     @Override
-    public double getDouble(int i, int j) {
-        return getDouble(new int[] {i, j});
+    public double getDouble(long i, long j) {
+        return getDouble(new long[] {i, j});
     }
 
     @Override
-    public float getFloat(int i) {
+    public float getFloat(long i) {
         return (float) getDouble(i);
     }
 
     @Override
-    public float getFloat(int i, int j) {
+    public float getFloat(long i, long j) {
         return (float) getDouble(i, j);
     }
 
@@ -684,7 +717,7 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
                     }
                 } else {
                     int lowerBound = sparseOffsets()[dim];
-                    int upperBound = sparseOffsets()[dim] + shape()[idxNotFixed];
+                    long upperBound = sparseOffsets()[dim] + shape()[idxNotFixed];
                     if (!(idx[dim] >= lowerBound && idx[dim] < upperBound)) {
                         isIn = false;
                         break;
@@ -737,7 +770,7 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
                     }
                 } else {
                     int lowerBound = sparseOffsets()[dim];
-                    int upperBound = sparseOffsets()[dim] + shape()[idxNotFixed];
+                    long upperBound = sparseOffsets()[dim] + shape()[idxNotFixed];
                     if (!(idx[dim] >= lowerBound && idx[dim] < upperBound)) {
                         isIn = false;
                         break;
@@ -768,7 +801,8 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
             throw new UnsupportedOperationException();
         }
 
-        int[] temp = new int[length()];
+        // FIXME: int cast
+        int[] temp = new int[(int) length()];
         for (int i = 0; i < length(); i++) {
             temp[i] = getUnderlyingIndicesOf(i).getInt(idx);
         }
@@ -859,10 +893,10 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
         // resolve the offsets in the view dimension
         int underlyingRank = sparseOffsets().length;
         long[] newOffsets = new long[rank()];
-        List<Integer> shapeList = Ints.asList(shape());
+        List<Long> shapeList = Longs.asList(shape());
         int penultimate = rank() - 1;
         for (int i = 0; i < penultimate; i++) {
-            long prod = ArrayUtil.prod(shapeList.subList(i + 1, rank()));
+            long prod = ArrayUtil.prodLong(shapeList.subList(i + 1, rank()));
             newOffsets[i] = offset / prod;
             offset = offset - newOffsets[i] * prod;
         }
@@ -1073,6 +1107,16 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
     @Override
     public INDArray mmuli(INDArray other, INDArray result, MMulTranspose transpose) {
         return null;
+    }
+
+    @Override
+    public void setStride(long... stride) {
+
+    }
+
+    @Override
+    public void setShape(long... shape) {
+
     }
 
     @Override

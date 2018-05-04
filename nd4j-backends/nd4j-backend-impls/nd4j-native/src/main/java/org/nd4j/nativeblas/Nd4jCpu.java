@@ -13478,14 +13478,6 @@ public static final int PREALLOC_SIZE = 33554432;
     @Namespace("shape") public static native int offset(IntBuffer buffer);
     @Namespace("shape") public static native int offset(int[] buffer);
 
-
-// #ifdef __CUDACC__
-// #endif
-
-    @Namespace("shape") public static native @ByRef IntPointer extra(IntPointer buffer);
-    @Namespace("shape") public static native @ByRef IntBuffer extra(IntBuffer buffer);
-    @Namespace("shape") public static native @ByRef int[] extra(int[] buffer);
-
 /**
  * Returns the ordering
  * for this shape information buffer
@@ -14906,10 +14898,6 @@ public static final int PREALLOC_SIZE = 33554432;
  */
 // #ifdef __CUDACC__
 // #endif
-
-//     #ifdef __CUDACC__
-// #endif
-
 
 /**
  * Returns the ordering

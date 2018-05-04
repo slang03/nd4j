@@ -391,12 +391,12 @@ public class ArrayUtil {
      *            to calculate the sum for
      * @return the product of this array
      */
-    public static long prodLong(List<Integer> mult) {
+    public static long prodLong(List<? extends Number> mult) {
         if (mult.size() < 1)
             return 0;
         long ret = 1;
         for (int i = 0; i < mult.size(); i++)
-            ret *= mult.get(i);
+            ret *= mult.get(i).longValue();
         return ret;
     }
 
@@ -922,6 +922,13 @@ public class ArrayUtil {
         return ret;
     }
 
+    public static double[] toDoubles(long[] ints) {
+        double[] ret = new double[ints.length];
+        for (int i = 0; i < ints.length; i++)
+            ret[i] = (double) ints[i];
+        return ret;
+    }
+
     public static double[] toDoubles(float[] ints) {
         double[] ret = new double[ints.length];
         for (int i = 0; i < ints.length; i++)
@@ -939,6 +946,13 @@ public class ArrayUtil {
 
 
     public static float[] toFloats(int[] ints) {
+        float[] ret = new float[ints.length];
+        for (int i = 0; i < ints.length; i++)
+            ret[i] = (float) ints[i];
+        return ret;
+    }
+
+    public static float[] toFloats(long[] ints) {
         float[] ret = new float[ints.length];
         for (int i = 0; i < ints.length; i++)
             ret[i] = (float) ints[i];

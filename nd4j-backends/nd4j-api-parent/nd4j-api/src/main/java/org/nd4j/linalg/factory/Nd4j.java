@@ -77,6 +77,7 @@ import org.nd4j.linalg.compression.CompressedDataBuffer;
 import org.nd4j.linalg.convolution.ConvolutionInstance;
 import org.nd4j.linalg.convolution.DefaultConvolutionInstance;
 import org.nd4j.linalg.exception.ND4JArraySizeException;
+import org.nd4j.linalg.exception.ND4JComplexNumbersNotSupportedException;
 import org.nd4j.linalg.exception.ND4JIllegalStateException;
 import org.nd4j.linalg.factory.Nd4jBackend.NoAvailableBackendException;
 import org.nd4j.linalg.memory.BasicMemoryManager;
@@ -3127,6 +3128,7 @@ public class Nd4j {
      * @param shape  the shape
      * @return the random ndarray with the specified shape
      */
+    @Deprecated
     public static INDArray rand(long seed, int... shape) {
         INDArray ret = createUninitialized(shape, Nd4j.order());//INSTANCE.rand(shape, seed);
         logCreationIfNecessary(ret);
@@ -3264,6 +3266,12 @@ public class Nd4j {
      * @return
      */
     public static INDArray randn(int[] shape) {
+        INDArray ret = Nd4j.createUninitialized(shape, order());
+        logCreationIfNecessary(ret);
+        return randn(ret);
+    }
+
+    public static INDArray randn(long[] shape) {
         INDArray ret = Nd4j.createUninitialized(shape, order());
         logCreationIfNecessary(ret);
         return randn(ret);
@@ -4355,6 +4363,11 @@ public class Nd4j {
      */
     public static IComplexNDArray createComplex(int... shape) {
         return createComplex(shape, order());
+    }
+
+    public static IComplexNDArray createComplex(long... shape) {
+        //return createComplex(shape, order());
+        throw new ND4JComplexNumbersNotSupportedException();
     }
 
     /**
@@ -6546,6 +6559,12 @@ public class Nd4j {
         return ArrayUtil.calcStrides(shape, 2);
     }
 
+    public static long[] getComplexStrides(long[] shape, char order) {
+        if (order == NDArrayFactory.FORTRAN)
+            return ArrayUtil.calcStridesFortran(shape, 2);
+        return ArrayUtil.calcStrides(shape, 2);
+    }
+
     /**
      * Get the strides based on the shape
      * and NDArrays.order()
@@ -6555,6 +6574,10 @@ public class Nd4j {
      * and order specified by NDArrays.order()
      */
     public static int[] getComplexStrides(int[] shape) {
+        return getComplexStrides(shape, Nd4j.order());
+    }
+
+    public static long[] getComplexStrides(long[] shape) {
         return getComplexStrides(shape, Nd4j.order());
     }
 

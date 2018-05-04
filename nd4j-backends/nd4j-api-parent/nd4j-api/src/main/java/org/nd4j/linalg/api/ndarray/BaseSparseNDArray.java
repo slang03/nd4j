@@ -1,6 +1,7 @@
 package org.nd4j.linalg.api.ndarray;
 
 import com.google.common.primitives.Ints;
+import com.google.common.primitives.Longs;
 import lombok.extern.slf4j.Slf4j;
 import net.ericaro.neoitertools.Generator;
 import org.apache.commons.math3.util.FastMath;
@@ -115,7 +116,7 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
                         INDArray row = indices.slice(i);
                         for(int j = 0; j < row.length(); j++) {
                             INDArray put = arrList.get(j).slice(row.getInt(j));
-                            put = put.reshape(Ints.concat(new int[]{1},put.shape()));
+                            put = put.reshape(Longs.concat(new long[]{1}, put.shape()));
                             arrList.set(j,put);
                         }
                     }
@@ -289,13 +290,14 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     }
 
     @Override
-    public int length() {
-        return (int) length;
+    public long length() {
+        return length;
     }
 
     @Override
     public int nnz() {
-        return length();
+        // FIXME: int cast
+        return (int) length();
     }
 
     @Override
@@ -457,7 +459,7 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     }
 
     @Override
-    public int vectorsAlongDimension(int dimension) {
+    public long vectorsAlongDimension(int dimension) {
         return 0;
     }
 
@@ -467,7 +469,7 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     }
 
     @Override
-    public int tensorssAlongDimension(int... dimension) {
+    public long tensorssAlongDimension(int... dimension) {
         return 0;
     }
 
@@ -862,7 +864,7 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     }
 
     @Override
-    public int linearIndex(int i) {
+    public long linearIndex(long i) {
         return 0;
     }
 
@@ -902,7 +904,7 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     }
 
     @Override
-    public INDArray putRow(int row, INDArray toPut) {
+    public INDArray putRow(long row, INDArray toPut) {
         return null;
     }
 
@@ -912,17 +914,17 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     }
 
     @Override
-    public INDArray getScalar(int row, int column) {
+    public INDArray getScalar(long row, long column) {
         return null;
     }
 
     @Override
-    public INDArray getScalar(int i) {
+    public INDArray getScalar(long i) {
         return null;
     }
 
     @Override
-    public int index(int row, int column) {
+    public long index(long row, long column) {
         return 0;
     }
 
@@ -1093,7 +1095,7 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
 
     @Override
     public INDArray mmul(INDArray other) {
-        int[] shape = {rows(), other.columns()};
+        long[] shape = {rows(), other.columns()};
         INDArray result = createUninitialized(shape, 'f');
         if (result.isScalar())
             return Nd4j.scalar(Nd4j.getBlasWrapper().dot(this, other));
@@ -1460,22 +1462,22 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     }
 
     @Override
-    public double getDouble(int i) {
+    public double getDouble(long i) {
         return 0;
     }
 
     @Override
-    public double getDouble(int i, int j) {
+    public double getDouble(long i, long j) {
         return 0;
     }
 
     @Override
-    public float getFloat(int i) {
+    public float getFloat(long i) {
         return 0;
     }
 
     @Override
-    public float getFloat(int i, int j) {
+    public float getFloat(long i, long j) {
         return 0;
     }
 
@@ -1505,7 +1507,7 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     }
 
     @Override
-    public int slices() {
+    public long slices() {
         return 0;
     }
 
@@ -1520,12 +1522,12 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     }
 
     @Override
-    public INDArray slice(int i, int dimension) {
+    public INDArray slice(long i, int dimension) {
         return null;
     }
 
     @Override
-    public INDArray slice(int i) {
+    public INDArray slice(long i) {
         return null;
     }
 
@@ -1540,7 +1542,7 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     }
 
     @Override
-    public INDArray reshape(char order, int... newShape) {
+    public INDArray reshape(char order, long... newShape) {
         return null;
     }
 
@@ -1550,12 +1552,12 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     }
 
     @Override
-    public INDArray reshape(int... newShape) {
+    public INDArray reshape(long... newShape) {
         return null;
     }
 
     @Override
-    public INDArray reshape(int rows, int columns) {
+    public INDArray reshape(long rows, long columns) {
         return null;
     }
 
@@ -1600,12 +1602,12 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     }
 
     @Override
-    public int columns() {
+    public long columns() {
         return columns;
     }
 
     @Override
-    public int rows() {
+    public long rows() {
         return rows;
     }
 
@@ -1688,7 +1690,7 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     }
 
     @Override
-    public int size(int dimension) {
+    public long size(int dimension) {
         if (isScalar()) {
             if (dimension == 0 || dimension == 1 || dimension < 0)
                 return (int) length;
@@ -1714,7 +1716,7 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     }
 
     @Override
-    public INDArray broadcast(int... shape) {
+    public INDArray broadcast(long... shape) {
         return null;
     }
 

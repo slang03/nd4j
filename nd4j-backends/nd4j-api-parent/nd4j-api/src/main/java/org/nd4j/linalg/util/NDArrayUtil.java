@@ -39,6 +39,18 @@ public class NDArrayUtil {
         }
     }
 
+    public static INDArray toNDArray(long[] nums) {
+        if (Nd4j.dataType() == DataBuffer.Type.DOUBLE) {
+            double[] doubles = ArrayUtil.toDoubles(nums);
+            INDArray create = Nd4j.create(doubles, new int[] {1, nums.length});
+            return create;
+        } else {
+            float[] doubles = ArrayUtil.toFloats(nums);
+            INDArray create = Nd4j.create(doubles, new int[] {1, nums.length});
+            return create;
+        }
+    }
+
 
     public static int[] toInts(INDArray n) {
         if (n instanceof IComplexNDArray)
