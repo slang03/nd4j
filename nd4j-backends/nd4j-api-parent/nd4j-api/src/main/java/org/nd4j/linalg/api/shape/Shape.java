@@ -1024,7 +1024,7 @@ public class Shape {
         return offset;
     }
 
-    public static long getOffsetUnsafe(long[] shapeInformation, int row, int col) {
+    public static long getOffsetUnsafe(long[] shapeInformation, long row, long col) {
         long offset = 0;
         long size_0 = sizeUnsafe(shapeInformation, 0);
         long size_1 = sizeUnsafe(shapeInformation, 1);

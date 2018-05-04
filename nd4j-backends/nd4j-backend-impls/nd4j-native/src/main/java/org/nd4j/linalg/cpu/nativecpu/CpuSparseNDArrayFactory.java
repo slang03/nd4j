@@ -239,12 +239,12 @@ public class CpuSparseNDArrayFactory extends BaseSparseNDArrayFactory {
     }
 
     @Override
-    public IComplexNDArray createComplex(DataBuffer data, int rows, int columns, int[] stride, long offset) {
+    public IComplexNDArray createComplex(DataBuffer data, long rows, long columns, int[] stride, long offset) {
         return null;
     }
 
     @Override
-    public INDArray create(DataBuffer data, int rows, int columns, int[] stride, long offset) {
+    public INDArray create(DataBuffer data, long rows, long columns, int[] stride, long offset) {
         return null;
     }
 
@@ -384,7 +384,7 @@ public class CpuSparseNDArrayFactory extends BaseSparseNDArrayFactory {
     }
 
     @Override
-    public INDArray create(float[] data, int rows, int columns, int[] stride, long offset, char ordering) {
+    public INDArray create(float[] data, long rows, long columns, int[] stride, long offset, char ordering) {
         return null;
     }
 

@@ -17,14 +17,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class DirectShapeInfoProvider extends BaseShapeInfoProvider {
     // TODO: to be removed
-    private Map<ShapeDescriptor, Pair<DataBuffer, int[]>> shapeCache = new ConcurrentHashMap<>();
+    private Map<ShapeDescriptor, Pair<DataBuffer, long[]>> shapeCache = new ConcurrentHashMap<>();
 
     private Map<LongShapeDescriptor, Pair<DataBuffer, long[]>> longCache = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
     private static final int MAX_ENTRIES = 1000;
 
     @Override
-    public Pair<DataBuffer, int[]> createShapeInformation(int[] shape, int[] stride, long offset, int elementWiseStride, char order) {
+    public Pair<DataBuffer, long[]> createShapeInformation(int[] shape, int[] stride, long offset, int elementWiseStride, char order) {
         // We enforce offset to 0 in shapeBuffer, since we need it for cache efficiency + we don't actually use offset value @ native side
         offset = 0;
 
@@ -34,7 +34,7 @@ public class DirectShapeInfoProvider extends BaseShapeInfoProvider {
                 synchronized (this) {
                     if (!shapeCache.containsKey(descriptor)) {
                         counter.incrementAndGet();
-                        Pair<DataBuffer, int[]> buffer =
+                        Pair<DataBuffer, long[]> buffer =
                                         super.createShapeInformation(shape, stride, offset, elementWiseStride, order);
                         shapeCache.put(descriptor, buffer);
 

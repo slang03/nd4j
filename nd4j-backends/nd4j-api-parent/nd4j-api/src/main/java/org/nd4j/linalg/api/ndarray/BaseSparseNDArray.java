@@ -509,17 +509,17 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     }
 
     @Override
-    public INDArray putScalar(int i, double value) {
+    public INDArray putScalar(long i, double value) {
         return null;
     }
 
     @Override
-    public INDArray putScalar(int i, float value) {
+    public INDArray putScalar(long i, float value) {
         return null;
     }
 
     @Override
-    public INDArray putScalar(int i, int value) {
+    public INDArray putScalar(long i, int value) {
         return null;
     }
 
@@ -529,17 +529,17 @@ public abstract class BaseSparseNDArray implements ISparseNDArray {
     }
 
     @Override
-    public INDArray putScalar(int row, int col, double value) {
+    public INDArray putScalar(long row, long col, double value) {
         return null;
     }
 
     @Override
-    public INDArray putScalar(int dim0, int dim1, int dim2, double value) {
+    public INDArray putScalar(long dim0, long dim1, long dim2, double value) {
         return null;
     }
 
     @Override
-    public INDArray putScalar(int dim0, int dim1, int dim2, int dim3, double value) {
+    public INDArray putScalar(long dim0, long dim1, long dim2, long dim3, double value) {
         return null;
     }
 

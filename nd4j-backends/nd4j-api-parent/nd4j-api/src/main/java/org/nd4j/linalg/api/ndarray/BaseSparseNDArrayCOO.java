@@ -197,6 +197,29 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
      * @param virtualIndexes the view indexes
      * @return the original indexes
      * */
+    public long[] translateToPhysical(long[] virtualIndexes) {
+
+        long[] physicalIndexes = new long[underlyingRank()];
+        int idxPhy = 0;
+        int hidden = 0;
+
+        for (int idxVir = 0; idxVir < virtualIndexes.length; idxVir++) {
+            if (hidden < getNumHiddenDimension() && hiddenDimensions()[hidden] == idxVir) {
+                hidden++;
+            } else {
+                while (idxPhy < underlyingRank() && isDimensionFixed(idxPhy)) {
+                    physicalIndexes[idxPhy] = sparseOffsets()[idxPhy];
+                    idxPhy++;
+                }
+                if (idxPhy < underlyingRank() && !isDimensionFixed(idxPhy)) {
+                    physicalIndexes[idxPhy] = sparseOffsets()[idxPhy] + virtualIndexes[idxVir];
+                    idxPhy++;
+                }
+            }
+        }
+        return physicalIndexes;
+    }
+
     public int[] translateToPhysical(int[] virtualIndexes) {
 
         int[] physicalIndexes = new int[underlyingRank()];
@@ -229,21 +252,21 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
 
 
     @Override
-    public INDArray putScalar(int i, double value) {
+    public INDArray putScalar(long i, double value) {
         if (i < 0)
             i += rank();
         if (isScalar()) {
             if (Nd4j.getExecutioner().getProfilingMode() != OpExecutioner.ProfilingMode.DISABLED && Nd4j.getExecutioner().getProfilingMode() != OpExecutioner.ProfilingMode.SCOPE_PANIC)
                 OpProfiler.getInstance().processScalarCall();
 
-            addOrUpdate(new int[] {0, 0}, value);
+            addOrUpdate(new long[] {0, 0}, value);
             return this;
         }
         if (isRowVector()) {
-            addOrUpdate(new int[] {0, i}, value);
+            addOrUpdate(new long[] {0, i}, value);
             return this;
         } else if (isColumnVector()) {
-            addOrUpdate(new int[] {i, 0}, value);
+            addOrUpdate(new long[] {i, 0}, value);
             return this;
         }
         long[] indexes = ordering() == 'c' ? Shape.ind2subC(this, i) : Shape.ind2sub(this, i);
@@ -251,12 +274,12 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
     }
 
     @Override
-    public INDArray putScalar(int i, float value) {
+    public INDArray putScalar(long i, float value) {
         return putScalar(i, (double) value); //todo - move in baseSparse?
     }
 
     @Override
-    public INDArray putScalar(int i, int value) {
+    public INDArray putScalar(long i, int value) {
         return putScalar(i, (double) value); //todo
     }
 
@@ -276,7 +299,7 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
                             "Cannot use putScalar with indexes length " + indexes.length + " on rank " + rank);
         }
 
-        addOrUpdate(indexes, value);
+        addOrUpdate(ArrayUtil.toLongArray(indexes), value);
         return this;
     }
 
@@ -296,18 +319,18 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
     }
 
     @Override
-    public INDArray putScalar(int row, int col, double value) {
-        return putScalar(new int[] {row, col}, value);
+    public INDArray putScalar(long row, long col, double value) {
+        return putScalar(new long[] {row, col}, value);
     }
 
     @Override
-    public INDArray putScalar(int dim0, int dim1, int dim2, double value) {
-        return putScalar(new int[] {dim0, dim1, dim2}, value);
+    public INDArray putScalar(long dim0, long dim1, long dim2, double value) {
+        return putScalar(new long[] {dim0, dim1, dim2}, value);
     }
 
     @Override
-    public INDArray putScalar(int dim0, int dim1, int dim2, int dim3, double value) {
-        return putScalar(new int[] {dim0, dim1, dim2, dim3}, value);
+    public INDArray putScalar(long dim0, long dim1, long dim2, long dim3, double value) {
+        return putScalar(new long[] {dim0, dim1, dim2, dim3}, value);
     }
 
     @Override
@@ -359,7 +382,7 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
             throw new IllegalStateException(
                             "Cannot use putScalar with indexes length " + indexes.length + " on rank " + rank);
 
-        addOrUpdate(indexes, element.getDouble(0));
+        addOrUpdate(ArrayUtil.toLongArray(indexes), element.getDouble(0));
         return this;
     }
 
@@ -385,12 +408,12 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
      * @param indexes the indexes of the element to be added
      * @param value the value of the element to be added
      * */
-    public void addOrUpdate(int[] indexes, double value) {
+    public void addOrUpdate(long[] indexes, double value) {
 
-        int[] physicalIndexes = isView() ? translateToPhysical(indexes) : indexes;
+        long[] physicalIndexes = isView() ? translateToPhysical(indexes) : indexes;
 
         for (int i = 0; i < length; i++) {
-            int[] idx = getUnderlyingIndicesOf(i).asInt();
+            long[] idx = getUnderlyingIndicesOf(i).asLong();
             if (Arrays.equals(idx, physicalIndexes)) {
                 // There is already a non-null value at this index
                 // -> update the current value, the sort is maintained
@@ -561,11 +584,11 @@ public class BaseSparseNDArrayCOO extends BaseSparseNDArray {
      * @return index of the value
      * */
     public int reverseIndexes(int... indexes) {
-        int[] idx = translateToPhysical(indexes);
+        long[] idx = translateToPhysical(ArrayUtil.toLongArray(indexes));
         sort();
 
         // FIXME: int cast
-        return indexesBinarySearch(0, (int) length(), idx);
+        return indexesBinarySearch(0, (int) length(), ArrayUtil.toInts(idx));
     }
 
     /**

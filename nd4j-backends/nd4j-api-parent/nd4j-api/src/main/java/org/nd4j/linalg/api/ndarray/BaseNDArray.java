@@ -1143,8 +1143,18 @@ public abstract class BaseNDArray implements INDArray, Iterable {
     }
 
     @Override
+    public void setShape(long[] shape) {
+        setShapeInformation(Nd4j.getShapeInfoProvider().createShapeInformation(shape, stride(), 0, elementWiseStride(), ordering()));
+    }
+
+    @Override
     public void setStride(int[] stride) {
         setShapeInformation(Nd4j.getShapeInfoProvider().createShapeInformation(shape(), ArrayUtil.toLongArray(stride), 0, elementWiseStride(), ordering()));
+    }
+
+    @Override
+    public void setStride(long[] stride) {
+        setShapeInformation(Nd4j.getShapeInfoProvider().createShapeInformation(shape(), stride, 0, elementWiseStride(), ordering()));
     }
 
     @Override
@@ -1368,7 +1378,7 @@ public abstract class BaseNDArray implements INDArray, Iterable {
     }
 
     @Override
-    public INDArray putScalar(int i, double value) {
+    public INDArray putScalar(long i, double value) {
         if (i < 0)
             i += rank();
         if (isScalar()) {
@@ -1384,17 +1394,16 @@ public abstract class BaseNDArray implements INDArray, Iterable {
         }
         long[] indexes = ordering() == 'c' ? Shape.ind2subC(this, i) : Shape.ind2sub(this, i);
         return putScalar(indexes, value);
-
     }
 
     @Override
-    public INDArray putScalar(int i, float value) {
+    public INDArray putScalar(long i, float value) {
         return putScalar(i, (double) value);
 
     }
 
     @Override
-    public INDArray putScalar(int i, int value) {
+    public INDArray putScalar(long i, int value) {
         return putScalar(i, (double) value);
     }
 
@@ -1425,7 +1434,38 @@ public abstract class BaseNDArray implements INDArray, Iterable {
     }
 
     @Override
-    public INDArray putScalar(int row, int col, double value) {
+    public INDArray putScalar(long[] indexes, double value) {
+        Nd4j.getCompressor().autoDecompress(this);
+
+
+        for (int i = 0; i < indexes.length; i++) {
+            if (indexes[i] < 0)
+                indexes[i] += rank();
+        }
+
+        if (indexes.length == 1) {
+            return putScalar(indexes[0], value);
+        } else if (indexes.length == 2) {
+            return putScalar(indexes[0], indexes[1], value);
+        } else if (indexes.length == 3) {
+            return putScalar(indexes[0], indexes[1], indexes[2], value);
+        } else if (indexes.length == 4) {
+            return putScalar(indexes[0], indexes[1], indexes[2], indexes[3], value);
+        } else {
+            autoProcessScalarCall();
+            long offset = Shape.getOffset(javaShapeInformation, indexes);
+            data.put(offset, value);
+        }
+        return this;
+    }
+
+    @Override
+    public INDArray putScalar(long[] indexes, float value) {
+        return putScalar(indexes, (double) value);
+    }
+
+    @Override
+    public INDArray putScalar(long row, long col, double value) {
         Nd4j.getCompressor().autoDecompress(this);
         autoProcessScalarCall();
 
@@ -1437,7 +1477,7 @@ public abstract class BaseNDArray implements INDArray, Iterable {
     }
 
     @Override
-    public INDArray putScalar(int dim0, int dim1, int dim2, double value) {
+    public INDArray putScalar(long dim0, long dim1, long dim2, double value) {
         Nd4j.getCompressor().autoDecompress(this);
         autoProcessScalarCall();
 
@@ -1461,7 +1501,7 @@ public abstract class BaseNDArray implements INDArray, Iterable {
     }
 
     @Override
-    public INDArray putScalar(int dim0, int dim1, int dim2, int dim3, double value) {
+    public INDArray putScalar(long dim0, long dim1, long dim2, long dim3, double value) {
         Nd4j.getCompressor().autoDecompress(this);
         autoProcessScalarCall();
 
@@ -1481,6 +1521,11 @@ public abstract class BaseNDArray implements INDArray, Iterable {
 
     @Override
     public INDArray putScalar(int[] indexes, int value) {
+        return putScalar(indexes, (double) value);
+    }
+
+    @Override
+    public INDArray putScalar(long[] indexes, int value) {
         return putScalar(indexes, (double) value);
     }
 
@@ -1881,6 +1926,11 @@ public abstract class BaseNDArray implements INDArray, Iterable {
      */
     @Override
     public float getFloat(int... indices) {
+        return (float) getDouble(indices);
+    }
+
+    @Override
+    public float getFloat(long... indices) {
         return (float) getDouble(indices);
     }
 
@@ -4050,6 +4100,11 @@ public abstract class BaseNDArray implements INDArray, Iterable {
     @Override
     public INDArray getScalar(int... indexes) {
         return Nd4j.scalar(getDouble(indexes));
+    }
+
+    @Override
+    public INDArray getScalar(long... indexes) {
+        return Nd4j.trueScalar(getDouble(indexes));
     }
 
     @Override

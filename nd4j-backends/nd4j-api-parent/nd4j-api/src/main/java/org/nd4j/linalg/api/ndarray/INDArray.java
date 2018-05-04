@@ -306,7 +306,7 @@ public interface INDArray extends Serializable {
      * @param value the value to insert
      * @return this
      */
-    INDArray putScalar(int i, double value);
+    INDArray putScalar(long i, double value);
 
     /**
      * Insert a scalar float at the specified index
@@ -315,7 +315,7 @@ public interface INDArray extends Serializable {
      * @param value Value to insert
      * @return This array
      */
-    INDArray putScalar(int i, float value);
+    INDArray putScalar(long i, float value);
 
     /**
      * Insert a scalar int at the specified index
@@ -324,7 +324,7 @@ public interface INDArray extends Serializable {
      * @param value Value to insert
      * @return This array
      */
-    INDArray putScalar(int i, int value);
+    INDArray putScalar(long i, int value);
 
     /**
      * Insert the item at the specified indices
@@ -348,7 +348,7 @@ public interface INDArray extends Serializable {
      * @param value    Value to put
      * @return         This INDArray
      */
-    INDArray putScalar(int row, int col, double value);
+    INDArray putScalar(long row, long col, double value);
 
     /**
      * Insert the value at the specified indices, in a 3d (rank 3) NDArray<br>
@@ -359,7 +359,7 @@ public interface INDArray extends Serializable {
      * @param value    Value to put
      * @return         This INDArray
      */
-    INDArray putScalar(int dim0, int dim1, int dim2, double value);
+    INDArray putScalar(long dim0, long dim1, long dim2, double value);
 
     /**
      * Insert the value at the specified indices, in a 4d (rank 4) NDArray<br>
@@ -371,7 +371,7 @@ public interface INDArray extends Serializable {
      * @param value    Value to put
      * @return         This INDArray
      */
-    INDArray putScalar(int dim0, int dim1, int dim2, int dim3, double value);
+    INDArray putScalar(long dim0, long dim1, long dim2, long dim3, double value);
 
     /**
      * Returns the binary ndarray for "Less" comparison.
