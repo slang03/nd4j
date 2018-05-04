@@ -22,6 +22,7 @@ package org.nd4j.linalg.cpu.nativecpu;
 
 import lombok.extern.slf4j.Slf4j;
 import org.nd4j.linalg.compression.CompressionUtils;
+import org.nd4j.linalg.exception.ND4JComplexNumbersNotSupportedException;
 import org.nd4j.linalg.primitives.Pair;
 import org.bytedeco.javacpp.*;
 import org.bytedeco.javacpp.indexer.*;
@@ -88,6 +89,9 @@ public class CpuNDArrayFactory extends BaseNDArrayFactory {
     @Override
     public void createBlas() {
         blas = new CpuBlas();
+
+        // TODO: add batched gemm here
+
         PointerPointer functions = new PointerPointer(10);
         functions.put(0, Loader.addressof("cblas_sgemv"));
         functions.put(1, Loader.addressof("cblas_dgemv"));
@@ -216,13 +220,15 @@ public class CpuNDArrayFactory extends BaseNDArrayFactory {
     }
 
     @Override
-    public IComplexNDArray createComplex(DataBuffer data, int rows, int columns, int[] stride, long offset) {
-        return new ComplexNDArray(data, new int[] {rows, columns}, stride, offset);
+    public IComplexNDArray createComplex(DataBuffer data, long rows, long columns, int[] stride, long offset) {
+        //return new ComplexNDArray(data, new long[] {rows, columns}, stride, offset);
+        throw new ND4JComplexNumbersNotSupportedException();
     }
 
     @Override
-    public INDArray create(DataBuffer data, int rows, int columns, int[] stride, long offset) {
-        return new NDArray(data, new int[] {rows, columns}, stride, offset);
+    public INDArray create(DataBuffer data, long rows, long columns, int[] stride, long offset) {
+        //return new NDArray(data, new long[] {rows, columns}, stride, offset);
+        throw new ND4JComplexNumbersNotSupportedException();
     }
 
     @Override
@@ -271,7 +277,17 @@ public class CpuNDArrayFactory extends BaseNDArrayFactory {
     }
 
     @Override
+    public INDArray create(long rows, long columns, long[] stride, long offset) {
+        return create(new long[]{rows, columns}, stride, offset);
+    }
+
+    @Override
     public INDArray create(int[] shape, char ordering) {
+        return new NDArray(shape, Nd4j.getStrides(shape, ordering), 0, ordering);
+    }
+
+    @Override
+    public INDArray create(long[] shape, char ordering) {
         return new NDArray(shape, Nd4j.getStrides(shape, ordering), 0, ordering);
     }
 
@@ -312,8 +328,9 @@ public class CpuNDArrayFactory extends BaseNDArrayFactory {
     }
 
     @Override
-    public INDArray create(float[] data, int rows, int columns, int[] stride, long offset, char ordering) {
-        return new NDArray(data, new int[] {rows, columns}, stride, offset, ordering);
+    public INDArray create(float[] data, long rows, long columns, int[] stride, long offset, char ordering) {
+        //return new NDArray(data, new int[] {rows, columns}, stride, offset, ordering);
+        throw new ND4JComplexNumbersNotSupportedException();
     }
 
     @Override
@@ -327,6 +344,11 @@ public class CpuNDArrayFactory extends BaseNDArrayFactory {
     }
 
     @Override
+    public INDArray create(List<INDArray> list, long[] shape, char ordering) {
+        return new NDArray(list, shape, ordering);
+    }
+
+    @Override
     public INDArray create(double[] data, int[] shape, long offset) {
         return new NDArray(Nd4j.createBuffer(data), shape, offset);
     }
@@ -336,6 +358,35 @@ public class CpuNDArrayFactory extends BaseNDArrayFactory {
         return new NDArray(Nd4j.createBuffer(data), shape, stride, offset, ordering);
     }
 
+    @Override
+    public INDArray create(float[] data, long[] shape, long[] stride, long offset) {
+        return new NDArray(data, shape, stride, offset, Nd4j.order());
+    }
+
+    @Override
+    public INDArray create(double[] data, long[] shape, long[] stride, long offset) {
+        return new NDArray(data, shape, stride, offset, Nd4j.order());
+    }
+
+    @Override
+    public INDArray create(DataBuffer data, long[] shape) {
+        return new NDArray(data, shape);
+    }
+
+    @Override
+    public INDArray create(DataBuffer data, long[] shape, long[] stride, long offset) {
+        return create(data, shape, stride, offset, Nd4j.order());
+    }
+
+    @Override
+    public INDArray create(DataBuffer data, long[] shape, long[] stride, long offset, char ordering) {
+        return new NDArray(data, shape, stride, offset, ordering);
+    }
+
+    @Override
+    public INDArray create(float[] data, long[] shape, long[] stride, char order, long offset) {
+        return new NDArray(data, shape, stride, offset, order);
+    }
 
     /**
      * Creates an ndarray with the specified shape
@@ -410,7 +461,11 @@ public class CpuNDArrayFactory extends BaseNDArrayFactory {
     @Override
     public INDArray create(List<INDArray> list, int[] shape) {
         return new NDArray(list, shape, Nd4j.getStrides(shape));
+    }
 
+    @Override
+    public INDArray create(List<INDArray> list, long[] shape) {
+        return new NDArray(list, shape, Nd4j.getStrides(shape));
     }
 
 
@@ -553,13 +608,15 @@ public class CpuNDArrayFactory extends BaseNDArrayFactory {
                     float[] retData = (float[]) ret.data().array();
 
                     // FIXME: LONG
-                    System.arraycopy(mData, (int) mFrom, retData, retFrom, m.length());
+                    // FIXME: int cast
+                    System.arraycopy(mData, (int) mFrom, retData, retFrom, (int) m.length());
                 } else {
                     double[] mData = (double[]) arr;
                     double[] retData = (double[]) ret.data().array();
 
                     // FIXME: LONG
-                    System.arraycopy(mData, (int) mFrom, retData, retFrom, m.length());
+                    // FIXME: int cast
+                    System.arraycopy(mData, (int) mFrom, retData, retFrom, (int) m.length());
                 }
                 linearIndex += m.length();
             } else {
@@ -600,7 +657,7 @@ public class CpuNDArrayFactory extends BaseNDArrayFactory {
         Pair<DataBuffer, DataBuffer> tadBuffers = Nd4j.getExecutioner().getTADManager().getTADOnlyShapeInfo(tensor, dimensions);
 
         long tadLength = 1;
-        int[] shape = new int[dimensions.length];
+        long[] shape = new long[dimensions.length];
         for (int i = 0; i < dimensions.length; i++) {
             tadLength *= tensor.shape()[dimensions[i]];
             shape[i] = tensor.shape()[dimensions[i]];
@@ -668,7 +725,7 @@ public class CpuNDArrayFactory extends BaseNDArrayFactory {
 
         int sumAlongDim = 0;
 
-        int[] outputShape = ArrayUtil.copy(toConcat[0].shape());
+        long[] outputShape = ArrayUtil.copy(toConcat[0].shape());
 
 
         for (int i = 0; i < toConcat.length; i++) {
@@ -759,11 +816,11 @@ public class CpuNDArrayFactory extends BaseNDArrayFactory {
         if (indexes == null || indexes.length < 1)
             throw new IllegalStateException("Indexes can't be null or zero-length");
 
-        int[] shape;
+        long[] shape;
         if (sourceDimension == 1)
-            shape = new int[] {indexes.length, source.shape()[sourceDimension]};
+            shape = new long[] {indexes.length, source.shape()[sourceDimension]};
         else if (sourceDimension == 0)
-            shape = new int[] {source.shape()[sourceDimension], indexes.length};
+            shape = new long[] {source.shape()[sourceDimension], indexes.length};
         else
             throw new UnsupportedOperationException("2D input is expected");
         return pullRows(source, Nd4j.createUninitialized(shape, order), sourceDimension, indexes);
@@ -774,11 +831,11 @@ public class CpuNDArrayFactory extends BaseNDArrayFactory {
         if (indexes == null || indexes.length < 1)
             throw new IllegalStateException("Indexes can't be null or zero-length");
 
-        int[] shape = null;
+        long[] shape = null;
         if (sourceDimension == 1)
-            shape = new int[] {indexes.length, source.shape()[sourceDimension]};
+            shape = new long[] {indexes.length, source.shape()[sourceDimension]};
         else if (sourceDimension == 0)
-            shape = new int[] {source.shape()[sourceDimension], indexes.length};
+            shape = new long[] {source.shape()[sourceDimension], indexes.length};
         else
             throw new UnsupportedOperationException("2D input is expected");
 
@@ -998,9 +1055,9 @@ public class CpuNDArrayFactory extends BaseNDArrayFactory {
             tadLength *= arrays.get(0).shape()[dimensions.get(0)[i]];
         }
 
-        int numTads = arrays.get(0).length() / tadLength;
+        long numTads = arrays.get(0).length() / tadLength;
 
-        int[] map = ArrayUtil.buildInterleavedVector(rnd, numTads);
+        long[] map = ArrayUtil.buildInterleavedVector(rnd, numTads);
 
         PointerPointer dataPointers = new PointerPointer(arrays.size());
         PointerPointer shapePointers = new PointerPointer(arrays.size());
@@ -1013,7 +1070,7 @@ public class CpuNDArrayFactory extends BaseNDArrayFactory {
 
         TADManager tadManager = Nd4j.getExecutioner().getTADManager();
 
-        IntPointer ptrMap = new IntPointer(map);
+        LongPointer ptrMap = new LongPointer(map);
 
         long[] ptrs = new long[arrays.size()];
 

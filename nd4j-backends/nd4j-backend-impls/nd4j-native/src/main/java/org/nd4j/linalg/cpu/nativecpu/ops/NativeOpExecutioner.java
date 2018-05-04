@@ -163,7 +163,7 @@ public class NativeOpExecutioner extends DefaultOpExecutioner {
 
 
 
-        int[] retShape = Shape.wholeArrayDimension(dimension) ? new int[] {1, 1}
+        long[] retShape = Shape.wholeArrayDimension(dimension) ? new long[] {1, 1}
                 : ArrayUtil.removeIndex(op.x().shape(), dimension);
 
         // This is obviously wrong for IndexReduce, op.x has no real value as return
@@ -174,11 +174,11 @@ public class NativeOpExecutioner extends DefaultOpExecutioner {
         //ensure vector is proper shape
         if (retShape.length == 1) {
             if (dimension[0] == 0)
-                retShape = new int[] {1, retShape[0]};
+                retShape = new long[] {1, retShape[0]};
             else
-                retShape = new int[] {retShape[0], 1};
+                retShape = new long[] {retShape[0], 1};
         } else if (retShape.length == 0) {
-            retShape = new int[] {1, 1};
+            retShape = new long[] {1, 1};
         }
 
         if(op.z() == null || op.x() == op.z()) {
@@ -269,7 +269,7 @@ public class NativeOpExecutioner extends DefaultOpExecutioner {
         if (extraz.get() == null)
             extraz.set(new PointerPointer(32));
 
-        int[] maxShape = Shape.getMaxShape(op.x(),op.y());
+        long[] maxShape = Shape.getMaxShape(op.x(),op.y());
         for (int i = 0; i < dimension.length; i++)
             if (dimension[i] >= maxShape.length && dimension[i] != Integer.MAX_VALUE)
                 throw new ND4JIllegalStateException("Op target dimension " + Arrays.toString(dimension)
@@ -284,19 +284,19 @@ public class NativeOpExecutioner extends DefaultOpExecutioner {
             dimension = new int[] {Integer.MAX_VALUE};
 
 
-        int[] retShape;
+        long[] retShape;
         if (Shape.wholeArrayDimension(dimension))
-            retShape = new int[] {1, 1};
+            retShape = new long[] {1, 1};
         else
             retShape = ArrayUtil.removeIndex(maxShape, dimension);
         //ensure vector is proper shape
         if (retShape.length == 1) {
             if (dimension[0] == 0)
-                retShape = new int[] {1, retShape[0]};
+                retShape = new long[] {1, retShape[0]};
             else
-                retShape = new int[] {retShape[0], 1};
+                retShape = new long[] {retShape[0], 1};
         } else if (retShape.length == 0) {
-            retShape = new int[] {1, 1};
+            retShape = new long[] {1, 1};
         }
 
 
@@ -310,8 +310,8 @@ public class NativeOpExecutioner extends DefaultOpExecutioner {
         INDArray ret;
         if (op.z() == null || op.z() == op.x()) {
             if (op.isComplexAccumulation()) {
-                int xT = op.x().tensorssAlongDimension(dimension);
-                int yT = op.y().tensorssAlongDimension(dimension);
+                long xT = op.x().tensorssAlongDimension(dimension);
+                long yT = op.y().tensorssAlongDimension(dimension);
 
                 ret = Nd4j.create(xT, yT);
             } else {
@@ -348,8 +348,8 @@ public class NativeOpExecutioner extends DefaultOpExecutioner {
             if (!op.isComplexAccumulation() && op.z().lengthLong() != ArrayUtil.prodLong(retShape))
                 throw new ND4JIllegalStateException("Shape of target array for reduction [" + Arrays.toString(op.z().shape()) + "] doesn't match expected [" + Arrays.toString(retShape) + "]");
             else if (op.isComplexAccumulation()) {
-                int xT = op.x().tensorssAlongDimension(dimension);
-                int yT = op.y().tensorssAlongDimension(dimension);
+                long xT = op.x().tensorssAlongDimension(dimension);
+                long yT = op.y().tensorssAlongDimension(dimension);
 
                 if (op.z().lengthLong() != xT * yT)
                     throw new ND4JIllegalStateException("Shape of target array for reduction [" + Arrays.toString(op.z().shape()) + "] doesn't match expected [" + (xT * yT) + "]");
@@ -1743,9 +1743,9 @@ public class NativeOpExecutioner extends DefaultOpExecutioner {
         profilingHookOut(op, st);
     }
 
-    protected int[] getShapeFromPointer(IntPointer ptr) {
-        val rank = ptr.get(0);
-        int[] array = new int[rank];
+    protected long[] getShapeFromPointer(LongPointer ptr) {
+        val rank = (int) ptr.get(0);
+        long[] array = new long[rank];
         for (int i = 0; i < rank; i++) {
             array[i] = ptr.get(i+1);
         }
@@ -1753,11 +1753,11 @@ public class NativeOpExecutioner extends DefaultOpExecutioner {
     }
 
     @Override
-    public List<int[]> calculateOutputShape(@NonNull CustomOp op) {
+    public List<long[]> calculateOutputShape(@NonNull CustomOp op) {
         val lc = op.opName().toLowerCase();
         val hash = op.opHash();
 
-        val result = new ArrayList<int[]>();
+        val result = new ArrayList<long[]>();
         if(op.numInputArguments() < 1) {
             return Collections.emptyList();
         }
@@ -1794,7 +1794,7 @@ public class NativeOpExecutioner extends DefaultOpExecutioner {
                 throw new RuntimeException();
 
             for (int e = 0; e < ptrptr.size(); e++ )
-                result.add(getShapeFromPointer(new PagedPointer(ptrptr.at(e)).asIntPointer()));
+                result.add(getShapeFromPointer(new PagedPointer(ptrptr.at(e)).asLongPointer()));
 
             loop.deleteShapeList(ptrptr);
         } else if (Nd4j.dataType() == DataBuffer.Type.DOUBLE) {
@@ -1813,7 +1813,7 @@ public class NativeOpExecutioner extends DefaultOpExecutioner {
                 throw new RuntimeException();
 
             for (int e = 0; e < ptrptr.size(); e++ )
-                result.add(getShapeFromPointer(new PagedPointer(ptrptr.at(e)).asIntPointer()));
+                result.add(getShapeFromPointer(new PagedPointer(ptrptr.at(e)).asLongPointer()));
 
 
             loop.deleteShapeList(ptrptr);
@@ -1832,7 +1832,7 @@ public class NativeOpExecutioner extends DefaultOpExecutioner {
 
             val numOutputs = getCustomOperations().get(lc).getNumOutputs();
             for (int e = 0; e < ptrptr.size(); e++ )
-                result.add(getShapeFromPointer(new PagedPointer(ptrptr.at(e)).asIntPointer()));
+                result.add(getShapeFromPointer(new PagedPointer(ptrptr.at(e)).asLongPointer()));
 
             loop.deleteShapeList(ptrptr);
         }

@@ -692,6 +692,11 @@ public class Shape {
         return arr.data().getDouble(offset);
     }
 
+    public static double getDouble(INDArray arr, long... indices) {
+        long offset = getOffset(arr.shapeInfo(), indices);
+        return arr.data().getDouble(offset);
+    }
+
     /**
      * Iterate over 2
      * coordinate spaces given 2 arrays
@@ -871,6 +876,20 @@ public class Shape {
      * @return                    Buffer offset fo the specified indices
      */
     public static long getOffset(IntBuffer shapeInformation, int... indices) {
+        int rank = rank(shapeInformation);
+        if (indices.length != rank)
+            throw new IllegalArgumentException("Indexes must be same length as array rank");
+        long offset = 0;
+        for (int i = 0; i < rank; i++) {
+            int size_dimi = size(shapeInformation, i);
+            if (size_dimi != 1) {
+                offset += indices[i] * stride(shapeInformation, i);
+            }
+        }
+        return offset;
+    }
+
+    public static long getOffset(IntBuffer shapeInformation, long... indices) {
         int rank = rank(shapeInformation);
         if (indices.length != rank)
             throw new IllegalArgumentException("Indexes must be same length as array rank");

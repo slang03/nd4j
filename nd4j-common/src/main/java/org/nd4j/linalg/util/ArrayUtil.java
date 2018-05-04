@@ -2413,6 +2413,43 @@ public class ArrayUtil {
         return result;
     }
 
+    public static long[] buildInterleavedVector(Random rng, long length) {
+        // FIXME: int cast
+        long[] result = new long[(int) length];
+
+        List<Integer> indexes = new ArrayList<>();
+        List<Integer> odds = new ArrayList<>();
+
+        // we add odd indexes only to list
+        for (int i = 1; i < result.length; i += 2) {
+            indexes.add(i);
+            odds.add(i - 1);
+        }
+
+        Collections.shuffle(indexes, rng);
+
+        // now all even elements will be interleaved with odd elements
+        for (int i = 0; i < result.length; i++) {
+            if (i % 2 == 0 && indexes.size() >= 1) {
+                int idx = indexes.get(0);
+                indexes.remove(0);
+                result[i] = idx;
+            } else
+                result[i] = -1;
+        }
+
+        // for odd tad numbers, we add special random clause for last element
+        if (length % 2 != 0) {
+            int rndClause = odds.get(rng.nextInt(odds.size()));
+            long tmp = result[rndClause];
+            result[rndClause] = result[result.length - 1];
+            result[result.length - 1] = tmp;
+        }
+
+
+        return result;
+    }
+
     protected static <T extends Object> void swap(List<T> objects, int idxA, int idxB) {
         T tmpA = objects.get(idxA);
         T tmpB = objects.get(idxB);
