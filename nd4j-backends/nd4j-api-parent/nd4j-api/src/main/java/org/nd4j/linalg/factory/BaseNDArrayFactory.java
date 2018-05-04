@@ -669,6 +669,12 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
         return ret;
     }
 
+    @Override
+    public INDArray rand(long[] shape, org.nd4j.linalg.api.rng.Random r) {
+        INDArray ret = r.nextDouble(shape);
+        return ret;
+    }
+
     /**
      * Create a random ndarray with the given shape using the given rng
      *
@@ -678,6 +684,12 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
      */
     @Override
     public INDArray rand(int[] shape, long seed) {
+        Nd4j.getRandom().setSeed(seed);
+        return rand(shape, Nd4j.getRandom());
+    }
+
+    @Override
+    public INDArray rand(long[] shape, long seed) {
         Nd4j.getRandom().setSeed(seed);
         return rand(shape, Nd4j.getRandom());
     }
@@ -694,6 +706,11 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
         return rand(shape, System.currentTimeMillis());
     }
 
+    @Override
+    public INDArray rand(long[] shape) {
+        return rand(shape, System.currentTimeMillis());
+    }
+
     /**
      * Create a random ndarray with the given shape and order
      *
@@ -702,6 +719,11 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
      */
     @Override
     public INDArray rand(char order, int[] shape) {
+        return Nd4j.getRandom().nextDouble(order, shape);
+    }
+
+    @Override
+    public INDArray rand(char order, long[] shape) {
         return Nd4j.getRandom().nextDouble(order, shape);
     }
 
@@ -731,6 +753,11 @@ public abstract class BaseNDArrayFactory implements NDArrayFactory {
      */
     @Override
     public INDArray randn(char order, int[] shape) {
+        return Nd4j.getRandom().nextGaussian(order, shape);
+    }
+
+    @Override
+    public INDArray randn(char order, long[] shape) {
         return Nd4j.getRandom().nextGaussian(order, shape);
     }
 
