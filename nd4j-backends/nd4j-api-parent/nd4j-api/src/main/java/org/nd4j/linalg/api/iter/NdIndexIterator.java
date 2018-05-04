@@ -78,6 +78,10 @@ public class NdIndexIterator implements Iterator<long[]> {
         this(order, false, ArrayUtil.toLongArray(shape));
     }
 
+    public NdIndexIterator(char order, long... shape) {
+        this(order, false, shape);
+    }
+
     @Override
     public boolean hasNext() {
         return i < length;
