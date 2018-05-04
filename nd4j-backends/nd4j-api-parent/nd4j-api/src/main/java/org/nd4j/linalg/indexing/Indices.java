@@ -61,7 +61,10 @@ public class Indices {
     public static int rowNumber(int index, INDArray arr) {
         double otherTest = ((double) index) / arr.size(-1);
         int test = (int) Math.floor(otherTest);
-        int vectors = arr.vectorsAlongDimension(-1);
+
+        // FIXME: int cast
+
+        int vectors = (int) arr.vectorsAlongDimension(-1);
         if (test >= vectors)
             return vectors - 1;
         return test;
@@ -95,7 +98,7 @@ public class Indices {
             return otherDim;
         } else {
             int majorStride = arr.stride(-2);
-            int vectorsAlongDimension = arr.vectorsAlongDimension(-1);
+            long vectorsAlongDimension = arr.vectorsAlongDimension(-1);
             double rowCalc = (double) (index * majorStride) / (double) arr.length();
             int floor = (int) Math.floor(rowCalc);
 
