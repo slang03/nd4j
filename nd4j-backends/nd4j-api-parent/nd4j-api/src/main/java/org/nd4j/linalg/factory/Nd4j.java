@@ -5072,6 +5072,25 @@ public class Nd4j {
 
     }
 
+    /**
+     * Creates an ndarray with the specified shape
+     *
+     * @param shape  the shape of the ndarray
+     * @param stride the stride for the ndarray
+     * @param offset the offset of the ndarray
+     * @return the instance
+     */
+    public static INDArray create(long[] shape, long[] stride, long offset, char ordering) {
+        shape = getEnsuredShape(shape);
+
+        checkShapeValues(shape);
+
+        INDArray ret = INSTANCE.create(shape, stride, offset, ordering);
+        logCreationIfNecessary(ret);
+        return ret;
+
+    }
+
     public static INDArray zeros(int[] shape, int[] stride, long offset, char ordering) {
         return create(shape, stride, offset, ordering);
     }

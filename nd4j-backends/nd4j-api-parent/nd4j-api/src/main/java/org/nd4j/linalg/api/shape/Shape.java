@@ -2768,8 +2768,18 @@ public class Shape {
         return Arrays.copyOfRange(buffer, 1, 1 + rank);
     }
 
+    public static long[] shapeOf(long[] buffer) {
+        val rank = (int) buffer[0];
+        return Arrays.copyOfRange(buffer, 1, 1 + rank);
+    }
+
     public static int[] stridesOf(int[] buffer) {
         val rank = buffer[0];
+        return Arrays.copyOfRange(buffer, 1+rank, 1 + (rank * 2));
+    }
+
+    public static long[] stridesOf(long[] buffer) {
+        val rank = (int) buffer[0];
         return Arrays.copyOfRange(buffer, 1+rank, 1 + (rank * 2));
     }
 

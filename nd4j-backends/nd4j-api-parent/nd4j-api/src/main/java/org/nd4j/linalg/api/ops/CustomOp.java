@@ -37,7 +37,7 @@ public interface CustomOp {
 
     INDArray[] inputArguments();
 
-    int[] iArgs();
+    long[] iArgs();
 
     double[] tArgs();
 
@@ -48,7 +48,7 @@ public interface CustomOp {
 
     void removeIArgument(Integer arg);
 
-    Integer getIArgument(int index);
+    Long getIArgument(int index);
 
     int numIArguments();
 
