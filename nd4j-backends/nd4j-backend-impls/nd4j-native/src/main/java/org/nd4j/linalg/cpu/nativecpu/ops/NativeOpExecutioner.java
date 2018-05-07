@@ -1694,7 +1694,7 @@ public class NativeOpExecutioner extends DefaultOpExecutioner {
             for (val t: tArgs1)
                 tArgs.put(cnt++, (float) t);
 
-            val status = OpStatus.byNumber(loop.execCustomOpFloat(null, hash, inputBuffers, inputShapes, op.numInputArguments(), outputBuffers, outputShapes, op.numOutputArguments(), tArgs, op.numTArguments(), iArgs, op.numIArguments(), op.isInplaceCall()));
+            OpStatus status = OpStatus.byNumber(loop.execCustomOpFloat(null, hash, inputBuffers, inputShapes, op.numInputArguments(), outputBuffers, outputShapes, op.numOutputArguments(), tArgs, op.numTArguments(), iArgs, op.numIArguments(), op.isInplaceCall()));
             if (status != OpStatus.ND4J_STATUS_OK)
                 throw new ND4JIllegalStateException("Op execution failed: " + status);
         }  else if (Nd4j.dataType() == DataBuffer.Type.DOUBLE) {
@@ -1734,7 +1734,7 @@ public class NativeOpExecutioner extends DefaultOpExecutioner {
             for (val t: tArgs1)
                 tArgs.put(cnt++, ArrayUtil.toHalf(t));
 
-            val status = OpStatus.byNumber(loop.execCustomOpHalf(null, hash, inputBuffers, inputShapes, op.numInputArguments(),
+            OpStatus status = OpStatus.byNumber(loop.execCustomOpHalf(null, hash, inputBuffers, inputShapes, op.numInputArguments(),
                     outputBuffers, outputShapes, op.numOutputArguments(), tArgs, op.numTArguments(), iArgs, op.numIArguments(), op.isInplaceCall()));
             if (status != OpStatus.ND4J_STATUS_OK)
                 throw new ND4JIllegalStateException("Op execution failed: " + status);
@@ -1899,7 +1899,7 @@ public class NativeOpExecutioner extends DefaultOpExecutioner {
                 val buffer = var.getNDArray().buffer();
 
                 val rank = shapeInfo.get(0);
-                val jshape = new int[rank * 2 + 4];
+                val jshape = new long[rank * 2 + 4];
                 for (int i = 0; i < jshape.length; i++) {
                     jshape[i] = shapeInfo.get(i);
                 }
@@ -1931,7 +1931,7 @@ public class NativeOpExecutioner extends DefaultOpExecutioner {
                 val buffer = var.getNDArray().buffer();
 
                 val rank = shapeInfo.get(0);
-                val jshape = new int[rank * 2 + 4];
+                val jshape = new long[rank * 2 + 4];
                 for (int i = 0; i < jshape.length; i++) {
                     jshape[i] = shapeInfo.get(i);
                 }
@@ -1964,7 +1964,7 @@ public class NativeOpExecutioner extends DefaultOpExecutioner {
                 val buffer = var.getNDArray().buffer();
 
                 val rank = shapeInfo.get(0);
-                val jshape = new int[rank * 2 + 4];
+                val jshape = new long[rank * 2 + 4];
                 for (int i = 0; i < jshape.length; i++) {
                     jshape[i] = shapeInfo.get(i);
                 }

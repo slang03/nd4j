@@ -246,21 +246,21 @@ public abstract class NativeOps extends Pointer {
     public abstract void execReduce3AllDouble(PointerPointer extraPointers, int opNum, DoublePointer x,
                     IntPointer xShapeInfo, DoublePointer extraParamsVals, DoublePointer y, IntPointer yShapeInfo,
                     DoublePointer result, IntPointer resultShapeInfoBuffer, IntPointer dimension, int dimensionLength,
-                    IntPointer xTadShape, @Cast("Nd4jIndex *") LongPointer xOffsets, IntPointer yTadShape,
-                    @Cast("Nd4jIndex *") LongPointer yOffsets);
+                    IntPointer xTadShape, @Cast("Nd4jLong *") LongPointer xOffsets, IntPointer yTadShape,
+                    @Cast("Nd4jLong *") LongPointer yOffsets);
 
     public abstract void execReduce3AllFloat(PointerPointer extraPointers, int opNum, FloatPointer x,
                     IntPointer xShapeInfo, FloatPointer extraParamsVals, FloatPointer y, IntPointer yShapeInfo,
                     FloatPointer result, IntPointer resultShapeInfoBuffer, IntPointer dimension, int dimensionLength,
-                    IntPointer xTadShape, @Cast("Nd4jIndex *") LongPointer xOffsets, IntPointer yTadShape,
-                    @Cast("Nd4jIndex *") LongPointer yOffsets);
+                    IntPointer xTadShape, @Cast("Nd4jLong *") LongPointer xOffsets, IntPointer yTadShape,
+                    @Cast("Nd4jLong *") LongPointer yOffsets);
 
     public abstract void execReduce3AllHalf(PointerPointer extraPointers, int opNum, @Cast("float16*") ShortPointer x,
                     IntPointer xShapeInfo, @Cast("float16*") ShortPointer extraParamsVals,
                     @Cast("float16*") ShortPointer y, IntPointer yShapeInfo, @Cast("float16*") ShortPointer result,
                     IntPointer resultShapeInfoBuffer, IntPointer dimension, int dimensionLength, IntPointer xTadShape,
-                    @Cast("Nd4jIndex *") LongPointer xOffsets, IntPointer yTadShape,
-                    @Cast("Nd4jIndex *") LongPointer yOffsets);
+                    @Cast("Nd4jLong *") LongPointer xOffsets, IntPointer yTadShape,
+                    @Cast("Nd4jLong *") LongPointer yOffsets);
 
     /**
      *
@@ -853,9 +853,9 @@ public abstract class NativeOps extends Pointer {
      * @param xIndexes
      * @param resultIndexes
      */
-    public abstract void execScalarFloat(PointerPointer extraPointers, int opNum, FloatPointer x, IntPointer xShapeInfo,
-                    FloatPointer results, IntPointer resultShapeInfo, float scalar, FloatPointer extraParams,
-                    IntPointer xIndexes, IntPointer resultIndexes);
+    public abstract void execScalarFloat(PointerPointer extraPointers, int opNum, FloatPointer x, @Cast("Nd4jLong *") LongPointer xShapeInfo,
+                    FloatPointer results, @Cast("Nd4jLong *") LongPointer resultShapeInfo, float scalar, FloatPointer extraParams,
+                                         @Cast("Nd4jLong *") LongPointer xIndexes, @Cast("Nd4jLong *") LongPointer resultIndexes);
 
     /**
      *
@@ -865,7 +865,7 @@ public abstract class NativeOps extends Pointer {
      * @param extraParams
      */
     public abstract float execSummaryStatsScalarFloat(PointerPointer extraPointers, int opNum, FloatPointer x,
-                    IntPointer xShapeInfo, FloatPointer extraParams, boolean biasCorrected);
+                                                      @Cast("Nd4jLong *") LongPointer xShapeInfo, FloatPointer extraParams, boolean biasCorrected);
 
 
     /**
@@ -894,7 +894,7 @@ public abstract class NativeOps extends Pointer {
      * @param biasCorrected
      */
     public abstract void execSummaryStatsFloat(PointerPointer extraPointers, int opNum, FloatPointer x,
-                    IntPointer xShapeInfo, FloatPointer extraParams, FloatPointer results, IntPointer resultShapeInfo,
+                                               @Cast("Nd4jLong *") LongPointer xShapeInfo, FloatPointer extraParams, FloatPointer results, @Cast("Nd4jLong *") LongPointer resultShapeInfo,
                     boolean biasCorrected);
 
 
@@ -910,8 +910,8 @@ public abstract class NativeOps extends Pointer {
      * @param biasCorrected
      */
     public abstract void execSummaryStatsHalf(PointerPointer extraPointers, int opNum, @Cast("float16*") ShortPointer x,
-                    IntPointer xShapeInfo, @Cast("float16*") ShortPointer extraParams,
-                    @Cast("float16*") ShortPointer results, IntPointer resultShapeInfo, boolean biasCorrected);
+                                              @Cast("Nd4jLong *") LongPointer xShapeInfo, @Cast("float16*") ShortPointer extraParams,
+                    @Cast("float16*") ShortPointer results, @Cast("Nd4jLong *") LongPointer resultShapeInfo, boolean biasCorrected);
 
     /**
      *
@@ -927,8 +927,8 @@ public abstract class NativeOps extends Pointer {
      * @param biasCorrected
      */
     public abstract void execSummaryStatsFloat(PointerPointer extraPointers, int opNum, FloatPointer x,
-                    IntPointer xShapeInfo, FloatPointer extraParams, FloatPointer results,
-                    IntPointer resultShapeInfoBuffer, IntPointer dimension, int dimensionLength, boolean biasCorrected);
+                                               @Cast("Nd4jLong *") LongPointer xShapeInfo, FloatPointer extraParams, FloatPointer results,
+                                               @Cast("Nd4jLong *") LongPointer resultShapeInfoBuffer, IntPointer dimension, int dimensionLength, boolean biasCorrected);
 
 
     /**
@@ -945,8 +945,8 @@ public abstract class NativeOps extends Pointer {
      * @param biasCorrected
      */
     public abstract void execSummaryStatsHalf(PointerPointer extraPointers, int opNum, @Cast("float16*") ShortPointer x,
-                    IntPointer xShapeInfo, @Cast("float16*") ShortPointer extraParams,
-                    @Cast("float16*") ShortPointer results, IntPointer resultShapeInfoBuffer, IntPointer dimension,
+                                              @Cast("Nd4jLong *") LongPointer xShapeInfo, @Cast("float16*") ShortPointer extraParams,
+                    @Cast("float16*") ShortPointer results, @Cast("Nd4jLong *") LongPointer resultShapeInfoBuffer, IntPointer dimension,
                     int dimensionLength, boolean biasCorrected);
 
     /**
@@ -960,8 +960,8 @@ public abstract class NativeOps extends Pointer {
      * @param extraParams
      * @param n
      */
-    public abstract void execTransformFloat(PointerPointer extraPointers, int opNum, FloatPointer dx, int xStride,
-                    FloatPointer results, int resultStride, FloatPointer extraParams, long n);
+    public abstract void execTransformFloat(PointerPointer extraPointers, int opNum, FloatPointer dx, long xStride,
+                    FloatPointer results, long resultStride, FloatPointer extraParams, long n);
 
 
     /**
@@ -976,7 +976,7 @@ public abstract class NativeOps extends Pointer {
      * @param n
      */
     public abstract void execTransformHalf(PointerPointer extraPointers, int opNum, @Cast("float16*") ShortPointer dx,
-                    int xStride, @Cast("float16*") ShortPointer results, int resultStride,
+                    long xStride, @Cast("float16*") ShortPointer results, long resultStride,
                     @Cast("float16*") ShortPointer extraParams, long n);
 
     /**
@@ -990,7 +990,7 @@ public abstract class NativeOps extends Pointer {
      * @param extraParams
      */
     public abstract void execTransformFloat(PointerPointer extraPointers, int opNum, FloatPointer dx,
-                    IntPointer xShapeInfo, FloatPointer results, IntPointer resultShapeInfo, FloatPointer extraParams);
+                                            @Cast("Nd4jLong *") LongPointer xShapeInfo, FloatPointer results, @Cast("Nd4jLong *") LongPointer resultShapeInfo, FloatPointer extraParams);
 
 
     /**
@@ -1004,7 +1004,7 @@ public abstract class NativeOps extends Pointer {
      * @param extraParams
      */
     public abstract void execTransformHalf(PointerPointer extraPointers, int opNum, @Cast("float16*") ShortPointer dx,
-                    IntPointer xShapeInfo, @Cast("float16*") ShortPointer results, IntPointer resultShapeInfo,
+                                           @Cast("Nd4jLong *") LongPointer xShapeInfo, @Cast("float16*") ShortPointer results, @Cast("Nd4jLong *") LongPointer resultShapeInfo,
                     @Cast("float16*") ShortPointer extraParams);
 
     /**
@@ -1020,8 +1020,8 @@ public abstract class NativeOps extends Pointer {
      * @param resultIndexes
      */
     public abstract void execTransformFloat(PointerPointer extraPointers, int opNum, FloatPointer dx,
-                    IntPointer xShapeInfo, FloatPointer results, IntPointer resultShapeInfo, FloatPointer extraParams,
-                    IntPointer xIndexes, IntPointer resultIndexes);
+                                            @Cast("Nd4jLong *") LongPointer xShapeInfo, FloatPointer results, @Cast("Nd4jLong *") LongPointer resultShapeInfo, FloatPointer extraParams,
+                                            @Cast("Nd4jLong *") LongPointer xIndexes, @Cast("Nd4jLong *") LongPointer resultIndexes);
 
 
     /**
@@ -1037,8 +1037,8 @@ public abstract class NativeOps extends Pointer {
      * @param resultIndexes
      */
     public abstract void execTransformHalf(PointerPointer extraPointers, int opNum, @Cast("float16*") ShortPointer dx,
-                    IntPointer xShapeInfo, @Cast("float16*") ShortPointer results, IntPointer resultShapeInfo,
-                    @Cast("float16*") ShortPointer extraParams, IntPointer xIndexes, IntPointer resultIndexes);
+                                           @Cast("Nd4jLong *") LongPointer xShapeInfo, @Cast("float16*") ShortPointer results, @Cast("Nd4jLong *") LongPointer resultShapeInfo,
+                    @Cast("float16*") ShortPointer extraParams, @Cast("Nd4jLong *") LongPointer xIndexes, @Cast("Nd4jLong *") LongPointer resultIndexes);
 
 
     /**
@@ -1051,12 +1051,12 @@ public abstract class NativeOps extends Pointer {
      * @param input
      * @param inputShapeInfo
      */
-    public abstract void flattenFloat(PointerPointer extraPointers, int offset, char order, FloatPointer results,
-                    IntPointer resultShapeInfo, FloatPointer input, IntPointer inputShapeInfo);
+    public abstract void flattenFloat(PointerPointer extraPointers, long offset, char order, FloatPointer results,
+                    IntPointer resultShapeInfo, FloatPointer input, @Cast("Nd4jLong *") LongPointer inputShapeInfo);
 
-    public abstract void flattenHalf(PointerPointer extraPointers, int offset, char order,
-                    @Cast("float16*") ShortPointer results, IntPointer resultShapeInfo,
-                    @Cast("float16*") ShortPointer input, IntPointer inputShapeInfo);
+    public abstract void flattenHalf(PointerPointer extraPointers, long offset, char order,
+                    @Cast("float16*") ShortPointer results, @Cast("Nd4jLong *") LongPointer resultShapeInfo,
+                    @Cast("float16*") ShortPointer input, @Cast("Nd4jLong *") LongPointer inputShapeInfo);
 
 
     /**
@@ -1069,8 +1069,8 @@ public abstract class NativeOps extends Pointer {
      * @param input
      * @param inputShapeInfo
      */
-    public abstract void flattenDouble(PointerPointer extraPointers, int offset, char order, DoublePointer results,
-                    IntPointer resultShapeInfo, DoublePointer input, IntPointer inputShapeInfo);
+    public abstract void flattenDouble(PointerPointer extraPointers, long offset, char order, DoublePointer results,
+                                       @Cast("Nd4jLong *") LongPointer resultShapeInfo, DoublePointer input, @Cast("Nd4jLong *") LongPointer inputShapeInfo);
 
     /**
      *
@@ -1085,7 +1085,7 @@ public abstract class NativeOps extends Pointer {
      * @param tadOffsets
      */
     public abstract void concatDouble(PointerPointer extraPointers, int dimension, int numArrays, PointerPointer data,
-                    PointerPointer inputShapeInfo, DoublePointer results, IntPointer resultShapeInfo,
+                    PointerPointer inputShapeInfo, DoublePointer results, @Cast("Nd4jLong *") LongPointer resultShapeInfo,
                     PointerPointer tadPointers, PointerPointer tadOffsets);
 
     /**
@@ -1101,7 +1101,7 @@ public abstract class NativeOps extends Pointer {
      * @param tadOffsets
      */
     public abstract void concatFloat(PointerPointer extraPointers, int dimension, int numArrays, PointerPointer data,
-                    PointerPointer inputShapeInfo, FloatPointer results, IntPointer resultShapeInfo,
+                    PointerPointer inputShapeInfo, FloatPointer results, @Cast("Nd4jLong *") LongPointer resultShapeInfo,
                     PointerPointer tadPointers, PointerPointer tadOffsets);
 
 
@@ -1118,13 +1118,13 @@ public abstract class NativeOps extends Pointer {
      * @param tadOffsets
      */
     public abstract void concatHalf(PointerPointer extraPointers, int dimension, int numArrays, PointerPointer data,
-                    PointerPointer inputShapeInfo, @Cast("float16*") ShortPointer results, IntPointer resultShapeInfo,
+                    PointerPointer inputShapeInfo, @Cast("float16*") ShortPointer results, @Cast("Nd4jLong *") LongPointer resultShapeInfo,
                     PointerPointer tadPointers, PointerPointer tadOffsets);
 
 
     public abstract void specialConcatDouble(PointerPointer extraPointers, int dimension, int numArrays,
                     PointerPointer data, PointerPointer inputShapeInfo, DoublePointer results,
-                    IntPointer resultShapeInfo, PointerPointer tadPointers, PointerPointer tadOffsets);
+                                             @Cast("Nd4jLong *") LongPointer resultShapeInfo, PointerPointer tadPointers, PointerPointer tadOffsets);
 
     /**
      *
@@ -1140,7 +1140,7 @@ public abstract class NativeOps extends Pointer {
      */
     public abstract void specialConcatFloat(PointerPointer extraPointers, int dimension, int numArrays,
                     PointerPointer data, PointerPointer inputShapeInfo, FloatPointer results,
-                    IntPointer resultShapeInfo, PointerPointer tadPointers, PointerPointer tadOffsets);
+                                            @Cast("Nd4jLong *") LongPointer resultShapeInfo, PointerPointer tadPointers, PointerPointer tadOffsets);
 
 
     /**
@@ -1157,7 +1157,7 @@ public abstract class NativeOps extends Pointer {
      */
     public abstract void specialConcatHalf(PointerPointer extraPointers, int dimension, int numArrays,
                     PointerPointer data, PointerPointer inputShapeInfo, @Cast("float16*") ShortPointer results,
-                    IntPointer resultShapeInfo, PointerPointer tadPointers, PointerPointer tadOffsets);
+                                           @Cast("Nd4jLong *") LongPointer resultShapeInfo, PointerPointer tadPointers, PointerPointer tadOffsets);
 
     /**
      * Gets the maximum number of open mp threads
@@ -1246,25 +1246,25 @@ public abstract class NativeOps extends Pointer {
 
     public abstract void setGridLimit(int gridSize);
 
-    public abstract void tadOnlyShapeInfo(IntPointer shapeInfo, IntPointer dimension, int dimensionLength,
-                    IntPointer targetBuffer, @Cast("Nd4jIndex *") LongPointer offsetsBuffer);
+    public abstract void tadOnlyShapeInfo(@Cast("Nd4jLong *") LongPointer shapeInfo, IntPointer dimension, int dimensionLength,
+                                          @Cast("Nd4jLong *") LongPointer targetBuffer, @Cast("Nd4jLong *") LongPointer offsetsBuffer);
 
     ///////////////
 
-    public abstract void pullRowsFloat(PointerPointer extraPointers, FloatPointer x, IntPointer xShapeInfo,
-                    FloatPointer z, IntPointer zShapeInfo, int n, IntPointer indexes, IntPointer tadShapeInfo,
-                    @Cast("Nd4jIndex *") LongPointer tadOffsets, IntPointer zTadShapeInfo,
-                    @Cast("Nd4jIndex *") LongPointer zTadOffsets);
+    public abstract void pullRowsFloat(PointerPointer extraPointers, FloatPointer x, @Cast("Nd4jLong *") LongPointer xShapeInfo,
+                    FloatPointer z, @Cast("Nd4jLong *") LongPointer zShapeInfo, long n, @Cast("Nd4jLong *") LongPointer indexes, @Cast("Nd4jLong *") LongPointer tadShapeInfo,
+                    @Cast("Nd4jLong *") LongPointer tadOffsets, @Cast("Nd4jLong *") LongPointer zTadShapeInfo,
+                    @Cast("Nd4jLong *") LongPointer zTadOffsets);
 
-    public abstract void pullRowsDouble(PointerPointer extraPointers, DoublePointer x, IntPointer xShapeInfo,
-                    DoublePointer z, IntPointer zShapeInfo, int n, IntPointer indexes, IntPointer tadShapeInfo,
-                    @Cast("Nd4jIndex *") LongPointer tadOffsets, IntPointer zTadShapeInfo,
-                    @Cast("Nd4jIndex *") LongPointer zTadOffsets);
+    public abstract void pullRowsDouble(PointerPointer extraPointers, DoublePointer x, @Cast("Nd4jLong *") LongPointer xShapeInfo,
+                    DoublePointer z, @Cast("Nd4jLong *") LongPointer zShapeInfo, long n, @Cast("Nd4jLong *") LongPointer indexes, @Cast("Nd4jLong *") LongPointer tadShapeInfo,
+                    @Cast("Nd4jLong *") LongPointer tadOffsets, @Cast("Nd4jLong *") LongPointer zTadShapeInfo,
+                    @Cast("Nd4jLong *") LongPointer zTadOffsets);
 
     public abstract void pullRowsHalf(PointerPointer extraPointers, @Cast("float16*") ShortPointer x,
-                    IntPointer xShapeInfo, @Cast("float16*") ShortPointer z, IntPointer zShapeInfo, int n,
-                    IntPointer indexes, IntPointer tadShapeInfo, @Cast("Nd4jIndex *") LongPointer tadOffsets,
-                    IntPointer zTadShapeInfo, @Cast("Nd4jIndex *") LongPointer zTadOffsets);
+                                      @Cast("Nd4jLong *") LongPointer xShapeInfo, @Cast("float16*") ShortPointer z, @Cast("Nd4jLong *") LongPointer zShapeInfo, long n,
+                                      @Cast("Nd4jLong *") LongPointer indexes, IntPointer tadShapeInfo, @Cast("Nd4jLong *") LongPointer tadOffsets,
+                                      @Cast("Nd4jLong *") LongPointer zTadShapeInfo, @Cast("Nd4jLong *") LongPointer zTadOffsets);
 
 
     ///////////////////////
@@ -1323,12 +1323,12 @@ public abstract class NativeOps extends Pointer {
 
     // MetaOps
     public abstract void execMetaPredicateStridedFloat(PointerPointer extras, int opTypeA, int opNumA, int opTypeB,
-                    int opNumB, long N, FloatPointer dx, int xStride, FloatPointer dy, int yStride, FloatPointer dz,
-                    int zStride, FloatPointer extraA, FloatPointer extraB, float scalarA, float scalarB);
+                    int opNumB, long N, FloatPointer dx, long xStride, FloatPointer dy, long yStride, FloatPointer dz,
+                    long zStride, FloatPointer extraA, FloatPointer extraB, float scalarA, float scalarB);
 
     public abstract void execMetaPredicateStridedDouble(PointerPointer extras, int opTypeA, int opNumA, int opTypeB,
-                    int opNumB, long N, DoublePointer dx, int xStride, DoublePointer dy, int yStride, DoublePointer dz,
-                    int zStride, DoublePointer extraA, DoublePointer extraB, double scalarA, double scalarB);
+                    int opNumB, long N, DoublePointer dx, long xStride, DoublePointer dy, long yStride, DoublePointer dz,
+                    long zStride, DoublePointer extraA, DoublePointer extraB, double scalarA, double scalarB);
 
     public abstract void execMetaPredicateStridedHalf(PointerPointer extras, int opTypeA, int opNumA, int opTypeB,
                     int opNumB, long N, @Cast("float16*") ShortPointer dx, int xStride,
@@ -1337,32 +1337,32 @@ public abstract class NativeOps extends Pointer {
                     float scalarB);
 
     public abstract void execMetaPredicateShapeFloat(PointerPointer extras, int opTypeA, int opNumA, int opTypeB,
-                    int opNumB, long N, FloatPointer dx, IntPointer xShape, FloatPointer dy, IntPointer yShape,
-                    FloatPointer dz, IntPointer zShape, FloatPointer extraA, FloatPointer extraB, float scalarA,
+                    int opNumB, long N, FloatPointer dx, @Cast("Nd4jLong *") LongPointer xShape, FloatPointer dy, @Cast("Nd4jLong *") LongPointer yShape,
+                    FloatPointer dz, @Cast("Nd4jLong *") LongPointer zShape, FloatPointer extraA, FloatPointer extraB, float scalarA,
                     float scalarB);
 
     public abstract void execMetaPredicateShapeDouble(PointerPointer extras, int opTypeA, int opNumA, int opTypeB,
-                    int opNumB, long N, DoublePointer dx, IntPointer xShape, DoublePointer dy, IntPointer yShape,
-                    DoublePointer dz, IntPointer zShape, DoublePointer extraA, DoublePointer extraB, double scalarA,
+                    int opNumB, long N, DoublePointer dx, @Cast("Nd4jLong *") LongPointer xShape, DoublePointer dy, @Cast("Nd4jLong *") LongPointer yShape,
+                    DoublePointer dz, @Cast("Nd4jLong *") LongPointer zShape, DoublePointer extraA, DoublePointer extraB, double scalarA,
                     double scalarB);
 
     public abstract void execMetaPredicateShapeHalf(PointerPointer extras, int opTypeA, int opNumA, int opTypeB,
-                    int opNumB, long N, @Cast("float16*") ShortPointer dx, IntPointer xShape,
+                    int opNumB, long N, @Cast("float16*") ShortPointer dx, @Cast("Nd4jLong *") LongPointer xShape,
                     @Cast("float16*") ShortPointer dy, IntPointer yShape, @Cast("float16*") ShortPointer dz,
-                    IntPointer zShape, @Cast("float16*") ShortPointer extraA, @Cast("float16*") ShortPointer extraB,
+                                                    @Cast("Nd4jLong *") LongPointer zShape, @Cast("float16*") ShortPointer extraA, @Cast("float16*") ShortPointer extraB,
                     float scalarA, float scalarB);
 
     public abstract void execMetaPredicateReduceFloat(PointerPointer extras, int opTypeA, int opNumA, int opTypeB,
-                    int opNumB, FloatPointer dx, IntPointer xShapeInfo, FloatPointer dy, IntPointer yShapeInfo,
-                    FloatPointer dz, IntPointer zShapeInfo, IntPointer dimension, int dimensionLength,
-                    IntPointer tadShapeInfo, @Cast("Nd4jIndex *") LongPointer tadOffsets, FloatPointer extraA,
+                    int opNumB, FloatPointer dx, @Cast("Nd4jLong *") LongPointer xShapeInfo, FloatPointer dy, @Cast("Nd4jLong *") LongPointer yShapeInfo,
+                    FloatPointer dz, @Cast("Nd4jLong *") LongPointer zShapeInfo, IntPointer dimension, int dimensionLength,
+                                                      @Cast("Nd4jLong *") LongPointer tadShapeInfo, @Cast("Nd4jLong *") LongPointer tadOffsets, FloatPointer extraA,
                     FloatPointer extraB, float scalarA, float scalarB, boolean scalarReturned);
 
 
     /////////////////////////
 
     public abstract void execAggregateFloat(PointerPointer extras, int opNum,
-                    @Cast("float **") PointerPointer arguments, int numArguments, @Cast("int **") PointerPointer shapes,
+                    @Cast("float **") PointerPointer arguments, int numArguments, @Cast("Nd4jLong **") PointerPointer shapes,
                     int numShapes, IntPointer indexArguments, int numIndexArguments,
                     @Cast("int **") PointerPointer intArrays, int numIntArrays, FloatPointer realArguments,
                     int numRealArguments);
@@ -1370,13 +1370,13 @@ public abstract class NativeOps extends Pointer {
 
     public abstract void execAggregateDouble(PointerPointer extras, int opNum,
                     @Cast("double **") PointerPointer arguments, int numArguments,
-                    @Cast("int **") PointerPointer shapes, int numShapes, IntPointer indexArguments,
+                    @Cast("Nd4jLong **") PointerPointer shapes, int numShapes, IntPointer indexArguments,
                     int numIndexArguments, @Cast("int **") PointerPointer intArrays, int numIntArrays,
                     DoublePointer realArguments, int numRealArguments);
 
     public abstract void execAggregateHalf(PointerPointer extras, int opNum,
                     @Cast("float16 **") PointerPointer arguments, int numArguments,
-                    @Cast("int **") PointerPointer shapes, int numShapes, IntPointer indexArguments,
+                    @Cast("Nd4jLong **") PointerPointer shapes, int numShapes, IntPointer indexArguments,
                     int numIndexArguments, @Cast("int **") PointerPointer intArrays, int numIntArrays,
                     @Cast("float16*") ShortPointer realArguments, int numRealArguments);
 
@@ -1394,43 +1394,41 @@ public abstract class NativeOps extends Pointer {
 
 
     public abstract void execRandomFloat(PointerPointer extraPointers, int opNum, Pointer state, FloatPointer z,
-                    IntPointer zShapeBuffer, FloatPointer extraArguments);
+                                         @Cast("Nd4jLong *") LongPointer zShapeBuffer, FloatPointer extraArguments);
 
     public abstract void execRandomFloat(PointerPointer extraPointers, int opNum, Pointer state, FloatPointer x,
-                    IntPointer xShapeBuffer, FloatPointer y, IntPointer yShapeBuffer, FloatPointer z,
-                    IntPointer zShapeBuffer, FloatPointer extraArguments);
+                                         @Cast("Nd4jLong *") LongPointer xShapeBuffer, FloatPointer y, @Cast("Nd4jLong *") LongPointer yShapeBuffer, FloatPointer z,
+                                         @Cast("Nd4jLong *") LongPointer zShapeBuffer, FloatPointer extraArguments);
 
     public abstract void execRandomFloat(PointerPointer extraPointers, int opNum, Pointer state, FloatPointer x,
-                    IntPointer xShapeBuffer, FloatPointer z, IntPointer zShapeBuffer, FloatPointer extraArguments);
+                                         @Cast("Nd4jLong *") LongPointer xShapeBuffer, FloatPointer z, @Cast("Nd4jLong *") LongPointer zShapeBuffer, FloatPointer extraArguments);
 
 
     public abstract void execRandomDouble(PointerPointer extraPointers, int opNum, Pointer state, DoublePointer z,
-                    IntPointer zShapeBuffer, DoublePointer extraArguments);
+                                          @Cast("Nd4jLong *") LongPointer zShapeBuffer, DoublePointer extraArguments);
 
     public abstract void execRandomDouble(PointerPointer extraPointers, int opNum, Pointer state, DoublePointer x,
-                    IntPointer xShapeBuffer, DoublePointer y, IntPointer yShapeBuffer, DoublePointer z,
-                    IntPointer zShapeBuffer, DoublePointer extraArguments);
+                                          @Cast("Nd4jLong *") LongPointer xShapeBuffer, DoublePointer y, @Cast("Nd4jLong *") LongPointer yShapeBuffer, DoublePointer z,
+                                          @Cast("Nd4jLong *") LongPointer zShapeBuffer, DoublePointer extraArguments);
 
     public abstract void execRandomDouble(PointerPointer extraPointers, int opNum, Pointer state, DoublePointer x,
-                    IntPointer xShapeBuffer, DoublePointer z, IntPointer zShapeBuffer, DoublePointer extraArguments);
+                                          @Cast("Nd4jLong *") LongPointer xShapeBuffer, DoublePointer z, @Cast("Nd4jLong *") LongPointer zShapeBuffer, DoublePointer extraArguments);
 
 
     public abstract void execRandomHalf(PointerPointer extraPointers, int opNum, Pointer state,
-                    @Cast("float16*") ShortPointer z, IntPointer zShapeBuffer,
+                    @Cast("float16*") ShortPointer z, @Cast("Nd4jLong *") LongPointer zShapeBuffer,
                     @Cast("float16*") ShortPointer extraArguments);
 
     public abstract void execRandomHalf(PointerPointer extraPointers, int opNum, Pointer state,
-                    @Cast("float16*") ShortPointer x, IntPointer xShapeBuffer, @Cast("float16*") ShortPointer y,
-                    IntPointer yShapeBuffer, @Cast("float16*") ShortPointer z, IntPointer zShapeBuffer,
+                    @Cast("float16*") ShortPointer x, @Cast("Nd4jLong *") LongPointer xShapeBuffer, @Cast("float16*") ShortPointer y,
+                    @Cast("Nd4jLong *") LongPointer yShapeBuffer, @Cast("float16*") ShortPointer z, @Cast("Nd4jLong *") LongPointer zShapeBuffer,
                     @Cast("float16*") ShortPointer extraArguments);
 
     public abstract void execRandomHalf(PointerPointer extraPointers, int opNum, Pointer state,
-                    @Cast("float16*") ShortPointer x, IntPointer xShapeBuffer, @Cast("float16*") ShortPointer z,
-                    IntPointer zShapeBuffer, @Cast("float16*") ShortPointer extraArguments);
+                    @Cast("float16*") ShortPointer x, IntPointer xShapeBuffer, @Cast("float16*") ShortPointer z, @Cast("Nd4jLong *") LongPointer zShapeBuffer, @Cast("float16*") ShortPointer extraArguments);
 
 
-    public abstract Pointer initRandom(PointerPointer extraPointers, long seed, long numberOfElements,
-                    Pointer pointerToBuffer);
+    public abstract Pointer initRandom(PointerPointer extraPointers, long seed, long numberOfElements, Pointer pointerToBuffer);
 
     public abstract void refreshBuffer(PointerPointer extraPointers, long seed, Pointer pointer);
 
@@ -1499,98 +1497,82 @@ public abstract class NativeOps extends Pointer {
     public abstract Pointer pointerForAddress(long address);
 
 
-    public abstract void tearDouble(PointerPointer extras, DoublePointer tensor, IntPointer xShapeInfo,
-                    PointerPointer targets, IntPointer zShapeInfo, IntPointer tadShapeInfo,
-                    @Cast("Nd4jIndex *") LongPointer tadOffsets);
+    public abstract void tearDouble(PointerPointer extras, DoublePointer tensor, @Cast("Nd4jLong *") LongPointer xShapeInfo,
+                    PointerPointer targets, @Cast("Nd4jLong *") LongPointer zShapeInfo, @Cast("Nd4jLong *") LongPointer tadShapeInfo,
+                    @Cast("Nd4jLong *") LongPointer tadOffsets);
 
-    public abstract void tearFloat(PointerPointer extras, FloatPointer tensor, IntPointer xShapeInfo,
-                    PointerPointer targets, IntPointer zShapeInfo, IntPointer tadShapeInfo,
-                    @Cast("Nd4jIndex *") LongPointer tadOffsets);
+    public abstract void tearFloat(PointerPointer extras, FloatPointer tensor, @Cast("Nd4jLong *") LongPointer xShapeInfo,
+                    PointerPointer targets, @Cast("Nd4jLong *") LongPointer zShapeInfo, @Cast("Nd4jLong *") LongPointer tadShapeInfo,
+                    @Cast("Nd4jLong *") LongPointer tadOffsets);
 
-    public abstract void tearHalf(PointerPointer extras, @Cast("float16*") ShortPointer tensor, IntPointer xShapeInfo,
-                    PointerPointer targets, IntPointer zShapeInfo, IntPointer tadShapeInfo,
-                    @Cast("Nd4jIndex *") LongPointer tadOffsets);
+    public abstract void tearHalf(PointerPointer extras, @Cast("float16*") ShortPointer tensor, @Cast("Nd4jLong *") LongPointer xShapeInfo,
+                    PointerPointer targets, @Cast("Nd4jLong *") LongPointer zShapeInfo, @Cast("Nd4jLong *") LongPointer tadShapeInfo,
+                    @Cast("Nd4jLong *") LongPointer tadOffsets);
 
 
-    public abstract long encodeBitmapFloat(PointerPointer extraPointers, FloatPointer dx, long N, IntPointer dz,
-                    float threshold);
+    public abstract long encodeBitmapFloat(PointerPointer extraPointers, FloatPointer dx, long N, IntPointer dz, float threshold);
 
-    public abstract long encodeBitmapDouble(PointerPointer extraPointers, DoublePointer dx, long N, IntPointer dz,
-                    float threshold);
+    public abstract long encodeBitmapDouble(PointerPointer extraPointers, DoublePointer dx, long N, IntPointer dz, float threshold);
 
-    public abstract long encodeBitmapHalf(PointerPointer extraPointers, @Cast("float16*") ShortPointer dx, long N,
-                    IntPointer dz, float threshold);
+    public abstract long encodeBitmapHalf(PointerPointer extraPointers, @Cast("float16*") ShortPointer dx, long N, IntPointer dz, float threshold);
 
 
     public abstract void decodeBitmapFloat(PointerPointer extraPointers, Pointer dx, long N, FloatPointer dz);
 
     public abstract void decodeBitmapDouble(PointerPointer extraPointers, Pointer dx, long N, DoublePointer dz);
 
-    public abstract void decodeBitmapHalf(PointerPointer extraPointers, Pointer dx, long N,
-                    @Cast("float16*") ShortPointer dz);
+    public abstract void decodeBitmapHalf(PointerPointer extraPointers, Pointer dx, long N, @Cast("float16*") ShortPointer dz);
 
 
 
-    public abstract void encodeThresholdP1Float(PointerPointer extraPointers, FloatPointer dx, long N, IntPointer dz,
-                    float threshold);
+    public abstract void encodeThresholdP1Float(PointerPointer extraPointers, FloatPointer dx, long N, IntPointer dz, float threshold);
 
-    public abstract void encodeThresholdP1Double(PointerPointer extraPointers, DoublePointer dx, long N, IntPointer dz,
-                    float threshold);
+    public abstract void encodeThresholdP1Double(PointerPointer extraPointers, DoublePointer dx, long N, IntPointer dz, float threshold);
 
-    public abstract void encodeThresholdP1Half(PointerPointer extraPointers, @Cast("float16*") ShortPointer dx, long N,
-                    IntPointer dz, float threshold);
+    public abstract void encodeThresholdP1Half(PointerPointer extraPointers, @Cast("float16*") ShortPointer dx, long N, IntPointer dz, float threshold);
 
 
     public abstract void encodeThresholdP2Int(PointerPointer extraPointers, IntPointer dx, long N, IntPointer dz);
 
 
-    public abstract void encodeThresholdP3Float(PointerPointer extraPointers, FloatPointer dx, IntPointer offsets,
-                    long N, IntPointer dz);
+    public abstract void encodeThresholdP3Float(PointerPointer extraPointers, FloatPointer dx, IntPointer offsets, long N, IntPointer dz);
 
-    public abstract void encodeThresholdP3Double(PointerPointer extraPointers, DoublePointer dx, IntPointer offsets,
-                    long N, IntPointer dz);
+    public abstract void encodeThresholdP3Double(PointerPointer extraPointers, DoublePointer dx, IntPointer offsets,  long N, IntPointer dz);
 
-    public abstract void encodeThresholdP3Half(PointerPointer extraPointers, @Cast("float16*") ShortPointer dx,
-                    IntPointer offsets, long N, IntPointer dz);
+    public abstract void encodeThresholdP3Half(PointerPointer extraPointers, @Cast("float16*") ShortPointer dx, IntPointer offsets, long N, IntPointer dz);
 
     public abstract void decodeThresholdFloat(PointerPointer extraPointers, Pointer dx, long N, FloatPointer dz);
 
     public abstract void decodeThresholdDouble(PointerPointer extraPointers, Pointer dx, long N, DoublePointer dz);
 
-    public abstract void decodeThresholdHalf(PointerPointer extraPointers, Pointer dx, long N,
-                    @Cast("float16*") ShortPointer dz);
+    public abstract void decodeThresholdHalf(PointerPointer extraPointers, Pointer dx, long N, @Cast("float16*") ShortPointer dz);
 
 
-    public abstract void sortFloat(PointerPointer extraPointers, FloatPointer dx, IntPointer xShapeInfo,
-                    boolean descending);
+    public abstract void sortFloat(PointerPointer extraPointers, FloatPointer dx, @Cast("Nd4jLong *") LongPointer xShapeInfo, boolean descending);
 
-    public abstract void sortDouble(PointerPointer extraPointers, DoublePointer dx, IntPointer xShapeInfo,
-                    boolean descending);
+    public abstract void sortDouble(PointerPointer extraPointers, DoublePointer dx, @Cast("Nd4jLong *") LongPointer xShapeInfo, boolean descending);
 
-    public abstract void sortHalf(PointerPointer extraPointers, @Cast("float16*") ShortPointer dx,
-                    IntPointer xShapeInfo, boolean descending);
+    public abstract void sortHalf(PointerPointer extraPointers, @Cast("float16*") ShortPointer dx, @Cast("Nd4jLong *") LongPointer xShapeInfo, boolean descending);
 
 
 
-    public abstract void sortTadFloat(PointerPointer extraPointers, FloatPointer dx, IntPointer xShapeInfo,
-                    IntPointer dimension, int dimensionLength, IntPointer tadShapeInfo,
-                    @Cast("Nd4jIndex *") LongPointer tadOffsets, boolean descending);
+    public abstract void sortTadFloat(PointerPointer extraPointers, FloatPointer dx, @Cast("Nd4jLong *") LongPointer xShapeInfo,
+                    IntPointer dimension, int dimensionLength, @Cast("Nd4jLong *") LongPointer tadShapeInfo,
+                    @Cast("Nd4jLong *") LongPointer tadOffsets, boolean descending);
 
-    public abstract void sortTadDouble(PointerPointer extraPointers, DoublePointer dx, IntPointer xShapeInfo,
-                    IntPointer dimension, int dimensionLength, IntPointer tadShapeInfo,
-                    @Cast("Nd4jIndex *") LongPointer tadOffsets, boolean descending);
+    public abstract void sortTadDouble(PointerPointer extraPointers, DoublePointer dx, @Cast("Nd4jLong *") LongPointer xShapeInfo,
+                    IntPointer dimension, int dimensionLength, @Cast("Nd4jLong *") LongPointer tadShapeInfo,
+                    @Cast("Nd4jLong *") LongPointer tadOffsets, boolean descending);
 
     public abstract void sortTadHalf(PointerPointer extraPointers, @Cast("float16*") ShortPointer dx,
-                    IntPointer xShapeInfo, IntPointer dimension, int dimensionLength, IntPointer tadShapeInfo,
-                    @Cast("Nd4jIndex *") LongPointer tadOffsets, boolean descending);
+                    @Cast("Nd4jLong *") LongPointer xShapeInfo, IntPointer dimension, int dimensionLength, @Cast("Nd4jLong *") LongPointer tadShapeInfo,
+                    @Cast("Nd4jLong *") LongPointer tadOffsets, boolean descending);
 
-    public abstract void sortCooIndicesFloat(PointerPointer extraPointers, IntPointer indices, FloatPointer values,
-                    long length, int rank);
+    public abstract void sortCooIndicesFloat(PointerPointer extraPointers, @Cast("Nd4jLong *") LongPointer indices, FloatPointer values, long length, int rank);
 
-    public abstract void sortCooIndicesDouble(PointerPointer extraPointers, IntPointer indices, DoublePointer values,
-                    long length, int rank);
+    public abstract void sortCooIndicesDouble(PointerPointer extraPointers, @Cast("Nd4jLong *") LongPointer indices, DoublePointer values, long length, int rank);
 
-    public abstract void sortCooIndicesHalf(PointerPointer extraPointers, IntPointer indices, @Cast("float16*") ShortPointer values, long length, int rank);
+    public abstract void sortCooIndicesHalf(PointerPointer extraPointers, @Cast("Nd4jLong *") LongPointer indices, @Cast("float16*") ShortPointer values, long length, int rank);
 
     public abstract LongPointer mmapFile(PointerPointer extraPointers, String fileName, long length);
 
@@ -1602,17 +1584,17 @@ public abstract class NativeOps extends Pointer {
 
     public abstract String getAllOperations();
 
-    public abstract int execCustomOpFloat(PointerPointer extraPointers, long opHashCode, PointerPointer inputBuffers, PointerPointer inputShapes, int numInput, PointerPointer outputBuffers, PointerPointer outputShapes, int numOutputs, FloatPointer tArgs, int numTArgs, IntPointer iArgs, int numIArgs, boolean isInplace);
-    public abstract int execCustomOpDouble(PointerPointer extraPointers, long opHashCode, PointerPointer inputBuffers, PointerPointer inputShapes, int numInput, PointerPointer outputBuffers, PointerPointer outputShapes, int numOutputs, DoublePointer tArgs, int numTArgs, IntPointer iArgs, int numIArgs, boolean isInplace);
-    public abstract int execCustomOpHalf(PointerPointer extraPointers, long opHashCode, PointerPointer inputBuffers, PointerPointer inputShapes, int numInput, PointerPointer outputBuffers, PointerPointer outputShapes, int numOutputs, @Cast("float16*") ShortPointer tArgs, int numTArgs, IntPointer iArgs, int numIArgs, boolean isInplace);
+    public abstract int execCustomOpFloat(PointerPointer extraPointers, long opHashCode, PointerPointer inputBuffers, PointerPointer inputShapes, int numInput, PointerPointer outputBuffers, PointerPointer outputShapes, int numOutputs, FloatPointer tArgs, int numTArgs, @Cast("Nd4jLong *") LongPointer iArgs, int numIArgs, boolean isInplace);
+    public abstract int execCustomOpDouble(PointerPointer extraPointers, long opHashCode, PointerPointer inputBuffers, PointerPointer inputShapes, int numInput, PointerPointer outputBuffers, PointerPointer outputShapes, int numOutputs, DoublePointer tArgs, int numTArgs, @Cast("Nd4jLong *") LongPointer iArgs, int numIArgs, boolean isInplace);
+    public abstract int execCustomOpHalf(PointerPointer extraPointers, long opHashCode, PointerPointer inputBuffers, PointerPointer inputShapes, int numInput, PointerPointer outputBuffers, PointerPointer outputShapes, int numOutputs, @Cast("float16*") ShortPointer tArgs, int numTArgs, @Cast("Nd4jLong *") LongPointer iArgs, int numIArgs, boolean isInplace);
 
-    public abstract Pointer calculateOutputShapesFloat(PointerPointer extraPointers, long hash, PointerPointer inputShapes, int numInputShapes, FloatPointer tArgs, int numTArgs, IntPointer iArgs, int numIArgs);
-    public abstract Pointer calculateOutputShapesHalf(PointerPointer extraPointers, long hash, PointerPointer inputShapes, int numInputShapes, @Cast("float16") ShortPointer tArgs, int numTArgs, IntPointer iArgs, int numIArgs);
-    public abstract Pointer calculateOutputShapesDouble(PointerPointer extraPointers, long hash, PointerPointer inputShapes, int numInputShapes, DoublePointer tArgs, int numTArgs, IntPointer iArgs, int numIArgs);
+    public abstract Pointer calculateOutputShapesFloat(PointerPointer extraPointers, long hash, PointerPointer inputShapes, int numInputShapes, FloatPointer tArgs, int numTArgs, @Cast("Nd4jLong *") LongPointer iArgs, int numIArgs);
+    public abstract Pointer calculateOutputShapesHalf(PointerPointer extraPointers, long hash, PointerPointer inputShapes, int numInputShapes, @Cast("float16") ShortPointer tArgs, int numTArgs, @Cast("Nd4jLong *") LongPointer iArgs, int numIArgs);
+    public abstract Pointer calculateOutputShapesDouble(PointerPointer extraPointers, long hash, PointerPointer inputShapes, int numInputShapes, DoublePointer tArgs, int numTArgs, @Cast("Nd4jLong *") LongPointer iArgs, int numIArgs);
 
-    public abstract Pointer calculateOutputShapesFloat(PointerPointer extraPointers, long hash, PointerPointer inputBuffers, PointerPointer inputShapes, int numInputShapes, FloatPointer tArgs, int numTArgs, IntPointer iArgs, int numIArgs);
-    public abstract Pointer calculateOutputShapesHalf(PointerPointer extraPointers, long hash, PointerPointer inputBuffers, PointerPointer inputShapes, int numInputShapes, @Cast("float16") ShortPointer tArgs, int numTArgs, IntPointer iArgs, int numIArgs);
-    public abstract Pointer calculateOutputShapesDouble(PointerPointer extraPointers, long hash, PointerPointer inputBuffers, PointerPointer inputShapes, int numInputShapes, DoublePointer tArgs, int numTArgs, IntPointer iArgs, int numIArgs);
+    public abstract Pointer calculateOutputShapesFloat(PointerPointer extraPointers, long hash, PointerPointer inputBuffers, PointerPointer inputShapes, int numInputShapes, FloatPointer tArgs, int numTArgs, @Cast("Nd4jLong *") LongPointer iArgs, int numIArgs);
+    public abstract Pointer calculateOutputShapesHalf(PointerPointer extraPointers, long hash, PointerPointer inputBuffers, PointerPointer inputShapes, int numInputShapes, @Cast("float16") ShortPointer tArgs, int numTArgs, @Cast("Nd4jLong *") LongPointer iArgs, int numIArgs);
+    public abstract Pointer calculateOutputShapesDouble(PointerPointer extraPointers, long hash, PointerPointer inputBuffers, PointerPointer inputShapes, int numInputShapes, DoublePointer tArgs, int numTArgs, @Cast("Nd4jLong *") LongPointer iArgs, int numIArgs);
 
     public abstract int registerGraphFloat(PointerPointer extraPointers, long graphId, Pointer flatBufferPointer);
     public abstract int registerGraphDouble(PointerPointer extraPointers, long graphId, Pointer flatBufferPointer);
