@@ -6271,6 +6271,34 @@ public class Nd4jTestsC extends BaseNd4jTest {
         assertEquals(exp, arrayb.mmul(arrayb));
     }
 
+    @Test
+    public void testTile_1() {
+        val array = Nd4j.linspace(1, 6, 6).reshape(2, 3);
+        val exp = Nd4j.create(new double[] {1.000000, 2.000000, 3.000000, 1.000000, 2.000000, 3.000000, 4.000000, 5.000000, 6.000000, 4.000000, 5.000000, 6.000000, 1.000000, 2.000000, 3.000000, 1.000000, 2.000000, 3.000000, 4.000000, 5.000000, 6.000000, 4.000000, 5.000000, 6.000000}, new int[] {4, 6});
+        val output = Nd4j.create(4, 6);
+
+        val op = DynamicCustomOp.builder("tile")
+                .addInputs(array)
+                .addIntegerArguments(2, 2)
+                .addOutputs(output)
+                .build();
+
+        Nd4j.getExecutioner().exec(op);
+
+        assertEquals(exp, output);
+    }
+
+    @Test
+    public void testRelativeError_1() throws Exception {
+        val arrayX = Nd4j.create(10, 10);
+        val arrayY = Nd4j.ones(10, 10);
+        val exp = Nd4j.ones(10, 10);
+
+        Nd4j.getExecutioner().exec(new BinaryRelativeError(arrayX, arrayY, arrayX, 0.1));
+
+        assertEquals(exp, arrayX);
+    }
+
     ///////////////////////////////////////////////////////
     protected static void fillJvmArray3D(float[][][] arr) {
         int cnt = 1;
