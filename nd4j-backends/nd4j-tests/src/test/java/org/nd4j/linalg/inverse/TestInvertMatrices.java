@@ -108,6 +108,25 @@ public class TestInvertMatrices extends BaseNd4jTest {
         // general condition X = X * X^-1 * X
         final INDArray generalCond = X.mmul(leftInverse).mmul(X);
         assertTrue(X.equalsWithEps(generalCond, precision));
+        checkMoorePenroseConditions(X, leftInverse, precision);
+    }
+
+    /**
+     * Check the Moore-Penrose conditions for pseudo-matrices.
+     *
+     * @param A Initial matrix
+     * @param B Pseudo-Inverse of {@code A}
+     * @param precision Precision when comparing matrix elements
+     */
+    private void checkMoorePenroseConditions(INDArray A, INDArray B, double precision) {
+        // ABA=A (AB need not be the general identity matrix, but it maps all column vectors of A to themselves)
+        assertTrue(A.equalsWithEps(A.mmul(B).mmul(A), precision));
+        // BAB=B (B is a weak inverse for the multiplicative semigroup)
+        assertTrue(B.equalsWithEps(B.mmul(A).mmul(B), precision));
+        // (AB)^T=AB (AB is Hermitian)
+        assertTrue((A.mmul(B)).transpose().equalsWithEps(A.mmul(B), precision));
+        // (BA)^T=BA (BA is also Hermitian)
+        assertTrue((B.mmul(A)).transpose().equalsWithEps(B.mmul(A), precision));
     }
 
     /**
@@ -136,6 +155,7 @@ public class TestInvertMatrices extends BaseNd4jTest {
         // general condition X = X * X^-1 * X
         final INDArray generalCond = X.mmul(rightInverse).mmul(X);
         assertTrue(X.equalsWithEps(generalCond, precision));
+        checkMoorePenroseConditions(X, rightInverse, precision);
     }
 
     /**
