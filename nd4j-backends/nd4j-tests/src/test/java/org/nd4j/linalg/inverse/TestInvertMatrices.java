@@ -148,11 +148,11 @@ public class TestInvertMatrices extends BaseNd4jTest {
     }
 
     /**
-     * Try to compute the right pseudo inverse of a matrix without full row rank (x1 = 2*x2)
+     * Try to compute the left pseudo inverse of a matrix without full column rank (x1 = 2*x2)
      */
     @Test(expected = IllegalArgumentException.class)
     public void testLeftPseudoInvertWithNonFullColumnRank() {
-        INDArray X = Nd4j.create(new double[][]{{1, 2}, {3, 6}, {5, 10}}).transpose();
+        INDArray X = Nd4j.create(new double[][]{{1, 2}, {3, 6}, {5, 10}});
         INDArray leftInverse = InvertMatrix.pLeftInvert(X, false);
     }
 
