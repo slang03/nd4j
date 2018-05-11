@@ -2421,6 +2421,12 @@ public interface INDArray extends Serializable {
      */
     boolean isVector();
 
+    /**
+     * Returns true if this ndarray is a vector or scalar
+     *
+     * @return whether this ndarray is a vector or scalar
+     */
+    boolean isVectorOrScalar();
 
     /**
      * Returns whether the matrix
@@ -2497,6 +2503,14 @@ public interface INDArray extends Serializable {
      * @return the broadcasted ndarray
      */
     INDArray broadcast(int... shape);
+
+
+    /**
+     * Broadcasts this ndarray to be the specified shape
+     *
+     * @return the broadcasted ndarray
+     */
+    INDArray broadcast(INDArray result);
 
 
     /**
